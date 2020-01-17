@@ -23,6 +23,19 @@ The algorithm is used to produce visual images from 3D environments. It can simu
 
 * ArrayList/STL vector
 
+## Input
+
+Some basic 3D geometry is given as input, such as spheres, planes and cubes. These can be represented as polygons, triangles or in some other form. 
+
+## Output
+
+The program produces image as a output, such as JPG,JPEG,PNG. The easiest one to implement should be [.ppm](https://en.wikipedia.org/wiki/Netpbm_format)
+
+
+## Time complexity
+
+The true time complexity of ray tracing / ray casting algorithm is unkown, at least according to paper from 1997. It is believed to be sub-linear in most cases O(log N), where N is number of primitives (polygons, triangles) in the secene. 
+
 ## References
 
 [Ray tracing (graphics), wikipedia](https://en.wikipedia.org/wiki/Ray_tracing_(graphics))
