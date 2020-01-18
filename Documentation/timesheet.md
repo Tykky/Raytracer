@@ -3,4 +3,4 @@
 |------------|--------------|--------------------------------|---|---|
 | 17.01.2020 | 3            | reading about the topic        |   |   |
 | 17.01.2020 | 2            | Writing project specifications |   |   |
-| 17.01.2020 | 0.30         | Writing weekly report          |   |   |
+| 17.01.2020 | 0.50         | Writing weekly report          |   |   |

@@ -34,7 +34,7 @@ The program produces image as a output, such as JPG,JPEG,PNG. The easiest one to
 
 ## Time complexity
 
-The true time complexity of ray tracing / ray casting algorithm is unkown, at least according to paper from 1997. It is believed to be sub-linear in most cases O(log N), where N is number of primitives (polygons, triangles) in the secene. 
+The true time complexity of ray tracing / ray casting algorithm is unkown, at least according to paper from 1997. It is believed to be sub-linear in most cases O(log N), where N is number of primitives (polygons, triangles) in the scene. 
 
 ## References
 
