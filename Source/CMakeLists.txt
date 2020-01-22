@@ -1,1 +1,1 @@
-add_executable(raytracer main.cpp)
+add_executable(raytracer main.cpp Dummyclass.cpp)
