@@ -9,6 +9,6 @@ before_script:
 script:
         - make
 
- after_success:
+after_success:
          - ./test/gtest_run
          - bash <(curl -s https://codecov.io/bash)
