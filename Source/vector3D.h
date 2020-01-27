@@ -1,4 +1,4 @@
-/**@brief Vector3d class containing data structure for 3D-euclidean and 3D-RGB vectors.
+/**@brief vector3D class containing data structure for 3D-euclidean and RGB vectors.
  * @details class contains data structure for 3-dimensional
  * euclidean coordinate vector and 3-dimensional RGB vector.
  */
@@ -7,24 +7,31 @@
 #define RAYTRACER_VECTOR3D_H
 
 #include <iostream>
+#include <memory>
 
-class Vector3d {
+class vector3D {
 
     private:
     float x, y, z;
 
     public:
     /** Default constructor. Initialized everything to 0. */
-    Vector3d();
+    vector3D();
     /** Constructor with parameters. Initializes to parameter values. */
-    Vector3d(float x, float y, float z);
+    vector3D(float x, float y, float z);
 
     /**@brief Computes vector length with pythagoras sqrt(x^2+y^2+z^2) */
     float length() const;
     float lengthSquared() const;
 
     /**@brief Transforms vector to length 1 vector. */
-    void makeUnitVector();
+    void normalize();
+
+    /**@brief Computes vector dot product */
+    float dot(const vector3D &v) const;
+
+    /**@brief Computes vector cross product */
+    vector3D cross(const vector3D &v) const;
 
     float getX() const;
     float getY() const;
@@ -33,19 +40,19 @@ class Vector3d {
     float getG() const;
     float getB() const;
 
-    const Vector3d &operator+ () const;
-    Vector3d operator- () const;
+    const vector3D &operator+ () const;
+    vector3D operator- () const;
     float operator[] (int i) const;
     float &operator[] (int i);
 
-    Vector3d &operator+= (const Vector3d &v);
-    Vector3d &operator-= (const Vector3d &v);
-    Vector3d &operator*= (const Vector3d &v);
-    Vector3d &operator/= (const Vector3d &v);
-    Vector3d &operator+= (const float k);
-    Vector3d &operator-= (const float k);
-    Vector3d &operator*= (const float k);
-    Vector3d &operator/= (const float k);
+    vector3D &operator+= (const vector3D &v);
+    vector3D &operator-= (const vector3D &v);
+    vector3D &operator*= (const vector3D &v);
+    vector3D &operator/= (const vector3D &v);
+    vector3D &operator+= (float k);
+    vector3D &operator-= (float k);
+    vector3D &operator*= (float k);
+    vector3D &operator/= (float k);
 
     std::istream &operator>>(std::istream &is);
     std::ostream &operator<<(std::ostream &os);

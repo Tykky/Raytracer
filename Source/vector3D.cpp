@@ -1,95 +1,150 @@
-#include "Vector3d.h"
+#include "vector3D.h"
 #include <cmath>
+#include <memory>
 
-
-Vector3d::Vector3d() :
+vector3D::vector3D() :
     x(0), y(0), z(0) {
 }
 
-Vector3d::Vector3d(float x, float y, float z) :
-    x(x), y(y), z(y) {
+vector3D::vector3D(float x, float y, float z) :
+    x(x), y(y), z(z) {
 }
 
-float Vector3d::getX() const {
+float vector3D::getX() const {
     return x;
 }
 
-float Vector3d::getY() const {
+float vector3D::getY() const {
     return y;
 }
 
-float Vector3d::getZ() const {
+float vector3D::getZ() const {
     return z;
 }
 
-float Vector3d::getR() const {
+float vector3D::getR() const {
     return x;
 }
 
-float Vector3d::getG() const {
+float vector3D::getG() const {
     return y;
 }
 
-float Vector3d::getB() const {
+float vector3D::getB() const {
     return z;
 }
 
-float Vector3d::length() const {
+float vector3D::length() const {
     return std::sqrt(x*x + y*y + z*z);
 }
 
-float Vector3d::lengthSquared() const {
+float vector3D::lengthSquared() const {
     return x*x + y*y + z*z;
 }
 
-void Vector3d::makeUnitVector() {
-
+void vector3D::normalize() {
+    float k = 1/std::sqrt(x*x + y*y + z*z);
+    x *= k;
+    y *= k;
+    z *= k;
 }
 
-const Vector3d &Vector3d::operator+() const {
+const vector3D &vector3D::operator+() const {
     return *this;
 }
 
-Vector3d Vector3d::operator-() const {
+vector3D vector3D::operator-() const {
     return {-x,-y,-z};
 }
 
-float Vector3d::operator[](int i) const {
+float vector3D::operator[](int i) const {
+    if(i == 0) return x;
+    if(i == 1) return y;
+    if(i == 2) return z;
+    return 0;
 }
 
-float &Vector3d::operator[](int i) {
+float &vector3D::operator[](int i) {
+    if(i == 0) return x;
+    if(i == 1) return y;
+    if(i == 2) return z;
+    return x;
 }
 
-Vector3d &Vector3d::operator+=(const Vector3d &v) {
+vector3D &vector3D::operator+=(const vector3D &v) {
+    x += v.getX();
+    y += v.getY();
+    z += v.getZ();
+    return *this;
 }
 
-Vector3d &Vector3d::operator-=(const Vector3d &v) {
+vector3D &vector3D::operator-=(const vector3D &v) {
+    x -= v.getX();
+    y -= v.getY();
+    z -= v.getZ();
+    return *this;
 }
 
-Vector3d &Vector3d::operator*=(const Vector3d &v) {
+vector3D &vector3D::operator*=(const vector3D &v) {
+    x *= v.getX();
+    y *= v.getY();
+    z *= v.getZ();
+    return *this;
 }
 
-Vector3d &Vector3d::operator/=(const Vector3d &v) {
+vector3D &vector3D::operator/=(const vector3D &v) {
+    x /= v.getX();
+    y /= v.getY();
+    z /= v.getZ();
+    return *this;
 }
 
-Vector3d &Vector3d::operator+=(const float k) {
+vector3D &vector3D::operator+=(const float k) {
+    x += k;
+    y += k;
+    z += k;
+    return *this;
 }
 
-Vector3d &Vector3d::operator-=(const float k) {
+vector3D &vector3D::operator-=(const float k) {
+    x -= k;
+    y -= k;
+    z -= k;
+    return *this;
 }
 
-Vector3d &Vector3d::operator*=(const float k) {
+vector3D &vector3D::operator*=(const float k) {
+    x *= k;
+    y *= k;
+    z *= k;
+    return *this;
 }
 
-Vector3d &Vector3d::operator/=(const float k) {
+vector3D &vector3D::operator/=(const float k) {
+    x /= k;
+    y /= k;
+    z /= k;
+    return *this;
 }
 
-std::istream &Vector3d::operator>>(std::istream &is) {
+std::istream &vector3D::operator>>(std::istream &is) {
     is >> x >> y >> z;
     return is;
 }
 
-std::ostream &Vector3d::operator<<(std::ostream &os) {
+std::ostream &vector3D::operator<<(std::ostream &os) {
     os << x << y << z;
     return os;
+}
+
+float vector3D::dot(const vector3D &v) const {
+    return x*v.getX()+
+           y*v.getY()+
+           z*v.getZ();
+}
+vector3D vector3D::cross(const vector3D &v) const {
+    // a x b = (a2b3-a3b2)i+(a3b1-a1b3)j+(a1b2-a2b1)k
+    return {y * v.getZ() - z * v.getY(),
+            z * v.getX() - x * v.getZ(),
+            x * v.getY() - y * v.getX()};
 }
