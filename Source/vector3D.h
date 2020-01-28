@@ -15,7 +15,7 @@ class vector3D {
     float x, y, z;
 
     public:
-    /** Default constructor. Initialized everything to 0. */
+    /** Default constructor. Initializes everything to 0. */
     vector3D();
     /** Constructor with parameters. Initializes to parameter values. */
     vector3D(float x, float y, float z);
