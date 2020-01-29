@@ -37,7 +37,7 @@ protected:
 };
 
 /**Tests operator +() */
-TEST_F(vector3Dtest, opPlusTestSmal) {
+TEST_F(vector3Dtest, opPlusTestSmall) {
     +(v1);
     EXPECT_FLOAT_EQ(1,v1.getX());
     EXPECT_FLOAT_EQ(2, v1.getY());
