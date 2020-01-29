@@ -37,7 +37,7 @@ protected:
 };
 
 /**Tests operator +() */
-TEST_F(vector3Dtest, opPlusTestSmall) {
+TEST_F(vector3Dtest, opPlusTestSmal) {
     +(v1);
     EXPECT_FLOAT_EQ(1,v1.getX());
     EXPECT_FLOAT_EQ(2, v1.getY());
@@ -51,13 +51,13 @@ TEST_F(vector3Dtest, opPlusTestRandom) {
 }
 
 /** Tests operator += vector */
-TEST_F(vector3Dtest, opAddtTestSmall1) {
+TEST_F(vector3Dtest, opAddtTestSmallVector) {
     v1 += v2;
     EXPECT_FLOAT_EQ(4,v1.getX());
     EXPECT_FLOAT_EQ(6,v1.getY());
     EXPECT_FLOAT_EQ(8,v1.getZ());
 }
-TEST_F(vector3Dtest, opAddTestRandom1) {
+TEST_F(vector3Dtest, opAddTestRandomVector) {
     vr1 += vr2;
     EXPECT_FLOAT_EQ(x1+x2, vr1.getX());
     EXPECT_FLOAT_EQ(y1+y2, vr1.getY());
@@ -65,14 +65,14 @@ TEST_F(vector3Dtest, opAddTestRandom1) {
 }
 
 /** Tests operator += constant */
-TEST_F(vector3Dtest, opAddTestSmall2) {
+TEST_F(vector3Dtest, opAddTestSmallConstant) {
     float c = 9;
     v1 += c;
     EXPECT_FLOAT_EQ(1+c,v1.getX());
     EXPECT_FLOAT_EQ(2+c,v1.getY());
     EXPECT_FLOAT_EQ(3+c,v1.getZ());
 }
-TEST_F(vector3Dtest, opAddTestRandom2) {
+TEST_F(vector3Dtest, opAddTestRandomConstant) {
     float c = dist(gen);
     vr1 += c;
     EXPECT_FLOAT_EQ(x1+c,vr1.getX());
@@ -94,13 +94,13 @@ TEST_F(vector3Dtest, opMinusTestRandom) {
 }
 
 /** Tests operator -= vector */
-TEST_F(vector3Dtest, opDecreaseTestSmall) {
+TEST_F(vector3Dtest, opDecreaseTestSmallVector) {
     v1 -= v2;
     EXPECT_FLOAT_EQ(-2,v1.getX());
     EXPECT_FLOAT_EQ(-2, v1.getY());
     EXPECT_FLOAT_EQ(-2,v1.getZ());
 }
-TEST_F(vector3Dtest, opDecreaseTestRandom1) {
+TEST_F(vector3Dtest, opDecreaseTestRandomVector) {
     vr1 -= vr2;
     EXPECT_FLOAT_EQ(x1-x2,vr1.getX());
     EXPECT_FLOAT_EQ(y1-y2, vr1.getY());
@@ -108,14 +108,14 @@ TEST_F(vector3Dtest, opDecreaseTestRandom1) {
 }
 
 /** Tests operator -= constant */
-TEST_F(vector3Dtest,opDecreaseTestSmall2) {
+TEST_F(vector3Dtest,opDecreaseTestSmallConstant) {
     float c = 5;
     v1 -= c;
     EXPECT_FLOAT_EQ(-4, v1.getX());
     EXPECT_FLOAT_EQ(-3, v1.getY());
     EXPECT_FLOAT_EQ(-2, v1.getZ());
 }
-TEST_F(vector3Dtest,opDecreaseTestRandom2) {
+TEST_F(vector3Dtest,opDecreaseTestRandomConstant) {
     float c = dist(gen);
     vr1 -= c;
     EXPECT_FLOAT_EQ(x1-c, vr1.getX());
@@ -124,13 +124,13 @@ TEST_F(vector3Dtest,opDecreaseTestRandom2) {
 }
 
 /** Tests operator *= vector */
-TEST_F(vector3Dtest, opMultiplyTestSmall1) {
+TEST_F(vector3Dtest, opMultiplyTestSmallVector) {
     v1 *= v2;
     EXPECT_FLOAT_EQ(3, v1.getX());
     EXPECT_FLOAT_EQ(8, v1.getY());
     EXPECT_FLOAT_EQ(15, v1.getZ());
 }
-TEST_F(vector3Dtest, opMultiplyTesteRandom1) {
+TEST_F(vector3Dtest, opMultiplyTesteRandomVector) {
     vr1 *= vr2;
     EXPECT_FLOAT_EQ(x1*x2, vr1.getX());
     EXPECT_FLOAT_EQ(y1*y2, vr1.getY());
@@ -138,14 +138,14 @@ TEST_F(vector3Dtest, opMultiplyTesteRandom1) {
 }
 
 /** Tests operator *= constant */
-TEST_F(vector3Dtest, opMultiplyTestSmall2) {
+TEST_F(vector3Dtest, opMultiplyTestSmallConstant) {
     float c = 5;
     v1 *= c;
     EXPECT_FLOAT_EQ(5, v1.getX());
     EXPECT_FLOAT_EQ(10,v1.getY());
     EXPECT_FLOAT_EQ(15,v1.getZ());
 }
-TEST_F(vector3Dtest, opMultiplyTestRandom2) {
+TEST_F(vector3Dtest, opMultiplyTestRandomConstant) {
     float c = dist(gen);
     vr1 *= c;
     EXPECT_FLOAT_EQ(x1*c, vr1.getX());
