@@ -152,3 +152,33 @@ TEST_F(vector3Dtest, opMultiplyTestRandomConstant) {
     EXPECT_FLOAT_EQ(y1*c,vr1.getY());
     EXPECT_FLOAT_EQ(z1*c,vr1.getZ());
 }
+
+/** Test operator /= vector */
+TEST_F(vector3Dtest, opDivideTestSmallVector) {
+    v1 /= v2;
+    EXPECT_FLOAT_EQ(.33333334, v1.getX());
+    EXPECT_FLOAT_EQ(.5, v1.getY());
+    EXPECT_FLOAT_EQ(.60000002, v1.getZ());
+}
+TEST_F(vector3Dtest, opDivideTestRandomVector) {
+    vr1 /= vr2;
+    EXPECT_FLOAT_EQ(x1/x2, vr1.getX());
+    EXPECT_FLOAT_EQ(y1/y2, vr1.getY());
+    EXPECT_FLOAT_EQ(z1/z2, vr1.getZ());
+}
+
+/** Test operator /= constant */
+TEST_F(vector3Dtest, opDivideTestSmallConstant) {
+    float c = 5;
+    v1 /=  c;
+    EXPECT_FLOAT_EQ(0.2, v1.getX());
+    EXPECT_FLOAT_EQ(0.4, v1.getY());
+    EXPECT_FLOAT_EQ(0.6, v1.getZ());
+}
+TEST_F(vector3Dtest, opDivideTestRandomConstant) {
+    float c = dist(gen);
+    vr1 /= c;
+    EXPECT_FLOAT_EQ(x1/c, vr1.getX());
+    EXPECT_FLOAT_EQ(y1/c, vr1.getY());
+    EXPECT_FLOAT_EQ(z1/c, vr1.getZ());
+}
