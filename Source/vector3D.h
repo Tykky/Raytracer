@@ -7,7 +7,6 @@
 #define RAYTRACER_VECTOR3D_H
 
 #include <iostream>
-#include <memory>
 
 class vector3D {
 
