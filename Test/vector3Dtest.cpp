@@ -26,7 +26,7 @@ TEST_F(vector3Dtest, opPlusTest) {
 
 
 /** Tests operator += vector */
-TEST_F(vector3Dtest, opAddtTestVector) {
+TEST_F(vector3Dtest, opAddtVectorTest) {
     v1 += v2;
     EXPECT_FLOAT_EQ(4,v1.getX());
     EXPECT_FLOAT_EQ(6,v1.getY());
@@ -35,7 +35,7 @@ TEST_F(vector3Dtest, opAddtTestVector) {
 
 
 /** Tests operator += constant */
-TEST_F(vector3Dtest, opAddTestConstant) {
+TEST_F(vector3Dtest, opAddConstantTest) {
     float c = 9;
     v1 += c;
     EXPECT_FLOAT_EQ(1+c,v1.getX());
@@ -53,7 +53,7 @@ TEST_F(vector3Dtest, opMinusTest) {
 
 
 /** Tests operator -= vector */
-TEST_F(vector3Dtest, opDecreaseTestVector) {
+TEST_F(vector3Dtest, opDecreaseVectorTest) {
     v1 -= v2;
     EXPECT_FLOAT_EQ(-2,v1.getX());
     EXPECT_FLOAT_EQ(-2, v1.getY());
@@ -62,7 +62,7 @@ TEST_F(vector3Dtest, opDecreaseTestVector) {
 
 
 /** Tests operator -= constant */
-TEST_F(vector3Dtest,opDecreaseTestConstant) {
+TEST_F(vector3Dtest,opDecreaseConstantTest) {
     float c = 5;
     v1 -= c;
     EXPECT_FLOAT_EQ(-4, v1.getX());
@@ -72,7 +72,7 @@ TEST_F(vector3Dtest,opDecreaseTestConstant) {
 
 
 /** Tests operator *= vector */
-TEST_F(vector3Dtest, opMultiplyTestVector) {
+TEST_F(vector3Dtest, opMultiplyVectorTest) {
     v1 *= v2;
     EXPECT_FLOAT_EQ(3, v1.getX());
     EXPECT_FLOAT_EQ(8, v1.getY());
@@ -80,7 +80,7 @@ TEST_F(vector3Dtest, opMultiplyTestVector) {
 }
 
 /** Tests operator *= constant */
-TEST_F(vector3Dtest, opMultiplyTestConstant) {
+TEST_F(vector3Dtest, opMultiplyConstantTest) {
     float c = 5;
     v1 *= c;
     EXPECT_FLOAT_EQ(5, v1.getX());
@@ -89,7 +89,7 @@ TEST_F(vector3Dtest, opMultiplyTestConstant) {
 }
 
 /** Test operator /= vector */
-TEST_F(vector3Dtest, opDivideTestVector) {
+TEST_F(vector3Dtest, opDivideVectorTest) {
     v1 /= v2;
     EXPECT_FLOAT_EQ(.3333333, v1.getX());
     EXPECT_FLOAT_EQ(.5, v1.getY());
@@ -97,7 +97,7 @@ TEST_F(vector3Dtest, opDivideTestVector) {
 }
 
 /** Test operator /= constant */
-TEST_F(vector3Dtest, opDivideTestConstant) {
+TEST_F(vector3Dtest, opDivideConstantTest) {
     float c = 5;
     v1 /=  c;
     EXPECT_FLOAT_EQ(0.2, v1.getX());
@@ -136,6 +136,6 @@ TEST_F(vector3Dtest, lengthSquaredTest) {
 TEST_F(vector3Dtest, opIndexTest) {
     EXPECT_FLOAT_EQ(1,v1[0]);
     EXPECT_FLOAT_EQ(2,v1[1]);
-    EXPECT_FLOAT_EQ(3,v1[3]);
+    EXPECT_FLOAT_EQ(3,v1[2]);
     EXPECT_ANY_THROW(v1[3]);
 }
