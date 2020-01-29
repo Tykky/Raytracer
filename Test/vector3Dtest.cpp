@@ -104,3 +104,38 @@ TEST_F(vector3Dtest, opDivideTestConstant) {
     EXPECT_FLOAT_EQ(0.4, v1.getY());
     EXPECT_FLOAT_EQ(0.6, v1.getZ());
 }
+
+TEST_F(vector3Dtest, lengthTest) {
+    EXPECT_FLOAT_EQ(3.7416575,v1.length());
+    EXPECT_FLOAT_EQ(7.0710678, v2.length());
+}
+
+TEST_F(vector3Dtest, normalizeTest) {
+    v1.normalize();
+    EXPECT_FLOAT_EQ(0.26726124,v1.getX());
+    EXPECT_FLOAT_EQ(0.53452247, v1.getY());
+    EXPECT_FLOAT_EQ(0.80178368, v1.getZ());
+}
+
+TEST_F(vector3Dtest, dotTest) {
+    EXPECT_FLOAT_EQ(26,v1.dot(v2));
+}
+
+TEST_F(vector3Dtest, crossTest) {
+    vector3D v3 = v1.cross(v2);
+    EXPECT_FLOAT_EQ(-2, v3.getX());
+    EXPECT_FLOAT_EQ(4, v3.getY());
+    EXPECT_FLOAT_EQ(-2, v3.getZ());
+}
+
+TEST_F(vector3Dtest, lengthSquaredTest) {
+    EXPECT_FLOAT_EQ(14,v1.lengthSquared());
+    EXPECT_FLOAT_EQ(50,v2.lengthSquared());
+}
+
+TEST_F(vector3Dtest, opIndexTest) {
+    EXPECT_FLOAT_EQ(1,v1[0]);
+    EXPECT_FLOAT_EQ(2,v1[1]);
+    EXPECT_FLOAT_EQ(3,v1[3]);
+    EXPECT_ANY_THROW(v1[3]);
+}

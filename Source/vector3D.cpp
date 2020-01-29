@@ -61,14 +61,14 @@ float vector3D::operator[](int i) const {
     if(i == 0) return x;
     if(i == 1) return y;
     if(i == 2) return z;
-    throw std::out_of_range(std::to_string(i));
+    throw std::out_of_range("vector3D : index "+std::to_string(i)+" is out of range");
 }
 
 float &vector3D::operator[](int i) {
     if(i == 0) return x;
     if(i == 1) return y;
     if(i == 2) return z;
-    throw std::out_of_range(std::to_string(i));
+    throw std::out_of_range("vector3D : index "+std::to_string(i)+" is out of range");
 }
 
 vector3D &vector3D::operator+=(const vector3D &v) {
