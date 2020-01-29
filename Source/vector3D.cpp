@@ -61,14 +61,14 @@ float vector3D::operator[](int i) const {
     if(i == 0) return x;
     if(i == 1) return y;
     if(i == 2) return z;
-    return 0;
+    throw std::out_of_range(std::to_string(i));
 }
 
 float &vector3D::operator[](int i) {
     if(i == 0) return x;
     if(i == 1) return y;
     if(i == 2) return z;
-    return x;
+    throw std::out_of_range(std::to_string(i));
 }
 
 vector3D &vector3D::operator+=(const vector3D &v) {
