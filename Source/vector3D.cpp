@@ -133,7 +133,7 @@ std::istream &vector3D::operator>>(std::istream &is) {
 }
 
 std::ostream &vector3D::operator<<(std::ostream &os) {
-    os << x << y << z;
+    os << x << " " << y << " " << z;
     return os;
 }
 
