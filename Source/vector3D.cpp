@@ -1,6 +1,5 @@
 #include "vector3D.h"
 #include <cmath>
-#include <memory>
 
 vector3D::vector3D() :
     x(0), y(0), z(0) {
