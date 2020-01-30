@@ -137,5 +137,5 @@ TEST_F(vector3Dtest, opIndexTest) {
     EXPECT_FLOAT_EQ(1,v1[0]);
     EXPECT_FLOAT_EQ(2,v1[1]);
     EXPECT_FLOAT_EQ(3,v1[2]);
-    EXPECT_ANY_THROW(v1[3]);
+    EXPECT_ANY_THROW(v1[2]);
 }
