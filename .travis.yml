@@ -8,7 +8,7 @@ before_script:
         - cmake ..
 script:
         - make
+        - ./Test/gtest_run
 
 after_success:
-         - ./Test/gtest_run
          - bash <(curl -s https://codecov.io/bash)
