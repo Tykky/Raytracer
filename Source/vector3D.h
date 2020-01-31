@@ -1,7 +1,4 @@
-/**@brief vector3D class containing data structure for 3D-euclidean and RGB vectors.
- * @details class contains data structure for 3-dimensional
- * euclidean coordinate vector and 3-dimensional RGB vector.
- */
+/**@brief vector3D class containing data structure for 3D-euclidean and RGB vectors. **/
 
 #ifndef RAYTRACER_VECTOR3D_H
 #define RAYTRACER_VECTOR3D_H
@@ -14,9 +11,9 @@ class vector3D {
     float x, y, z;
 
     public:
-    /** Default constructor. Initializes everything to 0. */
+    /** Initializes everything to 0. */
     vector3D();
-    /** Constructor with parameters. Initializes to parameter values. */
+    /** Initializes to parameter values. */
     vector3D(float x, float y, float z);
 
     /**@brief Computes vector length with pythagoras sqrt(x^2+y^2+z^2) */
@@ -26,10 +23,8 @@ class vector3D {
     /**@brief Transforms vector to length 1 vector. */
     void normalize();
 
-    /**@brief Computes vector dot product */
     float dot(const vector3D &v) const;
 
-    /**@brief Computes vector cross product */
     vector3D cross(const vector3D &v) const;
 
     float getX() const;
