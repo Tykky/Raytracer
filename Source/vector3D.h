@@ -53,5 +53,13 @@ class vector3D {
 
 };
 
+vector3D operator+(const vector3D &v1, const vector3D &v2);
+vector3D operator-(const vector3D &v1, const vector3D &v2);
+vector3D operator*(const vector3D &v1, const vector3D& v2);
+vector3D operator*(const float &c, const vector3D &v);
+vector3D operator*(const vector3D &v, const float &c);
+vector3D operator/(const vector3D &v1, const vector3D &v2);
+vector3D operator/(const vector3D &v, const float &c);
+
 
 #endif //RAYTRACER_VECTOR3D_H

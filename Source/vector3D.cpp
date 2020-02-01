@@ -147,3 +147,36 @@ vector3D vector3D::cross(const vector3D &v) const {
             z * v.getX() - x * v.getZ(),
             x * v.getY() - y * v.getX()};
 }
+
+vector3D operator+(const vector3D &v1, const vector3D &v2) {
+    return {v1.getX()+v2.getX(),
+            v1.getY()+v2.getY(),
+            v1.getZ()+v2.getZ()};
+}
+vector3D operator-(const vector3D &v1, const vector3D &v2) {
+    return {v1.getX()-v2.getX(),
+            v1.getY()-v2.getY(),
+            v1.getZ()-v2.getZ()};
+}
+vector3D operator*(const vector3D &v1, const vector3D& v2) {
+    return {v1.getX()*v2.getX(),
+            v1.getY()*v2.getY(),
+            v1.getZ()*v2.getZ()};
+}
+
+vector3D operator*(const float &c, const vector3D &v) {
+    return {c*v.getX(), c*v.getY(), c*v.getZ()};
+}
+
+vector3D operator*(const vector3D &v, const float &c) {
+    return {c*v.getX(), c*v.getY(), c*v.getZ()};
+}
+
+vector3D operator/(const vector3D &v1, const vector3D &v2) {
+    return {v1.getX()/v2.getX(),
+            v1.getY()/v2.getY(),
+            v1.getZ()/v2.getZ()};
+}
+vector3D operator/(const vector3D &v, const float &c) {
+    return {v.getX()/c, v.getY()/c, v.getZ()/c};
+}
