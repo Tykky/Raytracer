@@ -11,11 +11,11 @@ ray::ray(const vector3D &v1, const vector3D &v2) {
 }
 
 vector3D ray::getA() const {
-    return vector3D();
+    return A;
 }
 
 vector3D ray::getB() const {
-    return vector3D();
+    return B;
 }
 
 vector3D ray::scalarMult(const float c) const {

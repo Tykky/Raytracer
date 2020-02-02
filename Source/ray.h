@@ -1,4 +1,4 @@
-/**@brief Ray class handles mapping A->B between two vector3D vectors. **/
+/** @brief ray class handles mapping A->B between two vector3D vectors. **/
 
 #ifndef RAYTRACER_RAY_H
 #define RAYTRACER_RAY_H
@@ -21,7 +21,7 @@ public:
     vector3D getA() const;
     vector3D getB() const;
 
-    /** @brief Scalar multiplication along A->B. */
+    /** Scalar multiplication along A->B. */
     vector3D scalarMult(float c) const;
 
 };
