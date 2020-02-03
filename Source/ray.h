@@ -24,6 +24,10 @@ public:
     /** Scalar multiplication along A->B. */
     vector3D scalarMult(float c) const;
 
+    //** Returns coordinates for point c */
+    vector3D pointAtC(float c) const;
+
+
 };
 
 

@@ -1,1 +1,2 @@
-add_executable(raytracer main.cpp vector3D.cpp vector3D.h ray.cpp ray.h camera.cpp camera.h utility.cpp utility.h)
+include_directories(.)
+add_executable(raytracer main.cpp vector3D.cpp ray.cpp camera.cpp utility.cpp primitives/sphere.cpp primitives/primitivelist.cpp primitives/primitivelist.h)

@@ -1,26 +1,24 @@
 /** primitive is abstract class which provides interface for all primitives in the world. */
 
-#ifndef RAYTRACER_OBJECT_H
-#define RAYTRACER_OBJECT_H
+#ifndef RAYTRACER_PRIMITIVE_H
+#define RAYTRACER_PRIMITIVE_H
 
 #include "ray.h"
-#include "vector3D.h"
 
-struct hitRecord {
-    float c;
-    vector3D p;
-    vector3D normal;
+struct hitrecord {
+    float c; // solution to hit equation
+    vector3D p; // hit point p
+    vector3D normal; // normal from hit point p
 };
 
-
-class object {
+class primitive {
 public:
-    /**@brief returns true when the object is hit by ray r.
+    /**@brief returns true when the primitive is hit by ray r.
      * @param cmin is minimum acceptable value for hit equation's solution.
      * @param cmax is maximum acceptable value for hit equation's solution.
-     * hit equation is different for all primitives. */
-    virtual bool hit(const ray &r, float cmin, float cmax, hitRecord rec);
+     * note that hit equation is not the same for all primitives. */
+    virtual bool hit(const ray &r, float cmin, float cmax, hitrecord &record) const = 0;
 };
 
 
-#endif //RAYTRACER_OBJECT_H
+#endif //RAYTRACER_PRIMITIVE_H
