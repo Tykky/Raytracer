@@ -9,6 +9,7 @@
 #include "primitives/primitivelist.h"
 #include "cmath"
 #include <chrono>
+#include <limits>
 
 using namespace std;
 
@@ -43,7 +44,7 @@ int main() {
                 ray r = cam.getRay(float(x) / float(width), float(y) / float(height));
                 hitrecord rec;
                 vector3D col;
-                if (world->hit(r, 0, MAXFLOAT, rec)) {
+                if (world->hit(r, 0, numeric_limits<float>::max(), rec)) {
                         col = sphereNormalColor(rec);
                 } else {
                     col = skyGradient(r);
