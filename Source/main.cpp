@@ -6,48 +6,73 @@
 #include "camera.h"
 #include "utility.h"
 #include "primitives/sphere.h"
+#include "primitives/primitivelist.h"
+#include "cmath"
+#include <chrono>
 
 using namespace std;
 
 int main() {
 
-    int width = 2560;
-    int height = 1440;
+    const int width = 2560;
+    const int height = 1440;
 
+    const camera cam(100,float(width)/float(height));
+
+    vector3D** framebuffer = new vector3D*[height];
+    for (int i = 0; i < height; ++i) {
+        framebuffer[i] = new vector3D[width];
+    }
+
+    primitive *list[4];
+    list[0] = new sphere(vector3D(0,0,-7),1);
+    list[1] = new sphere(vector3D(4,0,-7), 1);
+    list[2] = new sphere(vector3D(-4,0,-7),1);
+    list[3] = new sphere(vector3D(0,-10000,-7),9999);
+    primitive *world = new primitivelist(list,4);
+
+    auto start = chrono::system_clock::now();
+
+    cout << "rendering started.." << endl;
+
+#pragma omp parallel
+    {
+        #pragma omp for
+        for (int y = height - 1; y >= 0; --y) {
+            for (int x = 0; x < width; ++x) {
+                ray r = cam.getRay(float(x) / float(width), float(y) / float(height));
+                hitrecord rec;
+                vector3D col;
+                if (world->hit(r, 0, MAXFLOAT, rec)) {
+                        col = sphereNormalColor(rec);
+                } else {
+                    col = skyGradient(r);
+                }
+                framebuffer[y][x] = col;
+            }
+        }
+    }
+    auto end = chrono::system_clock::now();
+    auto elapsed = chrono::duration_cast<chrono::milliseconds>(end-start);
+
+    cout << "rendering finished in " << double(elapsed.count())/1000 << " seconds" << endl;
+
+    start = chrono::system_clock::now();
+    cout << "writing to file... " << endl;
     ofstream of;
     of.open("image.ppm");
     of << "P3\n" << width << " " << height << "\n255\n";
-
-    camera cam(100,float(width)/float(height));
-
-    for (int y = height-1; y >= 0; --y) {
+    for (int y = height-1; y >=0 ; --y) {
         for (int x = 0; x < width; ++x) {
-            ray r = cam.getRay(float(x)/float(width),float(y)/float(height));
-            sphere sp1(vector3D(0,0,-7),1);
-            sphere sp2(vector3D(4,0,-7), 1);
-            sphere sp3(vector3D(-4,0,-7),1);
-            sphere sp4(vector3D(0,-100,-7),100);
-            hitrecord record1;
-            hitrecord record2;
-            hitrecord record3;
-            hitrecord record4;
-            vector3D col = vector3D();
-            if(sp1.hit(r,0, 10000000.0,record1)) {
-                col = sphereNormalColor(record1);
-            } else if(sp2.hit(r,0,10000000.0,record2)) {
-                col = sphereNormalColor(record2);
-            } else if(sp3.hit(r,0,10000000.0,record3)) {
-                col = sphereNormalColor(record3);
-            } else if(sp4.hit(r,0,10000000.0,record4)) {
-                col = sphereNormalColor(record4);
-            } else {
-                col = skyGradient(r);
-            }
-            of << int(255.99*col.getR()) << " " << int(255.99*col.getG()) << " " << int(255.99*col.getB()) << "\n";
+            of << int(framebuffer[y][x].getR()*255.99) << " "
+               << int(framebuffer[y][x].getG()*255.99) << " "
+               << int(framebuffer[y][x].getB()*255.99) << "\n";
         }
     }
-
     of.close();
+    end = chrono::system_clock::now();
+    elapsed = chrono::duration_cast<chrono::milliseconds>(end-start);
+    cout << "writing finished in " << double(elapsed.count())/1000 << " seconds" << endl;
 
     return 0;
 }
