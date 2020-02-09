@@ -16,6 +16,7 @@ This repository contains a raytracer for University of Helsinki's course Data St
 * [Week 1](./Documentation/reports/week1.md)
 * [Week 2](./Documentation/reports/week2.md)
 * [Week 3](./Documentation/reports/week3.md)
+* [Week 4](./Documentation/reports/week4.md)
 
 ## Current state of the project
 
