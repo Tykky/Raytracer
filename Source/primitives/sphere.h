@@ -8,8 +8,9 @@ class sphere: public primitive {
 private:
     vector3D center;
     float radius;
+    material *matptr;
 public:
-    sphere(const vector3D &center, float radius);
+    sphere(const vector3D &center, float radius, material* mat);
 
     /** @brief Computes solution for hit equation.
      *  @detail hit equation: dot((ray(c)-center),(ray(c)-center))=R^2 (R = radius)

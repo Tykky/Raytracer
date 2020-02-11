@@ -7,18 +7,31 @@
 #include "utility.h"
 #include "primitives/sphere.h"
 #include "primitives/primitivelist.h"
-#include "cmath"
 #include <chrono>
 #include <limits>
+#include "materials/lambertian.h"
+#include <cmath>
 
 using namespace std;
 
 int main() {
 
-    const int width = 2560;
-    const int height = 1440;
+    int width = 2560;
+    int height = 1440;
+    int samples = 1000;
+    int fov = 90;
 
-    const camera cam(100,float(width)/float(height));
+    cout << "Enter screen width: ";
+    cin >> width;
+    cout << "Enter screen height: ";
+    cin >> height;
+    cout << "Enter fov: ";
+    cin >> fov;
+    cout << "Enter amount of samples: ";;
+    cin >> samples;
+
+
+    const camera cam(90,float(width)/float(height));
 
     vector3D** framebuffer = new vector3D*[height];
     for (int i = 0; i < height; ++i) {
@@ -26,10 +39,14 @@ int main() {
     }
 
     primitive *list[4];
-    list[0] = new sphere(vector3D(0,0,-7),1);
-    list[1] = new sphere(vector3D(4,0,-7), 1);
-    list[2] = new sphere(vector3D(-4,0,-7),1);
-    list[3] = new sphere(vector3D(0,-10000,-7),9999);
+    lambertian mat(vector3D(0.5,0.5,0.5));
+    material *matptr = &mat;
+
+    list[0] = new sphere(vector3D(0,0,-2),0.5,matptr);
+    list[1] = new sphere(vector3D(1,0,-2), 0.5, matptr);
+    list[2] = new sphere(vector3D(-1,0,-2),0.5, matptr);
+    list[3] = new sphere(vector3D(0,-100.5,0),100, matptr);
+    //list[4] = new sphere(vector3D(0,105,-4),100, matptr);
     primitive *world = new primitivelist(list,4);
 
     auto start = chrono::system_clock::now();
@@ -41,15 +58,19 @@ int main() {
         #pragma omp for
         for (int y = height - 1; y >= 0; --y) {
             for (int x = 0; x < width; ++x) {
-                ray r = cam.getRay(float(x) / float(width), float(y) / float(height));
-                hitrecord rec;
-                vector3D col;
-                if (world->hit(r, 0, numeric_limits<float>::max(), rec)) {
-                        col = sphereNormalColor(rec);
-                } else {
-                    col = skyGradient(r);
+                vector3D color = vector3D();
+                for(int s = 0; s < samples; s++) {
+                    ray r = cam.getRay((float(x)+randomFloat()) / float(width), (float(y)+randomFloat()) / float(height));
+                    hitrecord rec;
+                    if (world->hit(r, 0, numeric_limits<float>::max(), rec)) {
+                        color += recursiveScatter(r, world, 0);
+                    } else {
+                        color += skyGradient(r);
+                    }
                 }
-                framebuffer[y][x] = col;
+                color/=float(samples);
+                color = vector3D(sqrt(color.getR()),sqrt(color.getG()),sqrt(color.getB()));
+                framebuffer[y][x] = color;
             }
         }
     }

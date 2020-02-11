@@ -1,4 +1,4 @@
-/** Primitivelist is a datastructure for keeping track of all primitives/objects
+/** Primitivelist is a data structure for keeping track of all primitives
  * in the world. */
 
 #ifndef RAYTRACER_PRIMITIVELIST_H

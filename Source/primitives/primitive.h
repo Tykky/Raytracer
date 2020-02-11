@@ -1,14 +1,18 @@
-/** primitive is abstract class which provides interface for all primitives in the world. */
+/** @brief primitive is abstract class which provides interface for all primitives in the world.
+ *  @detail primitive is piece of geometry which is not divisible in to smaller pieces. */
 
 #ifndef RAYTRACER_PRIMITIVE_H
 #define RAYTRACER_PRIMITIVE_H
 
 #include "ray.h"
 
+class material;
+
 struct hitrecord {
     float c; // solution to hit equation
     vector3D p; // hit point p
     vector3D normal; // normal from hit point p
+    material *matptr;
 };
 
 class primitive {

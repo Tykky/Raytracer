@@ -3,8 +3,8 @@
 
 using namespace std;
 
-sphere::sphere(const vector3D &center, float radius) :
-    center(center), radius(radius) {
+sphere::sphere(const vector3D &center, float radius, material *mat) :
+    center(center), radius(radius), matptr(mat) {
 }
 
 bool sphere::hit(const ray &r, float cmin, float cmax, hitrecord &record) const {
@@ -20,6 +20,8 @@ bool sphere::hit(const ray &r, float cmin, float cmax, hitrecord &record) const 
             record.c = solution;
             record.p = r.pointAtC(record.c);
             record.normal = (record.p - center);
+            record.normal.normalize();
+            record.matptr = matptr;
             return true;
         }
 
@@ -28,6 +30,8 @@ bool sphere::hit(const ray &r, float cmin, float cmax, hitrecord &record) const 
             record.c = solution;
             record.p = r.pointAtC(record.c);
             record.normal = (record.p - center)/radius;
+            record.normal.normalize();
+            record.matptr = matptr;
             return true;
         }
     }
