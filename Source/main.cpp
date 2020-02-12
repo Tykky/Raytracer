@@ -31,7 +31,7 @@ int main() {
     cin >> samples;
 
 
-    const camera cam(90,float(width)/float(height));
+    const camera cam(fov,float(width)/float(height));
 
     vector3D** framebuffer = new vector3D*[height];
     for (int i = 0; i < height; ++i) {
