@@ -9,6 +9,10 @@ This repository contains a raytracer for University of Helsinki's course Data St
 
 [Project Specification](./Documentation/specification.md)
 
+[Project Implementation](./Documentation/implementation.md)
+
+[Project Testing](./Documentation/testing.md)
+
 [Timesheet](./Documentation/timesheet.md)
 
 ## Weekly reports
@@ -17,6 +21,7 @@ This repository contains a raytracer for University of Helsinki's course Data St
 * [Week 2](./Documentation/reports/week2.md)
 * [Week 3](./Documentation/reports/week3.md)
 * [Week 4](./Documentation/reports/week4.md)
+* [Week 5](./Documentation/reports/week5.md)
 
 ## How to build on linux
 ```
@@ -56,7 +61,7 @@ the current directory (the same one where program is run).
 
 ## Current state of the project
 
-![](Documentation/data/image1.png)
+![](Documentation/data/renders/image1.png)
 [Lambertian reflectance](https://en.wikipedia.org/wiki/Lambertian_reflectance) is achieved by approximating [Lambert's cosine law](https://en.wikipedia.org/wiki/Lambert%27s_cosine_law) by sampling random inside unit sphere with [Mersenne Twister](https://en.wikipedia.org/wiki/Mersenne_Twister). Sampling is also used for [anti-aliasing](https://en.wikipedia.org/wiki/Anti-aliasing). The latest additions are:
 
 - Recursive ray scattering

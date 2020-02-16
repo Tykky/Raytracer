@@ -18,10 +18,6 @@ vector3D ray::getB() const {
     return B;
 }
 
-vector3D ray::scalarMult(const float c) const {
-    return A + c*B;
-}
-
 vector3D ray::pointAtC(float c) const {
     return A+c*B;
 }

@@ -6,11 +6,12 @@
 
 #include "ray.h"
 #include "primitives/primitive.h"
+#include <functional>
 
 class material {
 public:
-    virtual bool scatter(const ray &r, const hitrecord &record,
-                         vector3D &attenuation, ray &scatter) const = 0;
+    virtual bool scatter(const ray &r, const hitrecord &record, vector3D &attenuation, ray &scatter,
+                         std::function<float()> &randomFloat) const = 0;
 };
 
 

@@ -19,8 +19,7 @@ bool sphere::hit(const ray &r, float cmin, float cmax, hitrecord &record) const 
         if(solution < cmax && solution > cmin) {
             record.c = solution;
             record.p = r.pointAtC(record.c);
-            record.normal = (record.p - center);
-            record.normal.normalize();
+            record.normal = (record.p - center)/radius;
             record.matptr = matptr;
             return true;
         }
@@ -30,7 +29,6 @@ bool sphere::hit(const ray &r, float cmin, float cmax, hitrecord &record) const 
             record.c = solution;
             record.p = r.pointAtC(record.c);
             record.normal = (record.p - center)/radius;
-            record.normal.normalize();
             record.matptr = matptr;
             return true;
         }

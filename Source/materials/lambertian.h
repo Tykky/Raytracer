@@ -6,14 +6,15 @@
 #define RAYTRACER_LAMBERTIAN_H
 
 #include "material.h"
+#include "functional"
 
 class lambertian: public material {
 private:
     vector3D albedo;
 public:
     lambertian(const vector3D &albedo);
-    virtual bool scatter(const ray &r, const hitrecord &record,
-                         vector3D &attenuation, ray &scatter) const;
+    virtual bool scatter(const ray &r, const hitrecord &record, vector3D &attenuation, ray &scatter,
+                         std::function<float()> &randomFloat) const;
 };
 
 

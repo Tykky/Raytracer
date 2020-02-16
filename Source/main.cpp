@@ -1,5 +1,4 @@
 #include <iostream>
-#include <memory>
 #include <fstream>
 #include "vector3D.h"
 #include "ray.h"
@@ -14,11 +13,11 @@
 
 using namespace std;
 
-int main() {
+int main(int argc, char **argv) {
 
-    int width = 2560;
-    int height = 1440;
-    int samples = 1000;
+    int width = 800;
+    int height = 400;
+    int samples = 100;
     int fov = 90;
 
     cout << "Enter screen width: ";
@@ -38,7 +37,7 @@ int main() {
         framebuffer[i] = new vector3D[width];
     }
 
-    primitive *list[4];
+    primitive *list[5];
     lambertian mat(vector3D(0.5,0.5,0.5));
     material *matptr = &mat;
 
@@ -46,8 +45,8 @@ int main() {
     list[1] = new sphere(vector3D(1,0,-2), 0.5, matptr);
     list[2] = new sphere(vector3D(-1,0,-2),0.5, matptr);
     list[3] = new sphere(vector3D(0,-100.5,0),100, matptr);
-    //list[4] = new sphere(vector3D(0,105,-4),100, matptr);
-    primitive *world = new primitivelist(list,4);
+    list[4] = new sphere(vector3D(0,105,-4),100, matptr);
+    primitive *world = new primitivelist(list,5);
 
     auto start = chrono::system_clock::now();
 
@@ -55,6 +54,10 @@ int main() {
 
 #pragma omp parallel
     {
+        mt19937 engine;
+        uniform_real_distribution<float> dist(0.0,1.0);
+        function<float()> randomFloat = bind(dist,engine);
+
         #pragma omp for
         for (int y = height - 1; y >= 0; --y) {
             for (int x = 0; x < width; ++x) {
@@ -63,7 +66,7 @@ int main() {
                     ray r = cam.getRay((float(x)+randomFloat()) / float(width), (float(y)+randomFloat()) / float(height));
                     hitrecord rec;
                     if (world->hit(r, 0, numeric_limits<float>::max(), rec)) {
-                        color += recursiveScatter(r, world, 0);
+                        color += recursiveScatter(r, world, 0,randomFloat);
                     } else {
                         color += skyGradient(r);
                     }
