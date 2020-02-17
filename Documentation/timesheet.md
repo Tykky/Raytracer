@@ -8,3 +8,4 @@
 | 23.01.2020      | 1            | Googletest, travisCI & codecov setup   |
 | (27-31).01.2019 | 9            | vector3D & ray classes                 |
 | (1-4).02.2019   | 7            | Abstract primitive class, sphere class |
+| (9-16).02.2019  | 13           | Lambertian and metal materials         |

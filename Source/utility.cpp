@@ -7,7 +7,7 @@
 
 using namespace std;
 
-const int SCATTERDEPTH = 50;
+const int SCATTERDEPTH = 5;
 
 vector3D skyGradient(const ray &r) {
     vector3D direction = r.getB();
@@ -29,6 +29,8 @@ vector3D recursiveScatter(const ray &r, primitive *world, int depth, std::functi
         vector3D attenuation;
         if(depth < SCATTERDEPTH && record.matptr->scatter(r,record,attenuation,scatter,randomFloat)) {
             return attenuation*recursiveScatter(scatter,world,depth+1,randomFloat);
+        } else {
+            return vector3D();
         }
     }
     return skyGradient(r);

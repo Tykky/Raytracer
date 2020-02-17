@@ -9,6 +9,7 @@
 #include <chrono>
 #include <limits>
 #include "materials/lambertian.h"
+#include "materials/metal.h"
 #include <cmath>
 
 using namespace std;
@@ -29,7 +30,6 @@ int main(int argc, char **argv) {
     cout << "Enter amount of samples: ";;
     cin >> samples;
 
-
     const camera cam(fov,float(width)/float(height));
 
     vector3D** framebuffer = new vector3D*[height];
@@ -37,16 +37,25 @@ int main(int argc, char **argv) {
         framebuffer[i] = new vector3D[width];
     }
 
-    primitive *list[5];
-    lambertian mat(vector3D(0.5,0.5,0.5));
+    primitive *list[100];
+    metal mat(vector3D(0.8,0.6,0.2));
+    lambertian lamb(vector3D(0.5,0.5,0.5));
     material *matptr = &mat;
+    material *lambptr = &lamb;
 
-    list[0] = new sphere(vector3D(0,0,-2),0.5,matptr);
+    list[0] = new sphere(vector3D(0,0,-2),0.5,lambptr);
     list[1] = new sphere(vector3D(1,0,-2), 0.5, matptr);
     list[2] = new sphere(vector3D(-1,0,-2),0.5, matptr);
-    list[3] = new sphere(vector3D(0,-100.5,0),100, matptr);
-    list[4] = new sphere(vector3D(0,105,-4),100, matptr);
-    primitive *world = new primitivelist(list,5);
+    list[3] = new sphere(vector3D(0,-100.5,0),100, lambptr);
+    list[4] = new sphere(vector3D(0,-0.4,-1.5),0.1, matptr);
+    list[5] = new sphere(vector3D(0.4,-0.4,-1.5),0.1, matptr);
+    list[6] = new sphere(vector3D(0.8,-0.41,-1.5),0.1, matptr);
+    list[7] = new sphere(vector3D(1.2,-0.415,-1.5),0.1, matptr);
+    list[8] = new sphere(vector3D(-0.4,-0.4,-1.5),0.1, matptr);
+    list[9] = new sphere(vector3D(-0.8,-0.41,-1.5),0.1, matptr);
+    list[10] = new sphere(vector3D(-1.2,-0.415,-1.5),0.1, matptr);
+    list[11] = new sphere(vector3D(0,105,-4),90, lambptr);
+    primitive *world = new primitivelist(list,12);
 
     auto start = chrono::system_clock::now();
 
