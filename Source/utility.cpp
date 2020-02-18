@@ -3,11 +3,10 @@
 #include <limits>
 #include <random>
 #include <functional>
-#include <cstdlib>
 
 using namespace std;
 
-const int SCATTERDEPTH = 5;
+const int SCATTERDEPTH = 50;
 
 vector3D skyGradient(const ray &r) {
     vector3D direction = r.getB();
@@ -46,3 +45,20 @@ vector3D randomInUnitSphere(std::function<float()> &randomFloat) {
     }
 }
 
+vector3D reflect(const vector3D &v, const vector3D &n) {
+    return v - 2*v.dot(n)*n;
+}
+
+bool refract(const vector3D &v, const vector3D &n, float ior, vector3D &refraction) {
+    vector3D uv = v;
+    uv.normalize();
+    float vdotn = uv.dot(n);
+    float discriminant = 1.0 - ior*ior*(1-vdotn*vdotn);
+
+    if(discriminant > 0) {
+        refraction = vdotn*(uv-n*vdotn) - n*sqrt(discriminant);
+        return true;
+    } else {
+        return false;
+    }
+}

@@ -61,11 +61,12 @@ the current directory (the same one where program is run).
 
 ## Current state of the project
 
-![](Documentation/data/renders/image2.png)
+![](Documentation/data/renders/image3.png)
 [Lambertian reflectance](https://en.wikipedia.org/wiki/Lambertian_reflectance) is achieved by approximating [Lambert's cosine law](https://en.wikipedia.org/wiki/Lambert%27s_cosine_law) by sampling random inside unit sphere with [Mersenne Twister](https://en.wikipedia.org/wiki/Mersenne_Twister). Sampling is also used for [anti-aliasing](https://en.wikipedia.org/wiki/Anti-aliasing). The latest additions are:
 
 - Recursive ray scattering
 - support for multithreading with openMP
 - Lambertian material
 - Metal material
+- Dielectric material
 - Minimal command-line interface

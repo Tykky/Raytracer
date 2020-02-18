@@ -8,9 +8,9 @@
 #include "material.h"
 #include "functional"
 
-class lambertian: public material {
+class lambertian : public material {
 private:
-    vector3D albedo;
+    const vector3D albedo;
 public:
     lambertian(const vector3D &albedo);
     virtual bool scatter(const ray &r, const hitrecord &record, vector3D &attenuation, ray &scatter,

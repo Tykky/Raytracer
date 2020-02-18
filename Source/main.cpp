@@ -10,6 +10,7 @@
 #include <limits>
 #include "materials/lambertian.h"
 #include "materials/metal.h"
+#include "materials/dielectric.h"
 #include <cmath>
 
 using namespace std;
@@ -21,6 +22,7 @@ int main(int argc, char **argv) {
     int samples = 100;
     int fov = 90;
 
+
     cout << "Enter screen width: ";
     cin >> width;
     cout << "Enter screen height: ";
@@ -30,6 +32,7 @@ int main(int argc, char **argv) {
     cout << "Enter amount of samples: ";;
     cin >> samples;
 
+
     const camera cam(fov,float(width)/float(height));
 
     vector3D** framebuffer = new vector3D*[height];
@@ -38,24 +41,30 @@ int main(int argc, char **argv) {
     }
 
     primitive *list[100];
-    metal mat(vector3D(0.8,0.6,0.2));
+    metal mat(vector3D(0.8,0.6,0.2),0.2);
     lambertian lamb(vector3D(0.5,0.5,0.5));
+    lambertian red(vector3D(1,0.2,0.2));
+    dielectric glass = dielectric(1.5);
     material *matptr = &mat;
     material *lambptr = &lamb;
+    material *glassptr = &glass;
+    material *redptr = &red;
 
-    list[0] = new sphere(vector3D(0,0,-2),0.5,lambptr);
+    list[0] = new sphere(vector3D(0,0,-2),0.5,glassptr);
+    list[12] = new sphere(vector3D(0,0,-2),0.49,lambptr);
     list[1] = new sphere(vector3D(1,0,-2), 0.5, matptr);
     list[2] = new sphere(vector3D(-1,0,-2),0.5, matptr);
     list[3] = new sphere(vector3D(0,-100.5,0),100, lambptr);
     list[4] = new sphere(vector3D(0,-0.4,-1.5),0.1, matptr);
-    list[5] = new sphere(vector3D(0.4,-0.4,-1.5),0.1, matptr);
-    list[6] = new sphere(vector3D(0.8,-0.41,-1.5),0.1, matptr);
+    list[5] = new sphere(vector3D(0.4,-0.4,-1.5),0.1, glassptr);
+    list[6] = new sphere(vector3D(0.8,-0.415,-1.5),0.1, matptr);
     list[7] = new sphere(vector3D(1.2,-0.415,-1.5),0.1, matptr);
-    list[8] = new sphere(vector3D(-0.4,-0.4,-1.5),0.1, matptr);
+    list[8] = new sphere(vector3D(-0.4,-0.4,-1.5),0.1, glassptr);
     list[9] = new sphere(vector3D(-0.8,-0.41,-1.5),0.1, matptr);
     list[10] = new sphere(vector3D(-1.2,-0.415,-1.5),0.1, matptr);
     list[11] = new sphere(vector3D(0,105,-4),90, lambptr);
-    primitive *world = new primitivelist(list,12);
+    list[12] = new sphere(vector3D(0,0,-2),0.48,redptr);
+    primitive *world = new primitivelist(list,13);
 
     auto start = chrono::system_clock::now();
 

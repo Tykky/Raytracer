@@ -18,4 +18,10 @@ vector3D sphereNormalColor(hitrecord record);
 vector3D recursiveScatter(const ray &r, primitive *world, int depth, std::function<float()> &randomFloat);
 vector3D randomInUnitSphere(std::function<float()> &randomFloat);
 
+/** Mirrors vector v with surface normal n */
+vector3D reflect(const vector3D &v, const vector3D &n);
+
+/** Refracts vector according to snells law */
+bool refract(const vector3D &v, const vector3D& n, float ior, vector3D &refraction);
+
 #endif //RAYTRACER_UTILITY_H
