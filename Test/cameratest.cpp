@@ -12,7 +12,8 @@ protected:
     float halfh;
 
     virtual void SetUp() {
-        cam = new Camera(90, float(16) / float(9));
+        cam = new Camera(90, float(16) / float(9),vector3D(0,0,0),vector3D(0,0,-1),
+                vector3D(0,1,0));
         halfw = 1; // w = tan(fov/2)
         halfh = 0.5625; // h = halfw/(aspect ratio)
     }

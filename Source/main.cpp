@@ -15,7 +15,7 @@ using namespace std;
 int main(int argc, char **argv) {
 
     int width = 800;
-    int height = 400;
+    int height = 600;
     int samples = 100;
     int fov = 90;
 
@@ -28,7 +28,8 @@ int main(int argc, char **argv) {
     cout << "Enter amount of samples: ";;
     cin >> samples;
 
-    const Camera cam(fov, float(width) / float(height));
+    const Camera cam(fov, float(width) / float(height), vector3D(0,0,0),vector3D(0,0,-1),
+                 vector3D(0,1,0));
 
     Primitive *list[100];
     Metal mat(vector3D(0.8, 0.6, 0.2), 0.2);

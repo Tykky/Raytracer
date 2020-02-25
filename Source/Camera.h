@@ -19,7 +19,7 @@ private:
     // aspect ratio (width/height)
     float aspectratio;
 
-    // vertical angle in radians
+    // fov in radians
     float theta;
 
     // half screen height
@@ -37,11 +37,19 @@ private:
     // points at +X on screen
     vector3D horizontal;
 
+    vector3D origin;
+
 public:
 
     /** @brief Initializes fov, aspect ratio and computes the vectors
-     * that define the virtual screen. */
-    Camera(float fov, float aspectratio);
+     * that define the virtual screen.
+     * @param fov = field of view (vertical) in degrees
+     * @param aspectratio = screen width/height
+     * @param pointat the direction camera is facing
+     * @param up defines "up" direction for the camera. This
+     * determines the roll angle. */
+    Camera(float fov, float aspectratio, vector3D origin, vector3D pointat,
+            vector3D up);
 
     /** @return corresponding Ray for each (x,y) screen coordinate */
     Ray getRay(float x, float y) const;
