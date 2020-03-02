@@ -4,9 +4,9 @@
 
 ### In the real world
 To oversimplify, light in real world travels from light source (sun, light bulb)
-to the observers eye. When light rays hits eye, different wavelengths are perceived 
+to the observers eye. When light ray hits eye, different wavelengths are perceived 
 as different colors. When light bounces from objects its wavelength is changed 
-since some of its energy is absorbed. Energy of photon depends on the wavelenth. 
+since some of its energy is absorbed. Energy of a photon depends on the wavelenth. 
 
 ![](https://wikimedia.org/api/rest_v1/media/math/render/svg/a4a8c83479c76652ec6c8bc1a7cb6b4a7e89c3d0)
 
