@@ -5,20 +5,20 @@
 #include <iostream>
 #include <cmath>
 
-/**@brief vector3D class containing data structure for 3D-euclidean and RGB vectors. **/
-class vector3D {
+/**@brief Vector3D class containing data structure for 3D-euclidean and RGB vectors. **/
+class Vector3D {
 
 private:
     float x, y, z;
 
 public:
     /** @brief Initializes everything to 0. */
-    vector3D() :
+    Vector3D() :
             x(0), y(0), z(0) {
     }
 
     /** @brief Initializes to parameter values. */
-    vector3D(float x, float y, float z) :
+    Vector3D(float x, float y, float z) :
             x(x), y(y), z(z) {
     }
 
@@ -39,13 +39,13 @@ public:
         z *= k;
     }
 
-    inline float dot(const vector3D &v) const {
+    inline float dot(const Vector3D &v) const {
         return x * v.getX() +
                y * v.getY() +
                z * v.getZ();
     }
 
-    inline vector3D cross(const vector3D &v) const {
+    inline Vector3D cross(const Vector3D &v) const {
         // a x b = (a2b3-a3b2)i+(a3b1-a1b3)j+(a1b2-a2b1)k
         return {y * v.getZ() - z * v.getY(),
                 z * v.getX() - x * v.getZ(),
@@ -76,11 +76,11 @@ public:
         return z;
     }
 
-    inline const vector3D &operator+() const {
+    inline const Vector3D &operator+() const {
         return *this;
     }
 
-    inline vector3D operator-() const {
+    inline Vector3D operator-() const {
         return {-x, -y, -z};
     }
 
@@ -88,66 +88,66 @@ public:
         if (i == 0) return x;
         if (i == 1) return y;
         if (i == 2) return z;
-        throw std::out_of_range("vector3D : index " + std::to_string(i) + " is out of range");
+        throw std::out_of_range("Vector3D : index " + std::to_string(i) + " is out of range");
     }
 
     inline float &operator[](int i) {
         if (i == 0) return x;
         if (i == 1) return y;
         if (i == 2) return z;
-        throw std::out_of_range("vector3D : index " + std::to_string(i) + " is out of range");
+        throw std::out_of_range("Vector3D : index " + std::to_string(i) + " is out of range");
     }
 
-    inline vector3D &operator+=(const vector3D &v) {
+    inline Vector3D &operator+=(const Vector3D &v) {
         x += v.getX();
         y += v.getY();
         z += v.getZ();
         return *this;
     }
 
-    inline vector3D &operator-=(const vector3D &v) {
+    inline Vector3D &operator-=(const Vector3D &v) {
         x -= v.getX();
         y -= v.getY();
         z -= v.getZ();
         return *this;
     }
 
-    inline vector3D &operator*=(const vector3D &v) {
+    inline Vector3D &operator*=(const Vector3D &v) {
         x *= v.getX();
         y *= v.getY();
         z *= v.getZ();
         return *this;
     }
 
-    inline vector3D &operator/=(const vector3D &v) {
+    inline Vector3D &operator/=(const Vector3D &v) {
         x /= v.getX();
         y /= v.getY();
         z /= v.getZ();
         return *this;
     }
 
-    inline vector3D &operator+=(const float k) {
+    inline Vector3D &operator+=(const float k) {
         x += k;
         y += k;
         z += k;
         return *this;
     }
 
-    inline vector3D &operator-=(const float k) {
+    inline Vector3D &operator-=(const float k) {
         x -= k;
         y -= k;
         z -= k;
         return *this;
     }
 
-    inline vector3D &operator*=(const float k) {
+    inline Vector3D &operator*=(const float k) {
         x *= k;
         y *= k;
         z *= k;
         return *this;
     }
 
-    inline vector3D &operator/=(const float k) {
+    inline Vector3D &operator/=(const float k) {
         x /= k;
         y /= k;
         z /= k;
@@ -166,39 +166,39 @@ public:
 
 };
 
-inline vector3D operator+(const vector3D &v1, const vector3D &v2) {
+inline Vector3D operator+(const Vector3D &v1, const Vector3D &v2) {
     return {v1.getX() + v2.getX(),
             v1.getY() + v2.getY(),
             v1.getZ() + v2.getZ()};
 }
 
-inline vector3D operator-(const vector3D &v1, const vector3D &v2) {
+inline Vector3D operator-(const Vector3D &v1, const Vector3D &v2) {
     return {v1.getX() - v2.getX(),
             v1.getY() - v2.getY(),
             v1.getZ() - v2.getZ()};
 }
 
-inline vector3D operator*(const vector3D &v1, const vector3D &v2) {
+inline Vector3D operator*(const Vector3D &v1, const Vector3D &v2) {
     return {v1.getX() * v2.getX(),
             v1.getY() * v2.getY(),
             v1.getZ() * v2.getZ()};
 }
 
-inline vector3D operator*(const float &c, const vector3D &v) {
+inline Vector3D operator*(const float &c, const Vector3D &v) {
     return {c * v.getX(), c * v.getY(), c * v.getZ()};
 }
 
-inline vector3D operator*(const vector3D &v, const float &c) {
+inline Vector3D operator*(const Vector3D &v, const float &c) {
     return {c * v.getX(), c * v.getY(), c * v.getZ()};
 }
 
-inline vector3D operator/(const vector3D &v1, const vector3D &v2) {
+inline Vector3D operator/(const Vector3D &v1, const Vector3D &v2) {
     return {v1.getX() / v2.getX(),
             v1.getY() / v2.getY(),
             v1.getZ() / v2.getZ()};
 }
 
-inline vector3D operator/(const vector3D &v, const float &c) {
+inline Vector3D operator/(const Vector3D &v, const float &c) {
     return {v.getX() / c, v.getY() / c, v.getZ() / c};
 }
 

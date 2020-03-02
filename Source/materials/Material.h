@@ -19,7 +19,7 @@ public:
      *  the function has ran.
      *  @param randomFloat contains reference to random generator.
      *  @return true when scattered ray hits primitive, otherwise false. */
-    virtual bool scatter(const Ray &r, const hitrecord &record, vector3D &attenuation, Ray &scatter,
+    virtual bool scatter(const Ray &r, const hitrecord &record, Vector3D &attenuation, Ray &scatter,
                          std::function<float()> &randomFloat) const = 0;
 };
 

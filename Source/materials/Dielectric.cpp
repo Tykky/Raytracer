@@ -5,17 +5,17 @@ Dielectric::Dielectric(float ior) :
         ior(ior) {
 }
 
-bool Dielectric::scatter(const Ray &r, const hitrecord &record, vector3D &attenuation, Ray &scatter,
+bool Dielectric::scatter(const Ray &r, const hitrecord &record, Vector3D &attenuation, Ray &scatter,
                          std::function<float()> &randomFloat) const {
 
-    vector3D outnormal;
-    vector3D reflection = reflect(r.getDirection(), record.normal);
-    vector3D refraction;
+    Vector3D outnormal;
+    Vector3D reflection = reflect(r.getDirection(), record.normal);
+    Vector3D refraction;
 
     float tmpior;
 
     // No attenuation
-    attenuation = vector3D(1.0, 1.0, 1.0);
+    attenuation = Vector3D(1.0, 1.0, 1.0);
 
     float probability; // reflect probability
     float cosine;
@@ -43,10 +43,4 @@ bool Dielectric::scatter(const Ray &r, const hitrecord &record, vector3D &attenu
     }
     return true;
 
-}
-
-float fresnel(float cosine, float ior) {
-    float r0 = (1 - ior) / (1 + ior);
-    r0 = r0 * r0;
-    return r0 + (1 - r0) * pow((1 - cosine), 5);
 }

@@ -5,7 +5,7 @@
 
 #include <memory>
 #include "primitives/Primitive.h"
-#include "vector3D.h"
+#include "Vector3D.h"
 #include "Camera.h"
 
 using namespace std;
@@ -19,7 +19,7 @@ using namespace std;
  *  @param randomFloat contains reference to random generator.
  *  @param depthlimit is depth limit for recursion. This is compared against depth
  *  parameter. */
-vector3D recursiveScatter(const Ray &r, Primitive *world, int depth, function<float()> &randomFloat,
+Vector3D recursiveScatter(const Ray &r, Primitive *world, int depth, function<float()> &randomFloat,
                           const int depthlimit);
 
 /** @brief Engine class handles the rendering, writing
@@ -33,7 +33,7 @@ class Engine {
 
 private:
     Primitive *world;
-    unique_ptr<unique_ptr<vector3D[]>[]> framebuffer;
+    unique_ptr<unique_ptr<Vector3D[]>[]> framebuffer;
     Camera camera;
     int width;
     int height;

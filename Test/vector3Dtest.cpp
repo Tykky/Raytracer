@@ -1,18 +1,18 @@
 #include "gtest/gtest.h"
-#include "vector3D.h"
+#include "Vector3D.h"
 
 using namespace std;
 
-/** @brief Googletest fixture for vector3D class */
+/** @brief Googletest fixture for Vector3D class */
 class vector3Dtest : public ::testing::Test {
 protected:
 
-    vector3D v1;
-    vector3D v2;
+    Vector3D v1;
+    Vector3D v2;
 
     virtual void SetUp() {
-        v1 = vector3D(1, 2, 3);
-        v2 = vector3D(3, 4, 5);
+        v1 = Vector3D(1, 2, 3);
+        v2 = Vector3D(3, 4, 5);
     }
 
 };
@@ -46,7 +46,7 @@ TEST_F(vector3Dtest, opAddConstantTest) {
 
 /** Tests operator -() */
 TEST_F(vector3Dtest, opMinusTest) {
-    vector3D negv1 = -v1;
+    Vector3D negv1 = -v1;
     EXPECT_FLOAT_EQ(-1, negv1.getX());
     EXPECT_FLOAT_EQ(-2, negv1.getY());
     EXPECT_FLOAT_EQ(-3, negv1.getZ());
@@ -123,7 +123,7 @@ TEST_F(vector3Dtest, dotTest) {
 }
 
 TEST_F(vector3Dtest, crossTest) {
-    vector3D v3 = v1.cross(v2);
+    Vector3D v3 = v1.cross(v2);
     EXPECT_FLOAT_EQ(-2, v3.getX());
     EXPECT_FLOAT_EQ(4, v3.getY());
     EXPECT_FLOAT_EQ(-2, v3.getZ());
@@ -141,25 +141,25 @@ TEST_F(vector3Dtest, opIndexTest) {
     EXPECT_ANY_THROW(v1[3]);
 }
 
-/** Operators outside of vector3D class */
+/** Operators outside of Vector3D class */
 
 
 TEST_F(vector3Dtest, opVplusVTest) {
-    vector3D v3 = v1 + v2;
+    Vector3D v3 = v1 + v2;
     EXPECT_FLOAT_EQ(4, v3.getX());
     EXPECT_FLOAT_EQ(6, v3.getY());
     EXPECT_FLOAT_EQ(8, v3.getZ());
 }
 
 TEST_F(vector3Dtest, opVminusVTest) {
-    vector3D v3 = v1 - v2;
+    Vector3D v3 = v1 - v2;
     EXPECT_FLOAT_EQ(-2, v3.getX());
     EXPECT_FLOAT_EQ(-2, v3.getY());
     EXPECT_FLOAT_EQ(-2, v3.getZ());
 }
 
 TEST_F(vector3Dtest, opVmultVTest) {
-    vector3D v3 = v1 * v2;
+    Vector3D v3 = v1 * v2;
     EXPECT_FLOAT_EQ(3, v3.getX());
     EXPECT_FLOAT_EQ(8, v3.getY());
     EXPECT_FLOAT_EQ(15, v3.getZ());
@@ -167,7 +167,7 @@ TEST_F(vector3Dtest, opVmultVTest) {
 
 TEST_F(vector3Dtest, opCmultVTest) {
     float c = 5;
-    vector3D v3 = c * v1;
+    Vector3D v3 = c * v1;
     EXPECT_FLOAT_EQ(5, v3.getX());
     EXPECT_FLOAT_EQ(10, v3.getY());
     EXPECT_FLOAT_EQ(15, v3.getZ());
@@ -175,14 +175,14 @@ TEST_F(vector3Dtest, opCmultVTest) {
 
 TEST_F(vector3Dtest, opVmultCTest) {
     float c = 5;
-    vector3D v3 = v1 * c;
+    Vector3D v3 = v1 * c;
     EXPECT_FLOAT_EQ(5, v3.getX());
     EXPECT_FLOAT_EQ(10, v3.getY());
     EXPECT_FLOAT_EQ(15, v3.getZ());
 }
 
 TEST_F(vector3Dtest, opVdivVTest) {
-    vector3D v3 = v1 / v2;
+    Vector3D v3 = v1 / v2;
     EXPECT_FLOAT_EQ(.33333334, v3.getX());
     EXPECT_FLOAT_EQ(.5, v3.getY());
     EXPECT_FLOAT_EQ(.6, v3.getZ());
@@ -190,7 +190,7 @@ TEST_F(vector3Dtest, opVdivVTest) {
 
 TEST_F(vector3Dtest, opVdivCTest) {
     float c = 5;
-    vector3D v3 = v1 / c;
+    Vector3D v3 = v1 / c;
     EXPECT_FLOAT_EQ(0.2, v3.getX());
     EXPECT_FLOAT_EQ(0.4, v3.getY());
     EXPECT_FLOAT_EQ(0.6, v3.getZ());

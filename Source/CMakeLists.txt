@@ -1,2 +1,2 @@
 include_directories(.)
-add_executable(raytracer main.cpp Ray.cpp Camera.cpp Utility.cpp primitives/Sphere.cpp primitives/Primitivelist.cpp primitives/Primitivelist.h materials/Material.h materials/Lambertian.cpp materials/Lambertian.h materials/Metal.cpp materials/Metal.h materials/Dielectric.cpp materials/Dielectric.h Engine.cpp Engine.h)
+add_executable(raytracer main.cpp Ray.cpp Camera.cpp Utility.cpp primitives/Sphere.cpp primitives/Primitivelist.cpp primitives/Primitivelist.h materials/Material.h materials/Lambertian.cpp materials/Lambertian.h materials/Metal.cpp materials/Metal.h materials/Dielectric.cpp materials/Dielectric.h Engine.cpp Engine.h materials/Brdf.cpp materials/Brdf.h)

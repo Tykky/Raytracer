@@ -6,7 +6,7 @@
 
 using namespace std;
 
-vector3D recursiveScatter(const Ray &r, Primitive *world, int depth, function<float()> &randomFloat,
+Vector3D recursiveScatter(const Ray &r, Primitive *world, int depth, function<float()> &randomFloat,
                           const int depthlimit) {
     hitrecord record;
 
@@ -14,11 +14,11 @@ vector3D recursiveScatter(const Ray &r, Primitive *world, int depth, function<fl
 
     if (world->hit(r, floaterror, numeric_limits<float>::max(), record)) {
         Ray scatter;
-        vector3D attenuation;
+        Vector3D attenuation;
         if (depth < depthlimit && record.matptr->scatter(r, record, attenuation, scatter, randomFloat)) {
             return attenuation * recursiveScatter(scatter, world, depth + 1, randomFloat, depthlimit);
         } else {
-            return vector3D();
+            return Vector3D();
         }
     }
     return skyGradient(r);
@@ -26,9 +26,9 @@ vector3D recursiveScatter(const Ray &r, Primitive *world, int depth, function<fl
 
 Engine::Engine(Primitive *world, const Camera &camera, int width, int height) :
         world(world), camera(camera), width(width), height(height), depthlimit(50) {
-    framebuffer = make_unique<unique_ptr<vector3D[]>[]>(height);
+    framebuffer = make_unique<unique_ptr<Vector3D[]>[]>(height);
     for (int i = 0; i < height; ++i) {
-        framebuffer[i] = make_unique<vector3D[]>(width);
+        framebuffer[i] = make_unique<Vector3D[]>(width);
     }
 }
 
@@ -44,7 +44,7 @@ void Engine::render(int samples) {
         // Loop through every pixel on screen
         for (int y = height - 1; y >= 0; --y) {
             for (int x = 0; x < width; ++x) {
-                vector3D color = vector3D();
+                Vector3D color = Vector3D();
                 // Monte carlo sampling + supersampling
                 for (int s = 0; s < samples; s++) {
                     Ray r = camera.getRay((float(x) + randomFloat()) / float(width),
@@ -58,7 +58,7 @@ void Engine::render(int samples) {
                 }
                 color /= float(samples);
                 // Write gamma corrected pixels to framebuffer
-                framebuffer[y][x] = vector3D(sqrt(color.getR()), sqrt(color.getG()), sqrt(color.getB()));
+                framebuffer[y][x] = Vector3D(sqrt(color.getR()), sqrt(color.getG()), sqrt(color.getB()));
             }
         }
     }

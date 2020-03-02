@@ -5,13 +5,6 @@
 
 #include "Material.h"
 
-/** @brief Fresnel coefficient approximation by Christhophe Schlick
- *  @details https://en.wikipedia.org/wiki/Schlick%27s_approximation
- *  @param cosine corresponds to cosine(theta) in formula
- *  @param ior = index of refraction (R0 in formula)
- *  @return fresnel coefficient */
-float fresnel(float cosine, float ior);
-
 /** @brief Dielectric material allows rays to pass through objects.
  *  It can simulate materials like water or glass.
  *  @details When ray enters object, it is refracted or reflected
@@ -29,7 +22,7 @@ public:
     /** @param ior = index of refraction */
     Dielectric(float ior);
 
-    virtual bool scatter(const Ray &r, const hitrecord &record, vector3D &attenuation, Ray &scatter,
+    virtual bool scatter(const Ray &r, const hitrecord &record, Vector3D &attenuation, Ray &scatter,
                          std::function<float()> &randomFloat) const;
 };
 

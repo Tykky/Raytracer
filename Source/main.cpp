@@ -1,5 +1,5 @@
 #include <iostream>
-#include "vector3D.h"
+#include "Vector3D.h"
 #include "Camera.h"
 #include "Utility.h"
 #include "primitives/Sphere.h"
@@ -8,17 +8,19 @@
 #include "materials/Lambertian.h"
 #include "materials/Metal.h"
 #include "materials/Dielectric.h"
+#include "materials/Brdf.h"
 #include "Engine.h"
 
 using namespace std;
 
 int main(int argc, char **argv) {
 
-    int width = 800;
-    int height = 600;
+    int width = 400;
+    int height = 400;
     int samples = 100;
-    int fov = 90;
+    int fov = 60;
 
+    /*
     cout << "Enter screen width: ";
     cin >> width;
     cout << "Enter screen height: ";
@@ -27,35 +29,34 @@ int main(int argc, char **argv) {
     cin >> fov;
     cout << "Enter amount of samples: ";;
     cin >> samples;
+    */
 
-    const Camera cam(fov, float(width) / float(height), vector3D(0,0,0),vector3D(0,0,-1),
-                 vector3D(0,1,0));
+    const Camera cam(fov, float(width) / float(height), Vector3D(0, 1, 1), Vector3D(0, 0.5, -1),
+                     Vector3D(0, 1, 0));
 
     Primitive *list[100];
-    Metal mat(vector3D(0.8, 0.6, 0.2), 0.2);
-    Lambertian lamb(vector3D(0.5, 0.5, 0.5));
-    Lambertian red(vector3D(1, 0.2, 0.2));
-    Dielectric glass = Dielectric(1.5);
+    Metal mat(Vector3D(0.7,0.5,0.2),0.3);
+    Lambertian lamb(Vector3D(0.9, 0.9, 0.9));
+    Lambertian red(Vector3D(1, 0.2, 0.2));
+    Dielectric glass = Dielectric(1);
     Material *matptr = &mat;
     Material *lambptr = &lamb;
     Material *glassptr = &glass;
     Material *redptr = &red;
 
-    list[0] = new Sphere(vector3D(0, 0, -2), 0.5, glassptr);
-    list[12] = new Sphere(vector3D(0, 0, -2), 0.49, lambptr);
-    list[1] = new Sphere(vector3D(1, 0, -2), 0.5, matptr);
-    list[2] = new Sphere(vector3D(-1, 0, -2), 0.5, matptr);
-    list[3] = new Sphere(vector3D(0, -100.5, 0), 100, lambptr);
-    list[4] = new Sphere(vector3D(0, -0.4, -1.5), 0.1, matptr);
-    list[5] = new Sphere(vector3D(0.4, -0.4, -1.5), 0.1, glassptr);
-    list[6] = new Sphere(vector3D(0.8, -0.415, -1.5), 0.1, matptr);
-    list[7] = new Sphere(vector3D(1.2, -0.415, -1.5), 0.1, matptr);
-    list[8] = new Sphere(vector3D(-0.4, -0.4, -1.5), 0.1, glassptr);
-    list[9] = new Sphere(vector3D(-0.8, -0.41, -1.5), 0.1, matptr);
-    list[10] = new Sphere(vector3D(-1.2, -0.415, -1.5), 0.1, matptr);
-    list[11] = new Sphere(vector3D(0, 105, -4), 90, lambptr);
-    list[12] = new Sphere(vector3D(0, 0, -2), 0.48, redptr);
-    Primitive *world = new Primitivelist(list, 13);
+    list[0] = new Sphere(Vector3D(1, 0, -2), 0.5, matptr);
+    list[1] = new Sphere(Vector3D(-1, 0, -2), 0.5, matptr);
+    list[2] = new Sphere(Vector3D(0, -1000.5, 0), 1000, lambptr);
+    list[3] = new Sphere(Vector3D(0, -0.4, -1.5), 0.1, matptr);
+    list[4] = new Sphere(Vector3D(0.4, -0.4, -1.5), 0.1, glassptr);
+    list[5] = new Sphere(Vector3D(0.8, -0.415, -1.5), 0.1, matptr);
+    list[6] = new Sphere(Vector3D(1.2, -0.415, -1.5), 0.1, matptr);
+    list[7] = new Sphere(Vector3D(-0.4, -0.4, -1.5), 0.1, glassptr);
+    list[8] = new Sphere(Vector3D(-0.8, -0.41, -1.5), 0.1, matptr);
+    list[9] = new Sphere(Vector3D(-1.2, -0.415, -1.5), 0.1, matptr);
+    list[10] = new Sphere(Vector3D(0, 105, -4), 90, lambptr);
+    list[11] = new Sphere(Vector3D(0, 0, -2), 0.48, redptr);
+    Primitive *world = new Primitivelist(list, 12);
 
     Engine engine(world, cam, width, height);
 

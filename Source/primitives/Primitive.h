@@ -14,10 +14,11 @@ struct hitrecord {
     float c;
 
     /** @brief Point where the ray hit. */
-    vector3D p;
+    Vector3D p;
 
-    /** @brief Surface normal for point p. */
-    vector3D normal;
+    /** @brief Surface normal for point p.
+     *  Length of normal vector is always 1.*/
+    Vector3D normal;
 
     /** @brief Pointer to material. */
     Material *matptr;

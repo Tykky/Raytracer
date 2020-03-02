@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Camera::Camera(float fov, float aspectratio, vector3D origin, vector3D pointat, vector3D up) :
+Camera::Camera(float fov, float aspectratio, Vector3D origin, Vector3D pointat, Vector3D up) :
         fov(fov), aspectratio(aspectratio), origin(origin) {
 
     theta = fov * float(M_PI) / 180; // fov to radians
@@ -11,7 +11,7 @@ Camera::Camera(float fov, float aspectratio, vector3D origin, vector3D pointat, 
     halfheight = halfwidth / aspectratio; // aspect = w/h => h = w/aspect
 
     // Orthonormal basis
-    vector3D u, v, w;
+    Vector3D u, v, w;
 
     w = origin - pointat;
     w.normalize();
@@ -28,7 +28,7 @@ Camera::Camera(float fov, float aspectratio, vector3D origin, vector3D pointat, 
 }
 
 Ray Camera::getRay(float x, float y) const {
-    vector3D b = lowerleftcorner +
+    Vector3D b = lowerleftcorner +
                  x * horizontal +
                  y * vertical - origin;
     // returns origin -> (x,y)

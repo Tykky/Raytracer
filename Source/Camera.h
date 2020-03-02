@@ -4,7 +4,7 @@
 #define RAYTRACER_CAMERA_H
 
 #include "Ray.h"
-#include "vector3D.h"
+#include "Vector3D.h"
 
 /** @brief Camera class translates screen coordinates to rays.
  *  @details Screen coordinates are represented as x in [0,1], y in [0,1],
@@ -29,15 +29,15 @@ private:
     float halfwidth;
 
     // coordinates of lower left corner of screen
-    vector3D lowerleftcorner;
+    Vector3D lowerleftcorner;
 
     // points at +Y on screen
-    vector3D vertical;
+    Vector3D vertical;
 
     // points at +X on screen
-    vector3D horizontal;
+    Vector3D horizontal;
 
-    vector3D origin;
+    Vector3D origin;
 
 public:
 
@@ -48,8 +48,8 @@ public:
      * @param pointat the direction camera is facing
      * @param up defines "up" direction for the camera. This
      * determines the roll angle. */
-    Camera(float fov, float aspectratio, vector3D origin, vector3D pointat,
-            vector3D up);
+    Camera(float fov, float aspectratio, Vector3D origin, Vector3D pointat,
+           Vector3D up);
 
     /** @return corresponding Ray for each (x,y) screen coordinate */
     Ray getRay(float x, float y) const;

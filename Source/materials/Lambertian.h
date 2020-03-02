@@ -9,11 +9,11 @@
  *  producing "matte" like shading. */
 class Lambertian : public Material {
 private:
-    const vector3D albedo;
+    const Vector3D albedo;
 public:
-    Lambertian(const vector3D &albedo);
+    Lambertian(const Vector3D &albedo);
 
-    virtual bool scatter(const Ray &r, const hitrecord &record, vector3D &attenuation, Ray &scatter,
+    virtual bool scatter(const Ray &r, const hitrecord &record, Vector3D &attenuation, Ray &scatter,
                          std::function<float()> &randomFloat) const;
 };
 

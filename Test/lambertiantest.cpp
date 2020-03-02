@@ -15,7 +15,7 @@ protected:
     function<float()> randomfloat;
 
     virtual void SetUp() {
-        mat = new Lambertian(vector3D(0.5, 0.5, 0.5));
+        mat = new Lambertian(Vector3D(0.5, 0.5, 0.5));
         engine = mt19937(1337);
         dist = uniform_real_distribution<float>(0, 1);
         randomfloat = bind(dist, engine);
@@ -26,11 +26,11 @@ protected:
 TEST_F(lambertiantest, scattertest) {
 
     hitrecord record;
-    record.normal = vector3D(-1, 1, 0);
-    record.p = vector3D(1, 1, 0);
+    record.normal = Vector3D(-1, 1, 0);
+    record.p = Vector3D(1, 1, 0);
     record.c = 1;
 
-    vector3D attenuation;
+    Vector3D attenuation;
     Ray scatter;
     EXPECT_EQ(true, mat->scatter(Ray(), record, attenuation, scatter, randomfloat));
 
@@ -38,7 +38,7 @@ TEST_F(lambertiantest, scattertest) {
     EXPECT_EQ(attenuation.getY(), 0.5);
     EXPECT_EQ(attenuation.getZ(), 0.5);
 
-    vector3D scat = scatter.getDirection() - scatter.getOrigin();
+    Vector3D scat = scatter.getDirection() - scatter.getOrigin();
     // If vector length < 1, the point is inside unit sphere.
     EXPECT_LE((record.normal - scatter.getDirection()).length(), 1);
 

@@ -8,20 +8,23 @@
 /** @brief Reflect function mirrors vectors using normal as axis of symmetry.
  *  @param v vector
  *  @param n normal vector */
-vector3D reflect(const vector3D &v, const vector3D &n);
+Vector3D reflect(const Vector3D &v, const Vector3D &n);
 
 /** @brief Metal is highly reflective Material which mirrors all rays.
  *  @details Rays are mirrored using surface normal as axis of symmetry. */
 class Metal : public Material {
 
 private:
-    const vector3D albedo;
+    const Vector3D albedo;
     float blur;
 
 public:
-    Metal(const vector3D &albedo, float b);
+    /** @param b is blurriness, value in between 0 and 1
+     * should be given, where 1 is heavy blurriness and
+     * 0 is no blurriness at all. */
+    Metal(const Vector3D &albedo, float b);
 
-    virtual bool scatter(const Ray &r, const hitrecord &record, vector3D &attenuation, Ray &scatter,
+    virtual bool scatter(const Ray &r, const hitrecord &record, Vector3D &attenuation, Ray &scatter,
                          std::function<float()> &randomFloat) const;
 };
 
