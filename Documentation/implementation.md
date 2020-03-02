@@ -7,6 +7,7 @@ To oversimplify, light in real world travels from light source (sun, light bulb)
 to the observers eye. When light rays hits eye, different wavelengths are perceived 
 as different colors. When light bounces from objects its wavelength is changed 
 since some of its energy is absorbed. Energy of photon depends on the wavelenth. 
+
 ![](https://wikimedia.org/api/rest_v1/media/math/render/svg/a4a8c83479c76652ec6c8bc1a7cb6b4a7e89c3d0)
 
 where h is [Plancks constant](https://en.wikipedia.org/wiki/Planck_constant), c is [speed of light](https://en.wikipedia.org/wiki/Speed_of_light) and lambda being the wavelength.
@@ -139,7 +140,7 @@ reflections by adding slight random variation to the reflecting
 ray. Rendering following images at 400x400, 1000 samples and with 
 Ryzen 9 3900x.
 
-blur 0, render time 2.7 s                     |  blur 0.9, render time  3.0 s                 | blur 0.9, render time 3.0 s                  |
+blur 0, render time 2.7 s                     |  blur 0.3, render time  3.0 s                 | blur 0.9, render time 3.0 s                  |
 :-------------------------:|:-------------------------:|:-------------------------:|
 ![](data/materials/metal1.png) | ![](data/materials/metal2.png)| ![](data/materials/metal3.png) |
 
@@ -169,8 +170,39 @@ ior 1.0 (vacuum), render time 3.5 s                     |  ior 1.33 (water), ren
 ![](data/materials/dielectric1.png) | ![](data/materials/dielectric2.png)| ![](data/materials/dielectric3.png) |
 
 
+## Functions
 
+### Recursive scatter
 
+The function recursiveScatter() handles the recursive calling of the scatter() member function 
+which is defined by all material classes. The recursiveScatter function is:
+
+```C++
+Vector3D recursiveScatter(const Ray &r, Primitive *world, int depth, function<float()> &randomFloat,
+                          const int depthlimit) {
+    hitrecord record;
+
+    const float floaterror = 0.001;
+
+    if (world->hit(r, floaterror, numeric_limits<float>::max(), record)) {
+
+        Ray scatter;
+        Vector3D attenuation;
+
+        if (depth < depthlimit && record.matptr->scatter(r, record, attenuation, scatter, randomFloat)) {
+            return attenuation * recursiveScatter(scatter, world, depth + 1, randomFloat, depthlimit);
+        } else {
+            return Vector3D();
+        }
+    }
+    return skyGradient(r);
+}
+```
+
+The function is called first time with ray given by the camera. After that it calls recursively itself
+on every bounce. The _attenuation_ is used to alter the color after each bounce. This is done with 
+simple multiplication as shown in the code. This idea is similiar to photon losing some of its energy 
+after it bounces from objects (as described in the very beginning of this document). 
 
 ## Sources
 
