@@ -15,6 +15,8 @@ This repository contains a raytracer for University of Helsinki's course Data St
 
 [Timesheet](./Documentation/timesheet.md)
 
+[Doxygen doc](https://tykky.github.io/)
+
 ## Weekly reports
 
 * [Week 1](./Documentation/reports/week1.md)
