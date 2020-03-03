@@ -13,17 +13,22 @@ Brdf::Brdf(const Vector3D &lalbedo, const Vector3D &malbedo, float metalness, fl
 bool Brdf::scatter(const Ray &r, const hitrecord &record, Vector3D &attenuation, Ray &scatter,
                    std::function<float()> &randomFloat) const {
 
-    Vector3D direction = r.getDirection();
-    direction.normalize();
-
-    float cosine = direction.dot(record.normal);
+    float cosine = -r.getDirection().dot(record.normal) / r.getDirection().length();
     float probability = fresnel(cosine,ior);
 
-    
+    // Fresnel
+    if(randomFloat() < fresnelfactor*probability) {
+        attenuation = Vector3D(1,1,1); // no attenuation
+        Vector3D reflection = reflect(r.getDirection(), record.normal);
+        scatter = Ray(record.p, reflection);
+        return true;
+    }
 
     if(randomFloat() < metalness) {
+        // Metal
         return mptr->scatter(r,record,attenuation,scatter,randomFloat);
     } else {
+        // Lambertian
         return lptr->scatter(r,record,attenuation,scatter,randomFloat);
     }
 

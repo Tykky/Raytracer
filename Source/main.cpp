@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
 
     int width = 400;
     int height = 400;
-    int samples = 100;
+    int samples = 1000;
     int fov = 60;
 
     /*
@@ -31,12 +31,12 @@ int main(int argc, char **argv) {
     cin >> samples;
     */
 
-    const Camera cam(fov, float(width) / float(height), Vector3D(0, 1, 1), Vector3D(0, 0.5, -1),
+    const Camera cam(fov, float(width) / float(height), Vector3D(0, 1, 1), Vector3D(0, 0.7, -1),
                      Vector3D(0, 1, 0));
 
     Primitive *list[100];
-    Metal mat(Vector3D(0.7,0.5,0.2),0.3);
-    Lambertian lamb(Vector3D(0.9, 0.9, 0.9));
+    Brdf mat(Vector3D(0.3,0.3,0.8),Vector3D(0.2,1,0.1),0.8, 0.1, 1, 1);
+    Lambertian lamb(Vector3D(0.4, 0.4, 0.4));
     Lambertian red(Vector3D(1, 0.2, 0.2));
     Dielectric glass = Dielectric(1);
     Material *matptr = &mat;
@@ -44,19 +44,19 @@ int main(int argc, char **argv) {
     Material *glassptr = &glass;
     Material *redptr = &red;
 
-    list[0] = new Sphere(Vector3D(1, 0, -2), 0.5, matptr);
-    list[1] = new Sphere(Vector3D(-1, 0, -2), 0.5, matptr);
-    list[2] = new Sphere(Vector3D(0, -1000.5, 0), 1000, lambptr);
-    list[3] = new Sphere(Vector3D(0, -0.4, -1.5), 0.1, matptr);
+    //list[0] = new Sphere(Vector3D(1, 0, -2), 0.5, matptr);
+    //list[1] = new Sphere(Vector3D(-1, 0, -2), 0.5, matptr);
+    list[0] = new Sphere(Vector3D(0, -1000.5, 0), 1000, lambptr);
+    /*list[3] = new Sphere(Vector3D(0, -0.4, -1.5), 0.1, matptr);
     list[4] = new Sphere(Vector3D(0.4, -0.4, -1.5), 0.1, glassptr);
     list[5] = new Sphere(Vector3D(0.8, -0.415, -1.5), 0.1, matptr);
     list[6] = new Sphere(Vector3D(1.2, -0.415, -1.5), 0.1, matptr);
     list[7] = new Sphere(Vector3D(-0.4, -0.4, -1.5), 0.1, glassptr);
     list[8] = new Sphere(Vector3D(-0.8, -0.41, -1.5), 0.1, matptr);
-    list[9] = new Sphere(Vector3D(-1.2, -0.415, -1.5), 0.1, matptr);
-    list[10] = new Sphere(Vector3D(0, 105, -4), 90, lambptr);
-    list[11] = new Sphere(Vector3D(0, 0, -2), 0.48, redptr);
-    Primitive *world = new Primitivelist(list, 12);
+    list[9] = new Sphere(Vector3D(-1.2, -0.415, -1.5), 0.1, matptr);*/
+    //list[0] = new Sphere(Vector3D(0, 105, -4), 90, lambptr);
+    list[1] = new Sphere(Vector3D(0, 0.5, -2), 1, matptr);
+    Primitive *world = new Primitivelist(list, 2);
 
     Engine engine(world, cam, width, height);
 

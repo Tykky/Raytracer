@@ -8,10 +8,10 @@
 
 using namespace std;
 
-/** @brief Brdf combines lambertian and metal materials.
+/** @brief Brdf combines lambertian, metal materials and fresnel effect.
  *  @details Brdf stands for bidirectional reflectance distribution function.
- *  The brdf material defines how rays are scattered, just like lambertian or
- *  metal material does. This combines metal and lambertian materials using
+ *  The brdf defines how rays are scattered, just like lambertian or
+ *  metal material does. This combines metal, lambertian materials and fresnel using
  *  some probability distribution. */
 class Brdf : public Material {
 

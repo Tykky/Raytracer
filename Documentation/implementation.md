@@ -100,7 +100,8 @@ Primitivelist is data structure for keeping track of all objects in the world.
 This inherits the abstract primitive class, meaning Primitivelist has hit()
 member function. When this member function is called, all of the objects in 
 this list are tested against ray r (given as parameted in hit()) and the 
-closest hit to the camera is returned. 
+closest hit to the camera is returned. This enables multiple objects in 
+the world. 
 
 #### Sphere
 
@@ -108,6 +109,10 @@ Sphere class defines the sphere primitive. This inherits the abstract primitive
 class. The hit equation for the sphere is formulated using vectors
 
 ### Materials
+
+All preview images of materials are rendered at 400x400 and 
+1000 samples is used per pixel. The mentioned render times 
+are with Amd Ryzen 9 3900x processor (12 cores).
 
 #### Abstract material 
 
@@ -127,18 +132,12 @@ hence this implementation is only a approximation.
 
 ![](data/materials/lambertian.png)
 
-The image is rendered at 400x400, 1000 samples.
-
-Render time on Ryzen 9 3900x (24 threads) is 3.5 seconds
-
-
 #### Metal
 
 Metal material is highly reflective material. Rays are mirrored 
 using surface normal as axis of symmetry. Blur can be added to 
 reflections by adding slight random variation to the reflecting 
-ray. Rendering following images at 400x400, 1000 samples and with 
-Ryzen 9 3900x.
+ray.
 
 blur 0, render time 2.7 s                     |  blur 0.3, render time  3.0 s                 | blur 0.9, render time 3.0 s                  |
 :-------------------------:|:-------------------------:|:-------------------------:|
@@ -168,6 +167,27 @@ The dielectric material has one parameter which is ior ([index of refraction](ht
 ior 1.0 (vacuum), render time 3.5 s                     |  ior 1.33 (water), render time  3.7 s                 | ior 2.65 ([moissanite](https://en.wikipedia.org/wiki/Moissanite)), render time 13.3 s                  |
 :-------------------------:|:-------------------------:|:-------------------------:|
 ![](data/materials/dielectric1.png) | ![](data/materials/dielectric2.png)| ![](data/materials/dielectric3.png) |
+
+
+### Brdf (Bidirectional reflectance distribution function)
+
+The brdf defines how rays are reflected in general. This blends 
+the use of lambertian, metal materials and the Fresnel effect in 
+one material. Probability is used to determine how the ray 
+should be reflected. 
+
+
+metalness 0, render time 4.8 s                     |  metalness 0.1, render time  4.6 s                 | metalness 0.5, render time 4.2 s                  |
+:-------------------------:|:-------------------------:|:-------------------------:|
+![](data/materials/brdf1.png) | ![](data/materials/brdf2.png)| ![](data/materials/brdf3.png) |
+
+Reflections can have different color and roughness (metal blurriness).
+With values roughness = 0.2 and 
+
+metalness 0.1, render time 4.8 s                     |  metalness 0.5, render time  4.2 s                 | metalness 0.8, render time 4.2 s                  |
+:-------------------------:|:-------------------------:|:-------------------------:|
+![](data/materials/brdf4.png) | ![](data/materials/brdf5.png)| ![](data/materials/brdf6.png) |
+
 
 
 ## Functions
@@ -227,3 +247,4 @@ after it bounces from objects (as described in the very beginning of this docume
 [Moissanite, wikipedia](https://en.wikipedia.org/wiki/Moissanite)
 
 [Refractive index, wikipedia](https://en.wikipedia.org/wiki/Refractive_index)
+[Photon energy, wikipedia](https://en.wikipedia.org/wiki/Photon_energy)
