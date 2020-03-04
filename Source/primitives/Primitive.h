@@ -4,6 +4,7 @@
 #define RAYTRACER_PRIMITIVE_H
 
 #include "Ray.h"
+#include "Aabb.h"
 
 class Material;
 
@@ -39,6 +40,9 @@ public:
      * @return true when hit equation has solution between cmin and cmax, otherwise
      * false. */
     virtual bool hit(const Ray &r, float cmin, float cmax, hitrecord &record) const = 0;
+
+    virtual bool boundingBox(float c0, float c1, Aabb &box) const = 0;
+
 };
 
 

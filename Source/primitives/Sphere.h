@@ -18,6 +18,8 @@ public:
      *  @details hit equation for sphere: dot((Ray(c) - center),(Ray(c) - center))=R^2 (R = radius)
      *  solve for C. Ray function is Ray(c) = origin + c*direction, origin,direction are R^3 vectors. */
     bool hit(const Ray &r, float cmin, float cmax, hitrecord &record) const override;
+
+    virtual bool boundingBox(float c0, float c1, Aabb &box) const override;
 };
 
 

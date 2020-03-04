@@ -32,4 +32,7 @@ bool refract(const Vector3D &v, const Vector3D &n, float ior, Vector3D &refracti
  *  @return fresnel coefficient */
 float fresnel(float cosine, float ior);
 
+/** @brief combines two bounding boxes int one box */
+Aabb surroundingBox(Aabb box1, Aabb box2);
+
 #endif //RAYTRACER_UTILITY_H

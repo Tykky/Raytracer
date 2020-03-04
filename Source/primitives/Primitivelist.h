@@ -19,6 +19,9 @@ public:
      *  @return true if any of the primitives is hit in the list,
      *  otherwise false. */
     virtual bool hit(const Ray &r, float cmin, float cmax, hitrecord &record) const;
+
+    virtual bool boundingBox(float c0, float c1, Aabb &box) const;
+
 };
 
 

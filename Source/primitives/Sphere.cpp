@@ -15,7 +15,8 @@ bool Sphere::hit(const Ray &r, float cmin, float cmax, hitrecord &record) const 
     float discriminant = b * b - a * c;
 
     if (discriminant > 0) {
-        float solution = (-b - sqrt(discriminant)) / a;
+        float sqroot = sqrt(discriminant);
+        float solution = (-b - sqroot) / a;
         if (solution < cmax && solution > cmin) {
             record.c = solution;
             record.p = r.pointAtC(record.c);
@@ -24,7 +25,7 @@ bool Sphere::hit(const Ray &r, float cmin, float cmax, hitrecord &record) const 
             return true;
         }
 
-        solution = (-b + sqrt(discriminant)) / a;
+        solution = (-b + sqroot) / a;
         if (solution < cmax && solution > cmin) {
             record.c = solution;
             record.p = r.pointAtC(record.c);
@@ -34,4 +35,10 @@ bool Sphere::hit(const Ray &r, float cmin, float cmax, hitrecord &record) const 
         }
     }
     return false;
+}
+
+bool Sphere::boundingBox(float c0, float c1, Aabb &box) const {
+    box = Aabb(center - Vector3D(radius,radius,radius),
+               center + Vector3D(radius,radius,radius));
+    return true;
 }

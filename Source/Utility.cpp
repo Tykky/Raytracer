@@ -1,6 +1,8 @@
 #include <primitives/Sphere.h>
 #include <random>
 #include <functional>
+#include "Utility.h"
+
 
 using namespace std;
 
@@ -42,4 +44,17 @@ float fresnel(float cosine, float ior) {
     float r0 = (1 - ior) / (1 + ior);
     r0 = r0 * r0;
     return r0 + (1 - r0) * pow((1 - cosine), 5);
+}
+
+Aabb surroundingBox(Aabb box1, Aabb box2) {
+
+    Vector3D small(ffmin(box1.getMin().getX(),box2.getMin().getX()),
+                   ffmin(box1.getMin().getY(),box2.getMin().getX()),
+                   ffmin(box1.getMin().getZ(),box2.getMin().getZ()));
+
+    Vector3D big(ffmax(box1.getMax().getX(),box2.getMax().getX()),
+                 ffmax(box1.getMax().getY(),box2.getMax().getY()),
+                 ffmax(box1.getMax().getZ(),box2.getMax().getZ()));
+
+    return Aabb(small,big);
 }

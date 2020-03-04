@@ -85,7 +85,6 @@ count can be used to combat this issue but with diminishing returns. Another pop
 
 ### Primitives
 
-
 #### Abstract primitive
 
 Abstract primitive class or just Primitive class 
@@ -96,12 +95,35 @@ different for each primitive.
 
 #### Primitivelist
 
-Primitivelist is data structure for keeping track of all objects in the world. 
+Primitivelist is a data structure for keeping track of all objects in the world. 
 This inherits the abstract primitive class, meaning Primitivelist has hit()
 member function. When this member function is called, all of the objects in 
 this list are tested against ray r (given as parameted in hit()) and the 
 closest hit to the camera is returned. This enables multiple objects in 
 the world. 
+
+This data structure will give time complexity of O(N) since we need to 
+go through the whole list everytime we render a pixel. N is number of 
+primitives. 
+
+#### Bounding volume hierarchy class (Bvhnode)
+
+Bvh is a data structure for keeping track of all objects in the world. 
+This is used for same purpose as Primitivelist but is highly optimized 
+compared to the regular Primitivelist. Objects in the world are grouped 
+by bounding boxes e.g 10 spheres might be inside one bounding box. 
+When we want to check if ray hits any of these objects, we can first
+check if it hits the bounding box. If it doesn't we can safely ignore 
+computing all of the objects inside the bounding box. 
+
+A picture from wikipedia demonstrates this idea quite well. 
+
+![](https://upload.wikimedia.org/wikipedia/commons/2/2a/Example_of_bounding_volume_hierarchy.svg)
+
+This method is much faster in terms of time complexity. 
+Assume that division into bounding boxes is done efficiently, 
+then time complexity will be O(log(n)). Searching from this 
+tree is similar to binary search. 
 
 #### Sphere
 
@@ -147,7 +169,7 @@ Render time slightly increases when blur != 0 since random generator is used to
 produce the blurriness.
 
 
-#### Dielectric
+##### Dielectric
 
 Dielectric material allows rays to pass through surfaces. [Snell's law](https://en.wikipedia.org/wiki/Snell%27s_law) is used to compute the refraction angle. Usually 
 Snell's law is represented in form:
@@ -169,7 +191,7 @@ ior 1.0 (vacuum), render time 3.5 s                     |  ior 1.33 (water), ren
 ![](data/materials/dielectric1.png) | ![](data/materials/dielectric2.png)| ![](data/materials/dielectric3.png) |
 
 
-### Brdf (Bidirectional reflectance distribution function)
+#### Brdf (Bidirectional reflectance distribution function)
 
 The brdf defines how rays are reflected in general. This blends 
 the use of lambertian, metal materials and the Fresnel effect in 
@@ -187,6 +209,8 @@ With values roughness = 0.2 and
 metalness 0.1, render time 4.8 s                     |  metalness 0.5, render time  4.2 s                 | metalness 0.8, render time 4.2 s                  |
 :-------------------------:|:-------------------------:|:-------------------------:|
 ![](data/materials/brdf4.png) | ![](data/materials/brdf5.png)| ![](data/materials/brdf6.png) |
+
+
 
 
 
@@ -223,6 +247,7 @@ The function is called first time with ray given by the camera. After that it ca
 on every bounce. The _attenuation_ is used to alter the color after each bounce. This is done with 
 simple multiplication as shown in the code. This idea is similiar to photon losing some of its energy 
 after it bounces from objects (as described in the very beginning of this document). 
+
 
 ## Sources
 

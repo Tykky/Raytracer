@@ -15,7 +15,7 @@ public:
      *  @param record contains the hitrecord where ray r hit.
      *  @param attenuation defines how much of the color/light is preserved after each bounce. (RGB vector)
      *  @param scatter is SET by this function. This contains the scatter ray that is produced by this function.
-     *  Empty/zero vector should be given as reference parameter and  the result should be used after
+     *  Empty/zero vector should be given as reference parameter and the result should be used after
      *  the function has ran.
      *  @param randomFloat contains reference to random generator.
      *  @return true when scattered ray hits primitive, otherwise false. */
