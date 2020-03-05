@@ -3,6 +3,7 @@
 #include <fstream>
 #include "Engine.h"
 #include "Utility.h"
+#include "omp.h"
 
 using namespace std;
 
@@ -39,6 +40,8 @@ void Engine::render(int samples) {
         mt19937 engine;
         uniform_real_distribution<float> dist(0.0, 1.0);
         function<float()> randomFloat = bind(dist, engine);
+#pragma omp critical
+        cout << "Thread " << omp_get_thread_num() << " initialized" << endl;
 
 #pragma omp for
         // Loop through every pixel on screen

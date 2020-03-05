@@ -16,54 +16,82 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-    int width = 200;
-    int height = 200;
+    int width = 800;
+    int height = 600;
     int samples = 100;
-    int fov = 60;
+    int fov = 90;
+    int scene = 0;
 
-    /*
-    cout << "Enter screen width: ";
-    cin >> width;
-    cout << "Enter screen height: ";
-    cin >> height;
+    cout << "Enter camera preset (0-3): ";
+    cin >> scene;
     cout << "Enter fov: ";
     cin >> fov;
-    cout << "Enter amount of samples: ";;
+    cout << "Enter amount of  samples: ";;
     cin >> samples;
-    */
 
-    const Camera cam(fov, float(width) / float(height), Vector3D(0, 3, 1), Vector3D(0, 3, -1),
-                     Vector3D(0, 1, 0));
+    Camera cam(fov, float(width) / float(height), Vector3D(-0.2, 0.5, 1), Vector3D(0, 0.5, -1),
+               Vector3D(0, 0.5, 0));
 
+    if(scene == 1) {
+        cam = Camera(fov, float(width) / float(height), Vector3D(0, 5, 1), Vector3D(0, 0.5, -1),
+                     Vector3D(0, 0.5, 0));
+    }
 
-    int n = 100000;
+    if(scene == 2) {
+        cam = Camera(fov, float(width) / float(height), Vector3D(10, 5, 5), Vector3D(0, 0.5, -1),
+                     Vector3D(0, 0.5, 0));
+    }
 
-    Primitive *list[n+1];
+    if(scene == 3) {
+        cam = Camera(fov, float(width) / float(height), Vector3D(100, 30, 50), Vector3D(0, 0.5, -1),
+                     Vector3D(0, 0.5, 0));
+    }
+
+    int n = 50;
+
+    Primitive *list[n+5];
     Brdf mat(Vector3D(0.3,0.3,0.8),Vector3D(0.2,1,0.1),0.1, 0.1, 1, 1);
-    Lambertian lamb(Vector3D(0.6, 0.6, 0.6));
+    Brdf lamb(Vector3D(0.3,0.3,0.3),Vector3D(0.1,0.1,0.1),0, 0, 0.1, 1);
     Lambertian red(Vector3D(1, 0.2, 0.2));
-    Dielectric glass = Dielectric(1);
+    Dielectric glass = Dielectric(1.5);
+    Brdf close(Vector3D(0.0,0.3,0.3),Vector3D(1,1,1), 0.1, 0, 1,1);
+    Brdf gold(Vector3D(0.85,0.64,0.12),Vector3D(0.85,0.64,0.12),0.9,0.1,0,1);
+
     Material *matptr = &mat;
     Material *lambptr = &lamb;
     Material *glassptr = &glass;
     Material *redptr = &red;
+    Material *closeptr = &close;
+    Material *goldptr = &gold;
 
-    mt19937 gen;
+    mt19937 gen(456);
     uniform_real_distribution<float> dist(0.0, 1.0);
     function<float()> randomFloat = bind(dist, gen);
 
-    float randi = randomFloat();
+    int multp = 5;
+
 
     for (int i = 0; i < n; ++i) {
+        float randi = randomFloat();
         float radius = randomFloat();
-        list[i] = new Sphere(Vector3D(50*randomFloat()-25,0.5,-50*randomFloat()),0.5,matptr);
+        if(randi < 0.25) {
+            list[i] = new Sphere(Vector3D(multp * randomFloat() - multp/2, 0.1, -multp * randomFloat()), 0.1, glassptr);
+        } else if (randi < 0.5) {
+            list[i] = new Sphere(Vector3D(multp * randomFloat() - multp/2, 0.1, -multp * randomFloat()), 0.1, redptr);
+        } else {
+            list[i] = new Sphere(Vector3D(multp * randomFloat() - multp/2, 0.1, -multp * randomFloat()), 0.1, matptr);
+        }
     }
-
     list[n] = new Sphere(Vector3D(0,-1000,0),1000,lambptr);
 
-    Primitive *world = new Primitivelist(list,n+1);
+    list[n+1] = new Sphere(Vector3D(0,0.5,-1),0.5, closeptr);
+    list[n+2] = new Sphere(Vector3D(-10,4.7,-20),5, matptr);
+    list[n+3] = new Sphere(Vector3D(-1.5,0.5,-3),0.5, closeptr);
+    list[n+4] = new Sphere(Vector3D(-1.5,15,-3),10, lambptr);
 
-    Primitive *bvh = new Bvhnode(list,n+1,0,1,randomFloat);
+    Primitive *world = new Primitivelist(list,n+5);
+
+    Primitive *bvh = new Bvhnode(list,n+5,0,1,randomFloat);
 
     Engine engine(bvh, cam, width, height);
 
@@ -78,7 +106,7 @@ int main(int argc, char **argv) {
     cout << "rendering finished in " << double(elapsed.count()) / 1000 << " seconds" << endl;
 
     start = chrono::system_clock::now();
-    cout << "writing to file... " << endl;
+    cout << "writing to a file... " << endl;
     engine.frammebufferToNetpbm("image");
     end = chrono::system_clock::now();
     elapsed = chrono::duration_cast<chrono::milliseconds>(end - start);

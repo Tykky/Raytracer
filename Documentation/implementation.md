@@ -246,7 +246,7 @@ Vector3D recursiveScatter(const Ray &r, Primitive *world, int depth, function<fl
 The function is called first time with ray given by the camera. After that it calls recursively itself
 on every bounce. The _attenuation_ is used to alter the color after each bounce. This is done with 
 simple multiplication as shown in the code. This idea is similiar to photon losing some of its energy 
-after it bounces from objects (as described in the very beginning of this document). 
+after it bounces from objects (as described in the very beginning of this document). Most of the "heavy lifting" is done by this function. 
 
 
 ## Sources
