@@ -55,6 +55,7 @@ The program prompts user to enter
 
 - screen width (image width in pixels)
 - screen height (image height in pixels)
+- camera preset from 4 different options (0-3)
 - fov (vertical field of view in degrees)
 - samples (number of times each pixel is sampled)
 
