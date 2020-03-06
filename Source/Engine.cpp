@@ -37,7 +37,7 @@ void Engine::render(int samples) {
 #pragma omp parallel
     {
         // Each thread has it's own random generator
-        mt19937 engine;
+        mt19937 engine(1337);
         uniform_real_distribution<float> dist(0.0, 1.0);
         function<float()> randomFloat = bind(dist, engine);
 #pragma omp critical
