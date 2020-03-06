@@ -6,7 +6,7 @@
 using namespace std;
 
 /** @brief Googletest fixture for testing Lambertian material. */
-class lambertiantest : public ::testing::Test {
+class LambertianTest : public ::testing::Test {
 protected:
 
     Material *mat;
@@ -23,7 +23,7 @@ protected:
 };
 
 
-TEST_F(lambertiantest, scattertest) {
+TEST_F(LambertianTest, scattertest) {
 
     hitrecord record;
     record.normal = Vector3D(-1, 1, 0);
