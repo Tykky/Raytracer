@@ -42,7 +42,7 @@ private:
 public:
     /** @brief Constructor initializes framebuffer and object member variables
      *  @param world is pointer to array which contains all primitives in the world */
-    Engine(Primitive *world, const Camera &camera, int witdth, int height);
+    Engine(Primitive *world, const Camera &camera, int width, int height);
 
     /** @brief computes color for every pixel on screen.
      *  @details Multithreading is done inside this member function.

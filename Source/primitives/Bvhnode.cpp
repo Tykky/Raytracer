@@ -1,6 +1,9 @@
 #include "Bvhnode.h"
 #include "Utility.h"
 
+// All of the compare methods are the
+// same except they do comparison in different axis.
+
 int boxCompareX(const void *a, const void *b) {
     Aabb left, right;
     Primitive *ah = *(Primitive**)a;
