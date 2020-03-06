@@ -22,6 +22,10 @@ int main(int argc, char **argv) {
     int fov = 90;
     int scene = 0;
 
+    cout << "Enter image width: ";
+    cin >> width;
+    cout << "Enter image height: ";
+    cin >> height;
     cout << "Enter camera preset (0-3): ";
     cin >> scene;
     cout << "Enter fov: ";
@@ -62,7 +66,6 @@ int main(int argc, char **argv) {
     Material *glassptr = &glass;
     Material *redptr = &red;
     Material *closeptr = &close;
-    Material *goldptr = &gold;
 
     mt19937 gen(456);
     uniform_real_distribution<float> dist(0.0, 1.0);
