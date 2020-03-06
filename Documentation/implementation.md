@@ -125,6 +125,16 @@ Assume that division into bounding boxes is done efficiently,
 then time complexity will be O(log(n)). Searching from this 
 tree is similar to binary search. 
 
+Following is done to form the actual tree (in order)
+
+1. Pick randomly axis from 3 (x,y,z)
+2. Sort objects along this axis.
+3. split the axis into two sub trees
+
+**Note that qsort is used to do the sorting. This is default
+sorting algorithm in C.** This should be replaced with self
+implemented one.
+
 #### Sphere
 
 Sphere class defines the sphere primitive. This inherits the abstract primitive 
