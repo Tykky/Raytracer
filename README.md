@@ -66,7 +66,7 @@ the current directory (the same one where program is run).
 ## Current state of the project
 
 ![](Documentation/data/renders/demo.png)
-The render is now more efficient in rendering 
+The renderer is now more efficient in rendering 
 multiple objects. This is due to use of bounding 
 volume hierarchy data structure. Hit testing is done 
 in logarithmic time O(log(n)) instead of linear.
