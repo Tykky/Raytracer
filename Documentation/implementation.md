@@ -43,7 +43,7 @@ RGB vectors. This includes arithmetic operations between Vector3D objects.
 The whole vector class is inlined to improve performance. Majority of the 
 operations done by the algorithm are done using vectors. Hence these 
 are called millions of times in a short timespan. Therefore operation call
-overhead causes significant impact. 
+overhead causes significant impact.
 
 ### Ray
 
@@ -90,7 +90,7 @@ count can be used to combat this issue but with diminishing returns. Another pop
 Abstract primitive class or just Primitive class 
 provides interface for all "primitives". Primitives are objects in the world which cannot be divided into smaller pieces e.g triangles, polygons or spheres. All of 
 the classes which inherit this class must have "hit" member function. Hit member 
-function solves the hit equation or ray intersection equation. The hit equation for is 
+function solves the hit equation or ray intersection equation. The hit equation is 
 different for each primitive. 
 
 #### Primitivelist
@@ -138,7 +138,7 @@ implemented one.
 #### Sphere
 
 Sphere class defines the sphere primitive. This inherits the abstract primitive 
-class. The hit equation for the sphere is formulated using vectors
+class.
 
 ### Materials
 
@@ -179,7 +179,7 @@ Render time slightly increases when blur != 0 since random generator is used to
 produce the blurriness.
 
 
-##### Dielectric
+#### Dielectric
 
 Dielectric material allows rays to pass through surfaces. [Snell's law](https://en.wikipedia.org/wiki/Snell%27s_law) is used to compute the refraction angle. Usually 
 Snell's law is represented in form:
@@ -229,28 +229,17 @@ metalness 0.1, render time 4.8 s                     |  metalness 0.5, render ti
 ### Recursive scatter
 
 The function recursiveScatter() handles the recursive calling of the scatter() member function 
-which is defined by all material classes. The recursiveScatter function is:
+which is defined by all material classes. The recursiveScatter function in pseudocode is:
 
-```C++
-Vector3D recursiveScatter(const Ray &r, Primitive *world, int depth, function<float()> &randomFloat,
-                          const int depthlimit) {
-    hitrecord record;
+```
 
-    const float floaterror = 0.001;
-
-    if (world->hit(r, floaterror, numeric_limits<float>::max(), record)) {
-
-        Ray scatter;
-        Vector3D attenuation;
-
-        if (depth < depthlimit && record.matptr->scatter(r, record, attenuation, scatter, randomFloat)) {
-            return attenuation * recursiveScatter(scatter, world, depth + 1, randomFloat, depthlimit);
-        } else {
-            return Vector3D();
-        }
+RecursiveScatter(ray r, world w, depth) {
+    if(depth < limit && w.hit(r) && material.scatter(r)) {
+        return attenuation * RecursiveScatter(r, w, depth + 1)
     }
-    return skyGradient(r);
+    return skyGradient(r) // ray hits void
 }
+
 ```
 
 The function is called first time with ray given by the camera. After that it calls recursively itself
