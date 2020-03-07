@@ -128,7 +128,7 @@ tree is similar to binary search.
 Following is done to form the actual tree (in order)
 
 1. Pick randomly axis from 3 (x,y,z)
-2. Sort objects along this axis.
+2. Sort objects along this axis
 3. split the axis into two sub trees
 
 **Note that qsort is used to do the sorting. This is default
@@ -257,6 +257,22 @@ The function is called first time with ray given by the camera. After that it ca
 on every bounce. The _attenuation_ is used to alter the color after each bounce. This is done with 
 simple multiplication as shown in the code. This idea is similiar to photon losing some of its energy 
 after it bounces from objects (as described in the very beginning of this document). Most of the "heavy lifting" is done by this function. 
+
+
+## Flaws and improvements
+
+### Flaws
+
+Multithreading doesn't work optimally since some of the threads 
+can complete the task much more quickly than others. This 
+causes some threads to sleep while others are still 
+running. This issue could be alleviated by using smaller 
+segments and queue.
+
+### Improvements
+
+The renderer can only draw spheres. Support for 3D-models 
+could be added (ones that are made from triangles). 
 
 
 ## Sources

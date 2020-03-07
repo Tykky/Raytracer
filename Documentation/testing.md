@@ -6,7 +6,7 @@
 Unit testing is done with [googletest](https://github.com/google/googletest) and project is automatically build and tested at [Travis CI](https://travis-ci.org/). Test coverage reports are generated with gcc (using -coverage flag). After testing has finished the reports are upload to [codecov.io](https://codecov.io/) from Travis. 
 
 Unit tests that are currently implemented are 
-straight forward. Most of them use pre calculated 
+straight forward. Most of them use pre-calculated 
 values which are then compared against the code.
 
 
@@ -18,7 +18,7 @@ that they will work with any values.
 ### CameraTest
 
 Camera is tested with pre-calculated values. Fov, aspect ratio, origin
-and pointat position are set to predefiend values. Then it is tested 
+and pointAt position are set to predefiend values. Then it is tested 
 that camera returns correct rays for center and corners of the screen. 
 
 ### LambertianTest
@@ -31,7 +31,6 @@ is measured to check if the vector stays inside this unit circle.
 
 ### RayTest
 
-Rays are so simple that only one test is used. It is tested that 
-does pointAtC member function return correct values.
+RayTest tests  that does pointAtC member function return correct values.
 
 

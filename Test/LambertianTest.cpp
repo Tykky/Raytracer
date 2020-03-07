@@ -20,6 +20,11 @@ protected:
         dist = uniform_real_distribution<float>(0, 1);
         randomfloat = bind(dist, engine);
     }
+
+    virtual void TearDown() {
+        delete mat;
+    }
+
 };
 
 
