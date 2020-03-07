@@ -41,7 +41,13 @@ RayTest tests  that does pointAtC member function return correct values.
 
 As mentioned in the [implementation document](/Documentation/implementation.md#bounding-volume-hierarchy-class-bvhnode), the
 time complexity of bvh is O(log(n)) and for primitivelist it is O(n). Now this 
-is tested by measuring render times in the [demo scene](data/renders/demo.png) by varying the amount of 
-randomly generated spheres.
+is tested by measuring render times in the demo scene by varying the amount of 
+randomly generated spheres. Resolution of 200x100 is used to reduce render times
+to more feasible figures. 
 
 ![](data/comp.png)
+
+
+A picture of the used demo scene. At the picture the demo has slightly over 1000 spheres. 
+
+![](data/renders/demo.png)
