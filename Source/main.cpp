@@ -16,12 +16,12 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-    int width = 800;
-    int height = 600;
-    int samples = 100;
+    int width = 200;
+    int height = 100;
+    int samples = 10;
     int fov = 90;
     int scene = 0;
-
+/*
     cout << "Enter image width: ";
     cin >> width;
     cout << "Enter image height: ";
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     cin >> fov;
     cout << "Enter amount of  samples: ";;
     cin >> samples;
-
+*/
     Camera cam(fov, float(width) / float(height), Vector3D(-0.2, 0.5, 1), Vector3D(0, 0.5, -1),
                Vector3D(0, 0.5, 0));
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
                      Vector3D(0, 0.5, 0));
     }
 
-    int n = 50;
+    int n = 100000;
 
     Primitive *list[n+5];
     Brdf mat(Vector3D(0.3,0.3,0.8),Vector3D(0.2,1,0.1),0.1, 0.1, 1, 1);
@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
 
     Primitive *bvh = new Bvhnode(list,n+5,0,1,randomFloat);
 
-    Engine engine(bvh, cam, width, height);
+    Engine engine(world, cam, width, height);
 
     auto start = chrono::system_clock::now();
     cout << "rendering started.." << endl;
@@ -106,14 +106,14 @@ int main(int argc, char **argv) {
     auto end = chrono::system_clock::now();
     auto elapsed = chrono::duration_cast<chrono::milliseconds>(end - start);
 
-    cout << "rendering finished in " << double(elapsed.count()) / 1000 << " seconds" << endl;
+    cout << "rendering finished in " << double(elapsed.count()) << " ms" << endl;
 
     start = chrono::system_clock::now();
     cout << "writing to a file... " << endl;
     engine.frammebufferToNetpbm("image");
     end = chrono::system_clock::now();
     elapsed = chrono::duration_cast<chrono::milliseconds>(end - start);
-    cout << "writing finished in " << double(elapsed.count()) / 1000 << " seconds" << endl;
+    cout << "writing finished in " << double(elapsed.count())<< " ms" << endl;
 
     return 0;
 }

@@ -37,3 +37,11 @@ scatter rays when scatter() function is called.
 RayTest tests  that does pointAtC member function return correct values.
 
 
+## Performance comparison Bvh vs Primitivelist
+
+As mentioned in the [implementation document](/Documentation/implementation.md#bounding-volume-hierarchy-class-bvhnode), the
+time complexity of bvh is O(log(n)) and for primitivelist it is O(n). Now this 
+is tested by measuring render times in the [demo scene](data/renders/demo.png) by varying the amount of 
+randomly generated spheres.
+
+![](data/comp.png)
