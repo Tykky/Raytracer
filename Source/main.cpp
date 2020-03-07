@@ -16,12 +16,12 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-    int width = 200;
-    int height = 100;
+    int width = 800;
+    int height = 600;
     int samples = 10;
     int fov = 90;
     int scene = 0;
-/*
+
     cout << "Enter image width: ";
     cin >> width;
     cout << "Enter image height: ";
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     cin >> fov;
     cout << "Enter amount of  samples: ";;
     cin >> samples;
-*/
+
     Camera cam(fov, float(width) / float(height), Vector3D(-0.2, 0.5, 1), Vector3D(0, 0.5, -1),
                Vector3D(0, 0.5, 0));
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
                      Vector3D(0, 0.5, 0));
     }
 
-    int n = 100000;
+    int n = 50;
 
     Primitive *list[n+5];
     Brdf mat(Vector3D(0.3,0.3,0.8),Vector3D(0.2,1,0.1),0.1, 0.1, 1, 1);

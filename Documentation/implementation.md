@@ -261,7 +261,7 @@ segments and queue.
 ### Improvements
 
 The renderer can only draw spheres. Support for 3D-models 
-could be added (ones that are made from triangles). 
+could be added (ones that are made from triangles).
 
 
 ## Sources
