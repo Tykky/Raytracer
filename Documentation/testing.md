@@ -9,6 +9,11 @@ Unit tests that are currently implemented are
 straight forward. Most of them use pre-calculated 
 values which are then compared against the code.
 
+### EngineTest
+
+A simple test scene is rendered using 2 spheres. then some of the pixels are read from the output file and checked if they are in 
+certain color range. 
+
 
 ### Vector3DTest
 
@@ -21,12 +26,10 @@ Camera is tested with pre-calculated values. Fov, aspect ratio, origin
 and pointAt position are set to predefiend values. Then it is tested 
 that camera returns correct rays for center and corners of the screen. 
 
-### LambertianTest
+### Material tests
 
-The lambertian material is tested by checking if it returns correct 
-scatter ray when scatter() function is called. This is done by 
-knowing that the ray should be inside unit circle. Vector length 
-is measured to check if the vector stays inside this unit circle.
+The materials are tested by checking if they return correct 
+scatter rays when scatter() function is called.
 
 
 ### RayTest
