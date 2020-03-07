@@ -3,7 +3,7 @@
 #include "gtest/gtest.h"
 #include "primitives/Primitivelist.h";
 
-
+/** @brief Googletest fixture for testing primitivelist data structre. */
 class PrimitivelistTest : public ::testing::Test {
 protected:
 

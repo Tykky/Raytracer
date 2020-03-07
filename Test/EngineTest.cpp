@@ -9,6 +9,7 @@
 #include <sstream>
 #include <fstream>
 
+/** @brief Googletest fixture for testing the Engine class. */
 class EngineTest : public ::testing::Test {
 protected:
 

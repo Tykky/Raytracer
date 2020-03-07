@@ -1,3 +1,5 @@
+/** @file */
+
 #ifndef RAYTRACER_AABB_H
 #define RAYTRACER_AABB_H
 
@@ -17,9 +19,9 @@ inline float ffmax(float a, float b) {
     return a > b ? a : b;
 }
 
-/* @brief Aabb stands for axis-aligned bounding box
+/** @brief Aabb stands for axis-aligned bounding box
  * @details This defines the bounding box used by bvh
- * data structure. */
+ * data structure. **/
 class Aabb {
 
 private:

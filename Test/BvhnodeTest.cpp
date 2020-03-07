@@ -6,6 +6,7 @@
 
 using namespace std;
 
+/** @brief Googletest fixture for testing the bvh data structure. */
 class BvhnodeTest : public ::testing::Test {
 protected:
 
