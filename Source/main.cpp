@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
 
     Primitive *bvh = new Bvhnode(list,n+5,0,1,randomFloat);
 
-    Engine engine(world, cam, width, height);
+    Engine engine(bvh, cam, width, height);
 
     auto start = chrono::system_clock::now();
     cout << "rendering started.." << endl;
