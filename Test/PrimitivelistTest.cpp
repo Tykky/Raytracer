@@ -1,7 +1,7 @@
 #include <primitives/Sphere.h>
 #include <materials/Lambertian.h>
 #include "gtest/gtest.h"
-#include "primitives/Primitivelist.h";
+#include "primitives/Primitivelist.h"
 
 /** @brief Googletest fixture for testing primitivelist data structre. */
 class PrimitivelistTest : public ::testing::Test {
