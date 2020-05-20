@@ -4,5 +4,11 @@ project(Raytracer)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3")
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+find_package(Qt5Widgets REQUIRED)
+
 add_subdirectory(Source)
 add_subdirectory(Test)

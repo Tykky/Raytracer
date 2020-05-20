@@ -12,3 +12,4 @@ add_executable(raytracer main.cpp
                materials/Brdf.cpp
                primitives/Aabb.cpp
                primitives/Bvhnode.cpp)
+target_link_libraries(raytracer Qt5::Widgets)

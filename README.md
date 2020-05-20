@@ -2,6 +2,7 @@
 
 
 This repository contains a raytracer for University of Helsinki's course Data Structures Project.
+The course has ended and the project is still being developed. 
 
 [![Build Status](https://travis-ci.org/Tykky/Raytracer.svg?branch=master)](https://travis-ci.org/Tykky/Raytracer)
 [![codecov](https://codecov.io/gh/Tykky/Raytracer/branch/master/graph/badge.svg)](https://codecov.io/gh/Tykky/Raytracer)
@@ -13,20 +14,32 @@ This repository contains a raytracer for University of Helsinki's course Data St
 
 [Project Testing](./Documentation/testing.md)
 
-[Timesheet](./Documentation/timesheet.md)
-
 [Doxygen doc](https://tykky.github.io/)
 
-## Weekly reports
+## Dependencies
 
-* [Week 1](./Documentation/reports/week1.md)
-* [Week 2](./Documentation/reports/week2.md)
-* [Week 3](./Documentation/reports/week3.md)
-* [Week 4](./Documentation/reports/week4.md)
-* [Week 5](./Documentation/reports/week5.md)
-* [Week 6](./Documentation/reports/week6.md)
+### To run
 
-## How to build on linux
+* [QT 5.14.2](https://www.qt.io/download-open-source)
+
+### To build, test and develop
+* [googletest](https://github.com/google/googletest) (via git submodule, use --recursive while cloning the repository)
+* [cmake 3.12.4 (or newer)](https://cmake.org/)
+* [GCC 9.2 (or newer)](https://gcc.gnu.org/)
+* [git 2.26.2 (or newer)](https://git-scm.com/)
+* [OpenMP (comes with GCC)](https://www.openmp.org/)
+
+## How to build
+
+Before building (or running) make sure you have the required 
+dependencies installed. All of the dependencies are cross-platform
+and the project can be built at least on Windows, Linux and macOS. 
+**Note that googletest comes with the project when cloning is done with --recursive option.**
+Installing dependencies is instructed for windows operating system. Linux users can 
+install required dependencies via package manager.
+
+### On Linux
+#### Building
 ```
 git clone --recursive https://github.com/Tykky/Raytracer
 cd Raytracer
@@ -35,6 +48,7 @@ cd build
 cmake ..
 make
 ```
+#### Running
 After building the program can be run with:
 ```
 ./Source/raytracer
@@ -44,24 +58,38 @@ Tests can be run with:
 ./Test/gtest_run
 ```
 
-The project shouldn't have any operating system specific dependencies. This should be compilable on windows (not tested). To be able to build you need:
+### On Windows
 
-- cmake 3.12.4 (or newer)
-- gcc (9.2 preferably)
-
-## Command-line interface
-
-The program prompts user to enter 
-
-- screen width (image width in pixels)
-- screen height (image height in pixels)
-- camera preset from 4 different options (0-3)
-- fov (vertical field of view in degrees)
-- samples (number of times each pixel is sampled)
-
-
-After rendering is finished, the program should output image to 
-the current directory (the same one where program is run).
+#### Installing dependencies
+On windows the project can be built using MinGW.
+MinGW can be installed with [msys2](https://www.msys2.org/) and more 
+specifically the group [mingw-w64-x86_64-toolchain](https://packages.msys2.org/group/mingw-w64-x86_64-toolchain)
+is the one you want to install. QT, cmake and git can be also acquired with msys2. When you have [msys2](https://www.msys2.org/) installed,
+all of these packages can be installed with (make sure you add msys2 to path variable!):
+```
+pacman -S mingw-w64-x86_64-toolchain mingw-w64-x86_64-qt-creator mingw-w64-x86_64-cmake git
+```
+#### Building
+When you have everything ready, the project can be built with:
+```
+git clone --recursive https://github.com/Tykky/Raytracer
+cd .\Raytracer\
+mkdir build
+cd build
+cmake .. -G "MinGW Makefiles"
+mingw32-make
+```
+#### Running
+After this you should be able to run the program with
+```
+.\Source\raytracer.exe
+```
+and run the tests with 
+```
+.\Test\gtest_run.exe
+```
+## Graphical user interface
+The gui is work in progress. 
 
 ## Current state of the project
 
@@ -70,3 +98,14 @@ The renderer is now more efficient in rendering
 multiple objects. This is due to use of bounding 
 volume hierarchy data structure. Hit testing is done 
 in logarithmic time O(log(n)) instead of linear.
+
+## Legal
+
+The software (Raytracer) is released under [MIT License](./LICENSE)
+and uses libraries that use various licensing schemes. 
+QT Library is used to provide cross-platform graphical 
+user interface and is dynamically linked to the program.
+The software does not include any modifications to the QT 
+source code and uses the library as is. More information 
+about what licensing schemes are used in QT is available [here](https://doc.qt.io/qt-5/licenses-used-in-qt.html). 
+QT source code can be acquired by following instructions [here](https://wiki.qt.io/Building_Qt_5_from_Git#Getting_the_source_code).

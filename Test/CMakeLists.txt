@@ -15,7 +15,8 @@ add_executable(gtest_run Vector3DTest.cpp
               ../Source/primitives/Sphere.cpp
               ../Source/primitives/Primitivelist.cpp
               ../Source/materials/Lambertian.cpp
-              CameraTest.cpp RayTest.cpp
+              CameraTest.cpp
+              RayTest.cpp
               LambertianTest.cpp
               ../Source/materials/Metal.cpp
               ../Source/materials/Brdf.cpp
@@ -23,7 +24,8 @@ add_executable(gtest_run Vector3DTest.cpp
               EngineTest.cpp
               ../Source/Engine.cpp
               ../Source/primitives/Bvhnode.cpp
-              MetalTest.cpp DielectricTest.cpp
+              MetalTest.cpp
+              DielectricTest.cpp
               ../Source/materials/Dielectric.cpp
               PrimitivelistTest.cpp
               BvhnodeTest.cpp)
