@@ -2,7 +2,7 @@
 
 
 This repository contains a raytracer for University of Helsinki's course Data Structures Project.
-The course has ended and the project is still being developed. 
+The course has ended but development of this project continues. 
 
 [![Build Status](https://travis-ci.org/Tykky/Raytracer.svg?branch=master)](https://travis-ci.org/Tykky/Raytracer)
 [![codecov](https://codecov.io/gh/Tykky/Raytracer/branch/master/graph/badge.svg)](https://codecov.io/gh/Tykky/Raytracer)
@@ -35,8 +35,6 @@ Before building (or running) make sure you have the required
 dependencies installed. All of the dependencies are cross-platform
 and the project can be built at least on Windows, Linux and macOS. 
 **Note that googletest comes with the project when cloning is done with --recursive option.**
-Installing dependencies is instructed for windows operating system. Linux users can 
-install required dependencies via package manager.
 
 ### On Linux
 #### Building
@@ -67,7 +65,7 @@ specifically the group [mingw-w64-x86_64-toolchain](https://packages.msys2.org/g
 is the one you want to install. QT, cmake and git can be also acquired with msys2. When you have [msys2](https://www.msys2.org/) installed,
 all of these packages can be installed with (make sure you add msys2 to path variable!):
 ```
-pacman -S mingw-w64-x86_64-toolchain mingw-w64-x86_64-qt-creator mingw-w64-x86_64-cmake git
+pacman -S mingw-w64-x86_64-toolchain mingw-w64-x86_64-qt5 mingw-w64-x86_64-cmake git
 ```
 #### Building
 When you have everything ready, the project can be built with:
@@ -99,10 +97,9 @@ multiple objects. This is due to use of bounding
 volume hierarchy data structure. Hit testing is done 
 in logarithmic time O(log(n)) instead of linear.
 
-## Legal
+## License
 
-The software (Raytracer) is released under [MIT License](./LICENSE)
-and uses libraries that use various licensing schemes. 
+The software (Raytracer) is released under [MIT License](./LICENSE).
 QT Library is used to provide cross-platform graphical 
 user interface and is dynamically linked to the program.
 The software does not include any modifications to the QT 

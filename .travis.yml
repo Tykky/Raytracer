@@ -24,6 +24,12 @@ before_install:
         export MAKE=mingw32-make  # so that Autotools can find it
         ;;
     esac
+    case $TRAVIS_OS_NAME in
+      linux)
+      sudo apt-get update
+      sudo apt-get install qt5-default
+      ;;
+    esac
 
 before_cache:
 - |-
