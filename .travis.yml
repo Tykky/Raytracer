@@ -1,54 +1,71 @@
 language: cpp
-jobs:
-  include:
-    - name: "Windows MinGW"
-    os: windows
-    before_install:
-      - choco uninstall -y mingw
-      - choco upgrade --no-progress -y msys2
-      - export msys2='cmd //C RefreshEnv.cmd '
-      - export msys2+='& set MSYS=winsymlinks:nativestrict '
-      - export msys2+='& C:\\tools\\msys64\\msys2_shell.cmd -defterm -no-start'
-      - export mingw64="$msys2 -mingw64 -full-path -here -c "\"\$@"\" --"
-      - export msys2+=" -msys2 -c "\"\$@"\" --"
-      - $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-qt-creator
-      - ## Install more MSYS2 packages from https://packages.msys2.org/base here
-      - taskkill //IM gpg-agent.exe //F  # https://travis-ci.community/t/4967
-      - export PATH=/C/tools/msys64/mingw64/bin:$PATH
-      - export MAKE=mingw32-make  # so that Autotools can find it
-    before_cache:
-      - # https://unix.stackexchange.com/a/137322/107554
-      - $msys2 pacman --sync --clean --noconfirm
-    cache:
-      directories:
-        - $HOME/AppData/Local/Temp/chocolatey
-        - /C/tools/msys64
-    before_script:
-      - cmake .. -G "MinGW Makefiles" -DCMAKE_SH=SH-NOTFOUND -DCMAKE_CXX_FLAGS="$(CMAKE_CXX_FLAGS) -static"
-    script:
-      - mingw32-make
-      - ./Test/gtest_run
-    - name: "Linux"
-    os: linux
-    dist: trusty
-    before_install:
+os:
+  - linux
+  - windows
+
+compiler: gcc
+
+before_install:
+- |
+    case $TRAVIS_OS_NAME in
+      windows)
+        [[ ! -f C:/tools/msys64/msys2_shell.cmd ]] && rm -rf C:/tools/msys64
+        choco uninstall -y mingw
+        choco upgrade --no-progress -y msys2
+        export msys2='cmd //C RefreshEnv.cmd '
+        export msys2+='& set MSYS=winsymlinks:nativestrict '
+        export msys2+='& C:\\tools\\msys64\\msys2_shell.cmd -defterm -no-start'
+        export mingw64="$msys2 -mingw64 -full-path -here -c "\"\$@"\" --"
+        export msys2+=" -msys2 -c "\"\$@"\" --"
+        $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-qt-creator
+        ## Install more MSYS2 packages from https://packages.msys2.org/base here
+        taskkill //IM gpg-agent.exe //F  # https://travis-ci.community/t/4967
+        export PATH=/C/tools/msys64/mingw64/bin:$PATH
+        export MAKE=mingw32-make  # so that Autotools can find it
+        ;;
+    esac
+    case $TRAVIS_OS_NAME in
+      linux)
       sudo apt-get update
       sudo apt-get install qt5-default
-    before_script:
-      - mkdir build
-      - cd build
-      - cmake ..
-    script:
-      - make
-      - ./Test/gtest_run
-  
+      ;;
+    esac
+before_cache:
+- |
+    case $TRAVIS_OS_NAME in
+      windows)
+        # https://unix.stackexchange.com/a/137322/107554
+        $msys2 pacman --sync --clean --noconfirm
+        ;;
+    esac
+cache:
+    directories:
+    - $HOME/AppData/Local/Temp/chocolatey
+    - /C/tools/msys64
+
+before_script:
+        - mkdir build
+        - cd build
+        - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cmake .. ; fi
+        - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmake .. -G "MinGW Makefiles" -DCMAKE_SH=SH-NOTFOUND -DCMAKE_CXX_FLAGS="$(CMAKE_CXX_FLAGS) -static"; fi
+script:
+        - if [ "$TRAVIS_OS_NAME" = "linux" ]; then  make ; fi
+        - if [ "$TRAVIS_OS_NAME" = "windows" ]; then mingw32-make ; fi
+        - ./Test/gtest_run
+
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+         - bash <(curl -s https://codecov.io/bash)
+
+before_deploy:
+# Set up git user name and tag this commit
+  - git config --local user.name "Tykky"
+  - git config --local user.email "40919314+Tykky@users.noreply.github.com"
+  - export TRAVIS_TAG="$TRAVIS_OS_NAME-"${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)};
+  - git tag $TRAVIS_TAG
 
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
-  name: $RELEASE_NAME
   file:
     - ./Source/raytracer
     - ./Source/raytracer.exe
