@@ -12,6 +12,5 @@ add_executable(raytracer main.cpp
                materials/Brdf.cpp
                primitives/Aabb.cpp
                primitives/Bvhnode.cpp
-               gui/Mainwindow.cpp
-               gui/qdarkstyle/style.qrc)
+               gui/Mainwindow.cpp)
 target_link_libraries(raytracer Qt5::Widgets)

@@ -18,16 +18,10 @@ The course has ended but development of this project continues.
 
 ## Dependencies
 
-### To run
-
 * [QT 5.14.2](https://www.qt.io/download-open-source)
-
-### To build, test and develop
 * [googletest](https://github.com/google/googletest) (via git submodule, use --recursive while cloning the repository)
 * [cmake 3.12.4 (or newer)](https://cmake.org/)
-* [GCC 9.2 (or newer)](https://gcc.gnu.org/)
-* [git 2.26.2 (or newer)](https://git-scm.com/)
-* [OpenMP (comes with GCC)](https://www.openmp.org/)
+* [OpenMP](https://www.openmp.org/)
 
 ## How to build
 
@@ -56,7 +50,7 @@ Tests can be run with:
 ./Test/gtest_run
 ```
 
-### On Windows
+### On Windows (MinGW)
 
 #### Installing dependencies
 On windows the project can be built using MinGW.
@@ -86,8 +80,6 @@ and run the tests with
 ```
 .\Test\gtest_run.exe
 ```
-## Graphical user interface
-The gui is work in progress. 
 
 ## Current state of the project
 
