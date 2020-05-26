@@ -1,6 +1,9 @@
 /.idea
 /cmake-*
+CMakeSettings.json
 /build
 /latex
 /xml
 /html
+/.vs
+/out

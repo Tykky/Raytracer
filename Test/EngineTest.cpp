@@ -10,6 +10,10 @@
 #include <fstream>
 
 /** @brief Googletest fixture for testing the Engine class. */
+
+const int w = 200;
+const int h = 200;
+
 class EngineTest : public ::testing::Test {
 protected:
 
@@ -18,15 +22,12 @@ protected:
     Camera *camera;
     Primitive *list[2];
     Material *mat;
-    int h, w;
 
     std::mt19937 gen;
     std::uniform_real_distribution<float> dist;
     function<float()> randomFloat;
 
     virtual void SetUp() {
-        w = 200;
-        h = 200;
         mat = new Brdf(Vector3D(0.5,0.5,0.5),Vector3D(1,1,1),0,0,1,1.3);
         camera = new Camera(90,800/600,Vector3D(0,0.5,0),Vector3D(0,0.5,-1),Vector3D(0,1,0));
         list[0] = new Sphere(Vector3D(0,0.5,-1),0.5,mat);

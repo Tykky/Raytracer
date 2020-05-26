@@ -3,7 +3,10 @@ os:
   - linux
   - windows
 
-compiler: gcc
+compiler: 
+  - gcc
+  - msvc
+  - clang
 
 before_install:
 - |-

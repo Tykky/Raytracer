@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <string>
 
 /**@brief Vector3D class containing data structure for 3D-euclidean and RGB vectors. **/
 class Vector3D {

@@ -1,5 +1,11 @@
 include_directories(.)
-add_executable(raytracer main.cpp
+
+if(WIN32)
+    set(win32 "WIN32")
+endif()
+
+add_executable(raytracer ${win32} 
+               main.cpp
                Ray.cpp
                Camera.cpp
                Utility.cpp
@@ -13,4 +19,5 @@ add_executable(raytracer main.cpp
                primitives/Aabb.cpp
                primitives/Bvhnode.cpp
                gui/Mainwindow.cpp)
-target_link_libraries(raytracer Qt5::Widgets)
+
+target_link_libraries(raytracer PRIVATE Qt5::Widgets OpenMP::OpenMP_CXX)

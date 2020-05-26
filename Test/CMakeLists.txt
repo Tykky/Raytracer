@@ -29,4 +29,4 @@ add_executable(gtest_run Vector3DTest.cpp
               ../Source/materials/Dielectric.cpp
               PrimitivelistTest.cpp
               BvhnodeTest.cpp)
-target_link_libraries(gtest_run gtest gtest_main)
+target_link_libraries(gtest_run PRIVATE gtest gtest_main OpenMP::OpenMP_CXX)
