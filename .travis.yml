@@ -2,58 +2,35 @@ language: cpp
 os:
   - linux
   - windows
-
-compiler: 
-  - gcc
-  - msvc
-  - clang
+  - macos
 
 before_install:
 - |-
-    case $TRAVIS_OS_NAME in
-      windows)
-        [[ ! -f C:/tools/msys64/msys2_shell.cmd ]] && rm -rf C:/tools/msys64
-        choco uninstall -y mingw
-        choco upgrade --no-progress -y msys2
-        export msys2='cmd //C RefreshEnv.cmd '
-        export msys2+='& set MSYS=winsymlinks:nativestrict '
-        export msys2+='& C:\\tools\\msys64\\msys2_shell.cmd -defterm -no-start'
-        export mingw64="$msys2 -mingw64 -full-path -here -c "\"\$@"\" --"
-        export msys2+=" -msys2 -c "\"\$@"\" --"
-        $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-qt-creator
-        ## Install more MSYS2 packages from https://packages.msys2.org/base here
-        taskkill //IM gpg-agent.exe //F  # https://travis-ci.community/t/4967
-        export PATH=/C/tools/msys64/mingw64/bin:$PATH
-        export MAKE=mingw32-make  # so that Autotools can find it
+    case $TRAVIS_OS_NAME in 
+    windows)
+        choco install -y qtcreator
+        set PATH=%PATH%;C:\tools\qtcreator\bin
+        set PATH=%PATH%;C:\tools\qtcreator\bin\plugins\platforms
         ;;
     esac
-    case $TRAVIS_OS_NAME in
-      linux)
+    case $TRAVIS_OS_NAME in 
+    linux)
       sudo apt-get update
       sudo apt-get install qt5-default
       ;;
     esac
-before_cache:
-- |-
-    case $TRAVIS_OS_NAME in
-      windows)
-        # https://unix.stackexchange.com/a/137322/107554
-        $msys2 pacman --sync --clean --noconfirm
-        ;;
+    case $TRAVIS_OS_NAME in 
+    macos)
+      brew install qt5 cmake
+    ;;
     esac
-cache:
-    directories:
-    - $HOME/AppData/Local/Temp/chocolatey
-    - /C/tools/msys64
 
 before_script:
         - mkdir build
         - cd build
-        - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cmake .. ; fi
-        - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmake .. -G "MinGW Makefiles" -DCMAKE_SH=SH-NOTFOUND -DCMAKE_CXX_FLAGS="$(CMAKE_CXX_FLAGS) -static"; fi
+        - cmake ..
 script:
-        - if [ "$TRAVIS_OS_NAME" = "linux" ]; then  make ; fi
-        - if [ "$TRAVIS_OS_NAME" = "windows" ]; then mingw32-make ; fi
+        - cmake --build .
         - ./Test/gtest_run
 
 after_success:
