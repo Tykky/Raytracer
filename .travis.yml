@@ -3,41 +3,14 @@ os:
   - linux
   - windows
 
-before_install:
-- |-
-    case $TRAVIS_OS_NAME in windows)
-        ;;
-    esac
-    case $TRAVIS_OS_NAME in linux)
-      sudo apt-get update
-      ;;
-    esac
-
 before_script:
         - mkdir build
         - cd build
-        - cmake ..
+        - cmake -DBUILD_SOURCE=OFF ..
 script:
-        - cmake --build . --config release
+        - cmake --build .
         - if [ "$TRAIVS_OS_NAME" = "windows" ]; then ./Test/Release/gtest_run.exe ; fi
         - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./Test/gtest_run ; fi
   
 after_success:
          - bash <(curl -s https://codecov.io/bash)
-
-before_deploy:
-# Set up git user name and tag this commit
-  - git config --local user.name "Tykky"
-  - git config --local user.email "40919314+Tykky@users.noreply.github.com"
-  - export RELEASE_NAME="$TRAVIS_OS_NAME $(git describe --tags)"
-
-deploy:
-  provider: releases
-  api_key: $GITHUB_TOKEN
-  file:
-    - ./Source/raytracer
-    - ./Source/Release/raytracer.exe
-    
-  skip_cleanup: true
-  on:
-    tags: true

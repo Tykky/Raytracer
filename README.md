@@ -19,8 +19,8 @@ The course has ended but development of this project continues.
 ## Dependencies
 
 * [googletest](https://github.com/google/googletest) (via git submodule, use --recursive while cloning the repository)
-* [cmake 3.12.4 (or newer)](https://cmake.org/)
 * [OpenMP](https://www.openmp.org/)
+* [OpenGL](https://www.opengl.org/)
 
 ## How to build
 

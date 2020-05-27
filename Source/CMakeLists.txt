@@ -1,10 +1,6 @@
 include_directories(.)
 
-if(WIN32)
-    set(win32 "")
-endif()
-
-add_executable(raytracer ${win32} 
+add_executable(raytracer
                main.cpp
                Ray.cpp
                Camera.cpp
@@ -19,4 +15,4 @@ add_executable(raytracer ${win32}
                primitives/Aabb.cpp
                primitives/Bvhnode.cpp)
 
-target_link_libraries(raytracer PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(raytracer OpenGL::GL)
