@@ -1,7 +1,7 @@
 include_directories(.)
 
 if(WIN32)
-    set(win32 "WIN32")
+    set(win32 "")
 endif()
 
 add_executable(raytracer ${win32} 
@@ -17,7 +17,6 @@ add_executable(raytracer ${win32}
                Engine.cpp
                materials/Brdf.cpp
                primitives/Aabb.cpp
-               primitives/Bvhnode.cpp
-               gui/Mainwindow.cpp)
+               primitives/Bvhnode.cpp)
 
-target_link_libraries(raytracer PRIVATE Qt5::Widgets OpenMP::OpenMP_CXX)
+target_link_libraries(raytracer PRIVATE OpenMP::OpenMP_CXX)

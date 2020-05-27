@@ -2,27 +2,15 @@ language: cpp
 os:
   - linux
   - windows
-  - macos
 
 before_install:
 - |-
-    case $TRAVIS_OS_NAME in 
-    windows)
-        choco install -y qtcreator
-        set PATH=%PATH%;C:\tools\qtcreator\bin
-        set PATH=%PATH%;C:\tools\qtcreator\bin\plugins\platforms
+    case $TRAVIS_OS_NAME in windows)
         ;;
     esac
-    case $TRAVIS_OS_NAME in 
-    linux)
+    case $TRAVIS_OS_NAME in linux)
       sudo apt-get update
-      sudo apt-get install qt5-default
       ;;
-    esac
-    case $TRAVIS_OS_NAME in 
-    macos)
-      brew install qt5 cmake
-    ;;
     esac
 
 before_script:
@@ -30,9 +18,10 @@ before_script:
         - cd build
         - cmake ..
 script:
-        - cmake --build .
-        - ./Test/gtest_run
-
+        - cmake --build . --config release
+        - if [ "$TRAIVS_OS_NAME" = "windows" ]; then ./Test/Release/gtest_run.exe ; fi
+        - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./Test/gtest_run ; fi
+  
 after_success:
          - bash <(curl -s https://codecov.io/bash)
 
@@ -47,7 +36,8 @@ deploy:
   api_key: $GITHUB_TOKEN
   file:
     - ./Source/raytracer
-    - ./Source/raytracer.exe
+    - ./Source/Release/raytracer.exe
+    
   skip_cleanup: true
   on:
     tags: true
