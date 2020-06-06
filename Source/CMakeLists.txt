@@ -1,6 +1,6 @@
 include_directories(.)
 
-add_executable(raytracer
+add_executable(raytracer WIN32
                main.cpp
                Ray.cpp
                Camera.cpp
@@ -16,4 +16,4 @@ add_executable(raytracer
                primitives/Bvhnode.cpp
                gui/window.cpp)
 
-target_link_libraries(raytracer OpenGL::GL glfw)
+target_link_libraries(raytracer OpenGL::GL glew_s glfw)

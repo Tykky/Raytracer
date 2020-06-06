@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 if(WIN32)
 	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 endif()
 
 option(BUILD_SOURCE "" ON)
@@ -14,12 +15,11 @@ find_package(OpenMP REQUIRED)
 link_libraries(OpenMP::OpenMP_CXX)
 
 if(BUILD_SOURCE)
-	find_package(OpenGL REQUIRED)
+	include_directories(lib/glew-cmake/include)
 	add_subdirectory(lib/glfw)
-endif()
-
-
-if(BUILD_SOURCE)
+	add_subdirectory(lib/glew-cmake)
+	add_subdirectory(lib/glew-cmake/build/cmake)
+	find_package(OpenGL REQUIRED)
 	add_subdirectory(Source)
 endif()
 

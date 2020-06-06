@@ -1,7 +1,10 @@
 #ifndef RAYTRACER_WINDOW_H
 #define RAYTRACER_WINDOW_H
 
+#define GLEW_STATIC
+#include "GL/glew.h"
 #include <GLFW/glfw3.h>
+
 
 using namespace std;
 

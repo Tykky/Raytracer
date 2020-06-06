@@ -18,7 +18,9 @@ The course has ended but development of this project continues.
 
 ## Dependencies
 
-* [googletest](https://github.com/google/googletest) (via git submodule, use --recursive while cloning the repository)
+* [googletest](https://github.com/google/googletest) (via git submodule)
+* [glfw](https://github.com/glfw/glfw) (via git submodule)
+* [glew](https://github.com/nigels-com/glew) (via git submodule)
 * [OpenMP](https://www.openmp.org/)
 * [OpenGL](https://www.opengl.org/)
 

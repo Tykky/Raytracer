@@ -1,3 +1,15 @@
 [submodule "Test/lib/googletest"]
 	path = Test/lib/googletest
 	url = https://github.com/google/googletest
+[submodule "lib/glfw"]
+	path = lib/glfw
+	url = https://github.com/glfw/glfw
+[submodule "Lib/--glew"]
+	path = Lib/--glew
+	url = https://github.com/nigels-com/glew
+[submodule "Lib/glew"]
+	path = Lib/glew
+	url = https://github.com/nigels-com/glew
+[submodule "Lib/glew-cmake"]
+	path = Lib/glew-cmake
+	url = https://github.com/Perlmint/glew-cmake
