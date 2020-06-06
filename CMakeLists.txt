@@ -11,14 +11,13 @@ option(BUILD_SOURCE "" ON)
 option(BUILD_TEST "" ON)
 
 find_package(OpenMP REQUIRED)
+link_libraries(OpenMP::OpenMP_CXX)
 
 if(BUILD_SOURCE)
 	find_package(OpenGL REQUIRED)
 	add_subdirectory(lib/glfw)
-	link_libraries(glfw)
 endif()
 
-link_libraries(OpenMP::OpenMP_CXX)
 
 if(BUILD_SOURCE)
 	add_subdirectory(Source)

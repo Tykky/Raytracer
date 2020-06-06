@@ -13,6 +13,7 @@ add_executable(raytracer
                Engine.cpp
                materials/Brdf.cpp
                primitives/Aabb.cpp
-               primitives/Bvhnode.cpp)
+               primitives/Bvhnode.cpp
+               gui/window.cpp)
 
-target_link_libraries(raytracer OpenGL::GL)
+target_link_libraries(raytracer OpenGL::GL glfw)
