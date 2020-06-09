@@ -5,8 +5,6 @@
 #include "materials/Brdf.h"
 #include "primitives/Bvhnode.h"
 #include <random>
-#include <memory>
-#include <sstream>
 #include <fstream>
 
 /** @brief Googletest fixture for testing the Engine class. */
@@ -25,7 +23,7 @@ protected:
 
     std::mt19937 gen;
     std::uniform_real_distribution<float> dist;
-    function<float()> randomFloat;
+    std::function<float()> randomFloat;
 
     virtual void SetUp() {
         mat = new Brdf(Vector3D(0.5,0.5,0.5),Vector3D(1,1,1),0,0,1,1.3);
@@ -60,9 +58,9 @@ TEST_F(EngineTest, pixelTest) {
 
     Vector3D pixarray[h][w];
 
-    ifstream file("test.ppm");
+    std::ifstream file("test.ppm");
 
-    string line;
+    std::string line;
     int linect = 0;
 
     int y = 0;
@@ -72,19 +70,19 @@ TEST_F(EngineTest, pixelTest) {
         if(linect > 2) {
             int i = 0;
 
-            string red = "";
+            std::string red = "";
             while(line[i] != ' ') {
                 red += line[i];
                 i++;
             }
             i++;
-            string green = "";
+            std::string green = "";
             while(line[i] != ' ') {
                 green += line[i];
                 i++;
             }
             i++;
-            string blue = "";
+            std::string blue = "";
             while(i < line.length()) {
                 blue += line[i];
                 i++;

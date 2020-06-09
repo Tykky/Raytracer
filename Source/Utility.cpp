@@ -1,10 +1,5 @@
-#include <primitives/Sphere.h>
-#include <random>
 #include <functional>
 #include "Utility.h"
-
-
-using namespace std;
 
 Vector3D skyGradient(const Ray &r) {
     Vector3D direction = r.getDirection();

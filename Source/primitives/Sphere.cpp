@@ -1,8 +1,6 @@
 #include <cmath>
 #include "Sphere.h"
 
-using namespace std;
-
 Sphere::Sphere(const Vector3D &center, float radius, Material *mat) :
         center(center), radius(radius), matptr(mat) {
 }

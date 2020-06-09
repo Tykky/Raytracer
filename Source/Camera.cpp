@@ -1,8 +1,6 @@
 #include "Camera.h"
 #include <cmath>
 
-using namespace std;
-
 const float PI = 3.14159265359;
 
 Camera::Camera(float fov, float aspectratio, Vector3D origin, Vector3D pointat, Vector3D up) :

@@ -6,8 +6,6 @@
 #include "Vector3D.h"
 #include "Ray.h"
 #include "primitives/Primitive.h"
-#include "materials/Material.h"
-#include <random>
 #include <functional>
 
 /**@brief Produces light blue -> white gradient.

@@ -1,17 +1,16 @@
 #include <iostream>
+#include <chrono>
+#include <random>
 #include "Vector3D.h"
 #include "Camera.h"
-#include "Utility.h"
 #include "primitives/Sphere.h"
 #include "primitives/Primitivelist.h"
-#include <chrono>
 #include "materials/Lambertian.h"
 #include "materials/Dielectric.h"
 #include "materials/Brdf.h"
 #include "Engine.h"
 #include "primitives/Bvhnode.h"
 
-using namespace std;
 
 int main(int argc, char** argv) {
 
@@ -21,16 +20,16 @@ int main(int argc, char** argv) {
     int fov = 90;
     int scene = 0;
 
-    cout << "Enter image width: ";
-    cin >> width;
-    cout << "Enter image height: ";
-    cin >> height;
-    cout << "Enter camera preset (0-3): ";
-    cin >> scene;
-    cout << "Enter fov: ";
-    cin >> fov;
-    cout << "Enter amount of  samples: ";;
-    cin >> samples;
+    std::cout << "Enter image width: ";
+    std::cin >> width;
+    std::cout << "Enter image height: ";
+    std::cin >> height;
+    std::cout << "Enter camera preset (0-3): ";
+    std::cin >> scene;
+    std::cout << "Enter fov: ";
+    std::cin >> fov;
+    std::cout << "Enter amount of  samples: ";;
+    std::cin >> samples;
 
     Camera cam(fov, float(width) / float(height), Vector3D(-0.2, 0.5, 1), Vector3D(0, 0.5, -1),
         Vector3D(0, 0.5, 0));
@@ -66,9 +65,9 @@ int main(int argc, char** argv) {
     Material* redptr = &red;
     Material* closeptr = &close;
 
-    mt19937 gen(456);
-    uniform_real_distribution<float> dist(0.0, 1.0);
-    function<float()> randomFloat = bind(dist, gen);
+    std::mt19937 gen(456);
+    std::uniform_real_distribution<float> dist(0.0, 1.0);
+    std::function<float()> randomFloat = std::bind(dist, gen);
 
     int multp = 5;
 
@@ -97,22 +96,22 @@ int main(int argc, char** argv) {
 
     Engine engine(bvh, cam, width, height);
 
-    auto start = chrono::system_clock::now();
-    cout << "rendering started.." << endl;
+    auto start = std::chrono::system_clock::now();
+    std::cout << "rendering started.." << std::endl;
 
     engine.render(samples);
 
-    auto end = chrono::system_clock::now();
-    auto elapsed = chrono::duration_cast<chrono::milliseconds>(end - start);
+    auto end = std::chrono::system_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-    cout << "rendering finished in " << double(elapsed.count()) << " ms" << endl;
+    std::cout << "rendering finished in " << double(elapsed.count()) << " ms" << std::endl;
 
-    start = chrono::system_clock::now();
-    cout << "writing to a file... " << endl;
+    start = std::chrono::system_clock::now();
+    std::cout << "writing to a file... " << std::endl;
     engine.frammebufferToNetpbm("image");
-    end = chrono::system_clock::now();
-    elapsed = chrono::duration_cast<chrono::milliseconds>(end - start);
-    cout << "writing finished in " << double(elapsed.count()) << " ms" << endl;
+    end = std::chrono::system_clock::now();
+    elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << "writing finished in " << double(elapsed.count()) << " ms" << std::endl;
 
     return 0;
 }

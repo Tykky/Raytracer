@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
 #include "Vector3D.h"
 
-using namespace std;
-
 /** @brief Googletest fixture for Vector3D class */
 class Vector3DTest : public ::testing::Test {
 protected:

@@ -3,21 +3,19 @@
 #include <random>
 #include <functional>
 
-using namespace std;
-
 /** @brief Googletest fixture for testing Dielectric material. */
 class DielectricTest : public ::testing::Test {
 protected:
 
     Material *mat;
-    mt19937 engine;
-    uniform_real_distribution<float> dist;
-    function<float()> randomfloat;
+    std::mt19937 engine;
+    std::uniform_real_distribution<float> dist;
+    std::function<float()> randomfloat;
 
     virtual void SetUp() {
         mat = new Dielectric(1.3);
-        engine = mt19937(1337);
-        dist = uniform_real_distribution<float>(0, 1);
+        engine = std::mt19937(1337);
+        dist = std::uniform_real_distribution<float>(0, 1);
         randomfloat = bind(dist, engine);
     }
 

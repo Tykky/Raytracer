@@ -4,8 +4,6 @@
 #include "gtest/gtest.h"
 #include <random>
 
-using namespace std;
-
 /** @brief Googletest fixture for testing the bvh data structure. */
 class BvhnodeTest : public ::testing::Test {
 protected:
@@ -13,13 +11,13 @@ protected:
     Primitive *list[4];
     Material *mat;
     Bvhnode *bvh;
-    mt19937 engine;
-    uniform_real_distribution<float> dist;
-    function<float()> randomfloat;
+    std::mt19937 engine;
+    std::uniform_real_distribution<float> dist;
+    std::function<float()> randomfloat;
 
     void SetUp() {
-        engine = mt19937(1337);
-        dist = uniform_real_distribution<float>(0, 1);
+        engine = std::mt19937(1337);
+        dist = std::uniform_real_distribution<float>(0, 1);
         randomfloat = bind(dist, engine);
         mat = new Lambertian(Vector3D(1,1,1));
         list[0] = new Sphere(Vector3D(0,0,0),0.5,mat);

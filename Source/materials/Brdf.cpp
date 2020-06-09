@@ -5,8 +5,8 @@ Brdf::Brdf(const Vector3D &lalbedo, const Vector3D &malbedo, float metalness, fl
            float ior) :
         lalbedo(lalbedo), malbedo(malbedo), metalness(metalness), fresnelfactor(fresnelfactor), ior(ior)  {
 
-    lptr = make_unique<Lambertian>(this->lalbedo);
-    mptr = make_unique<Metal>(this->malbedo,roughness);
+    lptr = std::make_unique<Lambertian>(this->lalbedo);
+    mptr = std::make_unique<Metal>(this->malbedo,roughness);
 
 }
 

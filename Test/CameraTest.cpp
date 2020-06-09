@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
 #include "Camera.h"
 
-using namespace std;
-
 /** @brief Googletest fixture for testing Camera class */
 class Cameratest : public ::testing::Test {
 protected:

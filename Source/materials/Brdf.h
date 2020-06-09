@@ -6,8 +6,6 @@
 #include "Metal.h"
 #include "Lambertian.h"
 
-using namespace std;
-
 /** @brief Brdf combines lambertian, metal materials and fresnel effect.
  *  @details Brdf stands for bidirectional reflectance distribution function.
  *  The brdf defines how rays are scattered, just like lambertian or
@@ -16,8 +14,8 @@ using namespace std;
 class Brdf : public Material {
 
 private:
-    unique_ptr<Material> mptr; // metal ptr
-    unique_ptr<Material> lptr; // lambertian ptr
+    std::unique_ptr<Material> mptr; // metal ptr
+    std::unique_ptr<Material> lptr; // lambertian ptr
     const Vector3D malbedo; // metal albedo
     const Vector3D lalbedo; // lambertian albedo
     float metalness;
