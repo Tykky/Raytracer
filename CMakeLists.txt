@@ -8,13 +8,14 @@ if(WIN32)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 endif()
 
-option(BUILD_SOURCE "" ON)
+option(BUILD_GUI "" ON)
+option(BUILD_CLI "" ON)
 option(BUILD_TEST "" ON)
 
 find_package(OpenMP REQUIRED)
 link_libraries(OpenMP::OpenMP_CXX)
 
-if(BUILD_SOURCE)
+if(BUILD_GUI)
 	include_directories(lib/glew-cmake/include)
 	add_subdirectory(lib/glfw)
 	add_subdirectory(lib/glew-cmake)
