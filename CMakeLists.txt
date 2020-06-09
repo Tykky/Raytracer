@@ -21,6 +21,9 @@ if(BUILD_GUI)
 	add_subdirectory(lib/glew-cmake)
 	add_subdirectory(lib/glew-cmake/build/cmake)
 	find_package(OpenGL REQUIRED)
+endif()
+
+if(BUILD_GUI OR BUILD_CLI)
 	add_subdirectory(Source)
 endif()
 

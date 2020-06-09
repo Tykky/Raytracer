@@ -15,12 +15,15 @@ set(RAYTRACER_SRC Ray.cpp
 
 set(RAYTRACER_GUI gui/window.cpp)
 
-if(WIN32)
-    add_executable(raytracer WIN32 main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
-else()
-    add_executable(raytracer main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
+if(BUILD_GUI)
+    if(WIN32)
+        add_executable(raytracer WIN32 main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
+    else()
+        add_executable(raytracer main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
+    endif()
+        target_link_libraries(raytracer OpenGL::GL glew_s glfw)
 endif()
 
-target_link_libraries(raytracer OpenGL::GL glew_s glfw)
-
-add_executable(raytracer_cli cli/cli.cpp ${RAYTRACER_SRC})
+if(BUILD_CLI)
+    add_executable(raytracer_cli cli/cli.cpp ${RAYTRACER_SRC})
+endif()
