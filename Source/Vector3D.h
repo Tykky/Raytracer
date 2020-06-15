@@ -23,7 +23,7 @@ public:
             x(x), y(y), z(z) {
     }
 
-    /**@brief Computes vector length with pythagoras sqrt(x^2+y^2+z^2) */
+    /**@brief Computes vector length with pythagoras \f$ l = \sqrt{x^2+y^2+z^2} \f$ */
     inline float length() const {
         return std::sqrt(x * x + y * y + z * z);
     }

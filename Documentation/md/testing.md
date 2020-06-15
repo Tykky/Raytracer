@@ -1,4 +1,4 @@
-# Project Testing
+# Project tests
 
 
 ## Unit testing 

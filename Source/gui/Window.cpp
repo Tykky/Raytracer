@@ -10,19 +10,15 @@ Window::Window(const int width, const int height, const char *title) {
     glfwSetErrorCallback(error_callback);
 
     if (glfwInit()) {
-
     	window = glfwCreateWindow(width, height, title, NULL, NULL);
-
     	if(!window) {
             glfwTerminate();
             throw std::runtime_error("glfwCreateWindow failed");
         }
         glfwMakeContextCurrent(window);
-
         if (glewInit() != GLEW_OK) {
             throw std::runtime_error("glewInit failed");
         }
-    	
         render();
     } else {
         throw std::runtime_error("glfwinit failed");

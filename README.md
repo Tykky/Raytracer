@@ -8,13 +8,7 @@ The course has ended but development of this project continues.
 [![codecov](https://codecov.io/gh/Tykky/Raytracer/branch/master/graph/badge.svg)](https://codecov.io/gh/Tykky/Raytracer)
 ## Documentation
 
-[Project Specification](./Documentation/specification.md)
-
-[Project Implementation](./Documentation/implementation.md)
-
-[Project Testing](./Documentation/testing.md)
-
-[Doxygen doc](https://tykky.github.io/)
+[Documentation](https://tykky.github.io/)
 
 ## Dependencies
 

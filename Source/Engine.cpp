@@ -9,7 +9,6 @@
 Vector3D recursiveScatter(const Ray &r, Primitive *world, int depth, std::function<float()> &randomFloat,
                           const int depthlimit) {
     hitrecord record;
-
     const float floaterror = 0.001;
 
     if (world->hit(r, floaterror, std::numeric_limits<float>::max(), record)) {
@@ -17,9 +16,8 @@ Vector3D recursiveScatter(const Ray &r, Primitive *world, int depth, std::functi
         Vector3D attenuation;
         if (depth < depthlimit && record.matptr->scatter(r, record, attenuation, scatter, randomFloat)) {
             return attenuation * recursiveScatter(scatter, world, depth + 1, randomFloat, depthlimit);
-        } else {
-            return Vector3D();
         }
+        return {};
     }
     return skyGradient(r);
 }

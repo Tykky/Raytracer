@@ -2,9 +2,13 @@
 /cmake-*
 CMakeSettings.json
 /build
-/latex
-/xml
-/html
+Documentation/latex
+Documentation/xml
+Documentation/html
+Documentation/_build
 /.vs
 /out
 Folder.DotSettings.user
+Makefile
+_build/
+make.bat

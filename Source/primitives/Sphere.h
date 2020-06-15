@@ -15,8 +15,11 @@ public:
     Sphere(const Vector3D &center, float radius, Material *mat);
 
     /** @brief Computes solution for Ray - Sphere hit equation
-     *  @details hit equation for sphere: dot((Ray(c) - center),(Ray(c) - center))=R^2 (R = radius)
-     *  solve for C. Ray function is Ray(c) = origin + c*direction, origin,direction are R^3 vectors. */
+     *  @details hit equation for sphere: \f$ (\text{ray}(c) -
+     *  \text{center}) \cdot (\text{ray}(c) - \text{center}) = r^2 \f$
+     *  solve for C. Ray function is  \f$ \text{ray}(c) = \text{origin} + c \cdot \text{direction} \f$
+     *  where \f$ \text{origin} , \text{direction} \f$ and
+     *  \f$ \text{center} \f$ are \f$ \mathbb{R}^3 \f$ vectors and \f$ r \f$ is radius */
     bool hit(const Ray &r, float cmin, float cmax, hitrecord &record) const override;
 
     virtual bool boundingBox(float c0, float c1, Aabb &box) const override;
