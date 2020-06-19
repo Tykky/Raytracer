@@ -6,7 +6,8 @@ Documentation/latex
 Documentation/xml
 Documentation/html
 Documentation/_build
-/.vs
+*/.vs
+*/.vscode
 /out
 Folder.DotSettings.user
 Makefile
