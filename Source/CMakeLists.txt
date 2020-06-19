@@ -12,8 +12,7 @@ set(RAYTRACER_SRC Ray.cpp
                   materials/Brdf.cpp
                   primitives/Aabb.cpp
                   primitives/Bvhnode.cpp)
-
-set(RAYTRACER_GUI gui/window.cpp)
+set(RAYTRACER_GUI gui/Window.cpp)
 
 if(BUILD_GUI)
     if(WIN32)

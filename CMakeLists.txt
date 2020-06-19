@@ -12,6 +12,8 @@ option(BUILD_GUI "" ON)
 option(BUILD_CLI "" ON)
 option(BUILD_TEST "" ON)
 
+set(OpenGL_GL_PREFERENCE "GLVND")
+
 find_package(OpenMP REQUIRED)
 link_libraries(OpenMP::OpenMP_CXX)
 
