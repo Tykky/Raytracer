@@ -1,7 +1,7 @@
 #ifndef RAYTRACER_MATERIAL_H
 #define RAYTRACER_MATERIAL_H
 
-#include "Ray.h"
+#include "core/Ray.h"
 #include "primitives/Primitive.h"
 #include <functional>
 

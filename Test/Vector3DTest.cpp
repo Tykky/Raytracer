@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "Vector3D.h"
+#include "core/Vector3D.h"
 
 /** @brief Googletest fixture for Vector3D class */
 class Vector3DTest : public ::testing::Test {

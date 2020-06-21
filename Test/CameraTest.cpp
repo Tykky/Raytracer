@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "Camera.h"
+#include "core/Camera.h"
 
 /** @brief Googletest fixture for testing Camera class */
 class Cameratest : public ::testing::Test {

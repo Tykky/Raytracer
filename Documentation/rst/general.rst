@@ -23,7 +23,7 @@ Parallelization of the raytracing is done using `OpenMP <https://www.openmp.org/
 Building the project
 ######################
 
-If your system has all the required depedencies you should be 
+If your system has all the required depedencies you should be
 able to clone and build the project with:
 
 .. code-block:: bash
@@ -34,6 +34,12 @@ able to clone and build the project with:
     cd build
     cmake ..
     cmake --build . --config release
+
+After that the executables can be found in
+
+.. code-block::
+
+    raytracer/build/bin
 
 The project can be built without GUI by using
 
@@ -78,25 +84,25 @@ makes Sphinx understand Doxygen xml output.
 
 Navigate to Documents folder
 
-.. code-block:: bash
+.. code-block::
 
     cd Documentation
 
 Generate doxygen xml files
 
-.. code-block:: bash
+.. code-block::
 
     doxygen .doxygen.conf
 
 Generate sphinx html files (Linux)
 
-.. code-block:: bash
+.. code-block::
 
     make html
 
 Generate sphinx html files (Windows)
 
-.. code-block:: cmd
+.. code-block::
 
     .\make.bat html
 
@@ -123,3 +129,5 @@ Sources
 * `Moissanite, wikipedia <https://en.wikipedia.org/wiki/Moissanite>`_
 * `Refractive index, wikipedia <https://en.wikipedia.org/wiki/Refractive_index>`_
 * `Photon energy, wikipedia <https://en.wikipedia.org/wiki/Photon_energy>`_
+* `Fresnel equations, wikipedia <https://en.wikipedia.org/wiki/Fresnel_equations>`_
+* `Programming parallel computers, Aalto university <http://ppc.cs.aalto.fi/>`_

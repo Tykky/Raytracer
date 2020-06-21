@@ -1,7 +1,7 @@
 #include "materials/Material.h"
 #include "materials/Metal.h"
 #include "gtest/gtest.h"
-#include "Ray.h"
+#include "core/Ray.h"
 #include <random>
 
 /** @brief Googletest fixture for testing Metal material. */

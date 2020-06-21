@@ -33,4 +33,5 @@ float fresnel(float cosine, float ior);
 /** @brief combines two bounding boxes int one box */
 Aabb surroundingBox(Aabb box1, Aabb box2);
 
+
 #endif //RAYTRACER_UTILITY_H

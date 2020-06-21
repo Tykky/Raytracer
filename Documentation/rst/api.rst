@@ -32,3 +32,11 @@ Material classes
     classes/material
     classes/lambertian 
     classes/metal
+    classes/dielectric
+
+Utility functions
+###################
+
+
+.. toctree::
+    functions/utility

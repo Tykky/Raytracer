@@ -29,7 +29,6 @@ count can be used to combat this issue but with diminishing returns. Another pop
 method to combat this is to use denoise algorithm which isn't implemented in this project.
 
 
-
 API documentation
 ^^^^^^^^^^^^^^^^^^
 

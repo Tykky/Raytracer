@@ -1,7 +1,7 @@
 #ifndef RAYTRACER_SPHERE_H
 #define RAYTRACER_SPHERE_H
 
-#include "Vector3D.h"
+#include "core/Vector3D.h"
 #include "Primitive.h"
 
 /** @brief sphere primitive handles handles the

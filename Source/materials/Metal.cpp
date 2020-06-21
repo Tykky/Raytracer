@@ -1,5 +1,5 @@
 #include "Metal.h"
-#include "Utility.h"
+#include "core/Utility.h"
 
 Metal::Metal(const Vector3D &albedo, float blur) :
         albedo(albedo), blur(blur) {

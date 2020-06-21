@@ -3,8 +3,8 @@
 #ifndef RAYTRACER_AABB_H
 #define RAYTRACER_AABB_H
 
-#include "Vector3D.h"
-#include "Ray.h"
+#include "core/Vector3D.h"
+#include "core/Ray.h"
 
 // Simple min & max functions for floats
 // fmax and fmin are already reserved.

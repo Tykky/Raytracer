@@ -1,5 +1,5 @@
 #include "Bvhnode.h"
-#include "Utility.h"
+#include "core/Utility.h"
 
 // All of the compare methods are the
 // same except they do comparison in different axis.

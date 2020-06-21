@@ -1,5 +1,5 @@
 #include "Brdf.h"
-#include "Utility.h"
+#include "core/Utility.h"
 
 Brdf::Brdf(const Vector3D &lalbedo, const Vector3D &malbedo, float metalness, float roughness, float fresnelfactor,
            float ior) :

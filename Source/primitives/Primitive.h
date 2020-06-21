@@ -3,8 +3,9 @@
 #ifndef RAYTRACER_PRIMITIVE_H
 #define RAYTRACER_PRIMITIVE_H
 
-#include "Ray.h"
+#include "core/Ray.h"
 #include "Aabb.h"
+#include "core/Utility.h"
 
 class Material;
 

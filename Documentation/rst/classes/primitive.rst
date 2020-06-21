@@ -19,3 +19,9 @@ API documentation
 .. doxygenclass:: Primitive
     :members:
     :undoc-members:
+
+hitrecord struct
+^^^^^^^^^^^^^^^^^^^
+
+.. doxygenstruct:: hitrecord
+    :members:

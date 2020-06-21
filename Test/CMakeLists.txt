@@ -12,9 +12,9 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 include_directories(../Source)
 
 add_executable(gtest_run Vector3DTest.cpp
-               ../Source/Ray.cpp
-               ../Source/Camera.cpp
-              ../Source/Utility.cpp
+        ../Source/core/Ray.cpp
+        ../Source/core/Camera.cpp
+        ../Source/core/Utility.cpp
               ../Source/primitives/Sphere.cpp
               ../Source/primitives/Primitivelist.cpp
               ../Source/materials/Lambertian.cpp
@@ -25,7 +25,7 @@ add_executable(gtest_run Vector3DTest.cpp
               ../Source/materials/Brdf.cpp
               ../Source/primitives/Aabb.cpp
               EngineTest.cpp
-              ../Source/Engine.cpp
+        ../Source/core/Engine.cpp
               ../Source/primitives/Bvhnode.cpp
               MetalTest.cpp
               DielectricTest.cpp

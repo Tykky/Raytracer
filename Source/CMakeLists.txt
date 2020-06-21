@@ -1,24 +1,24 @@
 include_directories(.)
 
-set(RAYTRACER_SRC Ray.cpp
-                  Camera.cpp
-                  Utility.cpp
-                  primitives/Sphere.cpp
-                  primitives/Primitivelist.cpp
-                  materials/Lambertian.cpp
-                  materials/Metal.cpp
-                  materials/Dielectric.cpp
-                  Engine.cpp
-                  materials/Brdf.cpp
-                  primitives/Aabb.cpp
-                  primitives/Bvhnode.cpp)
+set(RAYTRACER_SRC core/Ray.cpp
+        core/Camera.cpp
+        core/Utility.cpp
+        core/Engine.cpp
+        primitives/Sphere.cpp
+        primitives/Primitivelist.cpp
+        primitives/Aabb.cpp
+        primitives/Bvhnode.cpp
+        materials/Lambertian.cpp
+        materials/Metal.cpp
+        materials/Dielectric.cpp
+        materials/Brdf.cpp)
 set(RAYTRACER_GUI gui/Window.cpp)
 
 if(BUILD_GUI)
     if(WIN32)
-        add_executable(raytracer WIN32 main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
+        add_executable(raytracer WIN32 core/main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
     else()
-        add_executable(raytracer main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
+        add_executable(raytracer core/main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
     endif()
         target_link_libraries(raytracer OpenGL::GL glew_s glfw)
 endif()

@@ -1,14 +1,14 @@
 #include <iostream>
 #include <chrono>
 #include <random>
-#include "Vector3D.h"
-#include "Camera.h"
+#include "core/Vector3D.h"
+#include "core/Camera.h"
 #include "primitives/Sphere.h"
 #include "primitives/Primitivelist.h"
 #include "materials/Lambertian.h"
 #include "materials/Dielectric.h"
 #include "materials/Brdf.h"
-#include "Engine.h"
+#include "core/Engine.h"
 #include "primitives/Bvhnode.h"
 
 

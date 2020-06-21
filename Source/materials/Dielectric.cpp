@@ -1,5 +1,5 @@
 #include "Dielectric.h"
-#include "Utility.h"
+#include "core/Utility.h"
 
 Dielectric::Dielectric(float ior) :
         ior(ior) {

@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
-#include "Engine.h"
-#include "Camera.h"
+#include "core/Engine.h"
+#include "core/Camera.h"
 #include "primitives/Sphere.h"
 #include "materials/Brdf.h"
 #include "primitives/Bvhnode.h"
