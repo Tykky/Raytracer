@@ -5,12 +5,7 @@
 
 #include "Material.h"
 
-/** @brief Reflect function mirrors vectors using normal as axis of symmetry.
- *  @param v vector
- *  @param n normal vector */
-Vector3D reflect(const Vector3D &v, const Vector3D &n);
-
-/** @brief Metal is highly reflective Material which mirrors all rays.
+/** @brief Metal is highly reflective material which mirrors all rays.
  *  @details Rays are mirrored using surface normal as axis of symmetry. */
 class Metal : public Material {
 

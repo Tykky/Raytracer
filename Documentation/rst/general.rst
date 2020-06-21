@@ -105,6 +105,7 @@ Depedencies
 * `Doxygen <https://www.doxygen.nl/index.html>`_
 * `Sphinx <https://en.wikipedia.org/wiki/Sphinx>`_
 * `Breathe <https://github.com/michaeljones/breathe>`_
+* `sphinx_rtd_theme <https://github.com/readthedocs/sphinx_rtd_theme>`_
 
 
 Sources

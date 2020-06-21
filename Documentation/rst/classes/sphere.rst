@@ -10,40 +10,46 @@ for the sphere is defined as
 
 .. math::
 
-    (\hat{p} - \hat{c}) \cdot (\hat{p}-\hat{c}) = r^2
+    (\vec{p} - \vec{c}) \cdot (\vec{p}-\vec{c}) = r^2
 
-where :math:`\hat{c} \in \mathbb{R}^{3}` is 
+where :math:`\vec{c} \in \mathbb{R}^{3}` is 
 the origin of the sphere and :math:`r \in \mathbb{R}` 
-is the radius. The equation states that 
-if point :math:`\hat{p}` satisfies the equation then 
+is the radius. The equation states tvec 
+if point :math:`\vec{p}` satisfies the equation then 
 this point is on the sphere. We want to find out
-which point(s) :math:`\hat{p}` along the 
-`ray <ray.rst>`_ satisfy 
-this equation (if any). So we need to solve which 
+which point(s) :math:`\vec{p}` along the 
+ray satisfy  this equation (if any). Recall tvec the 
+`ray <ray.rst>`_ can be thought of as a function
+
+.. math::
+
+    \text{ray}(c) = \vec{o} + c \cdot \vec{d}
+
+So we need to solve which 
 :math:`c \in \mathbb{R}` satisfies
 
 .. math::
 
-    (\text{ray}(c) - \hat{c}) \cdot (\text{ray}(c) - \hat{c}) = r^2. 
+    (\text{ray}(c) - \vec{c}) \cdot (\text{ray}(c) - \vec{c}) = r^2. 
 
 Expanding the equation results in
 
 .. math::
 
-    (\hat{o} + c \cdot \hat{d} - \hat{c}) \cdot (\hat{o} + c \cdot \hat{d} - \hat{c}) = r^2
+    (\vec{o} + c \cdot \vec{d} - \vec{c}) \cdot (\vec{o} + c \cdot \vec{d} - \vec{c}) = r^2
 
 and expanding the equation further results in 
 
 .. math::
 
-    c^2 \hat{d} \cdot \hat{d} + 2c\hat{d} \cdot (\hat{o} - \vec{c}) + (\hat{o} - \hat{c}) \cdot (\hat{o} - \hat{c}) - r^2 = 0
+    c^2 \vec{d} \cdot \vec{d} + 2c\vec{d} \cdot (\vec{o} - \vec{c}) + (\vec{o} - \vec{c}) \cdot (\vec{o} - \vec{c}) - r^2 = 0
 
 which can be solved with the quadratic formula
 
 .. math::
 
-    c = \frac{ -2\hat{d} \cdot (\hat{o}-c) \pm \sqrt{(2\hat{d} \cdot (\hat{o}-c))^2 - 4 \hat{d} \cdot \hat{d}((\hat{o} - \hat{c}) \cdot (\hat{o} - \hat{c}) - r^2) }) }
-    { 2 \hat{d} \cdot \hat{d} }.
+    c = \frac{ -2\vec{d} \cdot (\vec{o}-c) \pm \sqrt{(2\vec{d} \cdot (\vec{o}-c))^2 - 4 \vec{d} \cdot \vec{d}((\vec{o} - \vec{c}) \cdot (\vec{o} - \vec{c}) - r^2) }) }
+    { 2 \vec{d} \cdot \vec{d} }.
 
 
 API documentation

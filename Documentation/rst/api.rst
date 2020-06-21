@@ -21,5 +21,14 @@ Data structures
 .. toctree::
     classes/primitivelist
     classes/bvhnode
+    clasess/aabb
 
-    
+
+Material classes
+################
+
+
+.. toctree::
+    classes/material
+    classes/lambertian 
+    classes/metal

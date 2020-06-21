@@ -4,7 +4,7 @@ Bvhnode class
 Description
 ^^^^^^^^^^^^
 
-Bounding volume hierarchy (bvh) is a data structure for keeping track of all objects in the world. This is used for same purpose as
+Bounding volume hierarchy (BVH) is a data structure for keeping track of all objects in the world. This is used for same purpose as
 Primitivelist but is highly optimized compared to the regular Primitivelist. Objects in the world are
 grouped by bounding boxes e.g 10 spheres might be inside one bounding box. When we want to check if 
 ray hits any of these objects, we can first check if it hits the bounding box. 
@@ -19,7 +19,7 @@ then time complexity will be :math:`O(\log(n))`.
 
 Following is done to form the actual tree (in order)
 
-1. Pick randomly axis from 3 (x,y,z)
+1. Pick randomly axis from (x,y,z)
 2. Sort objects along this axis
 3. split the axis into two sub trees
 

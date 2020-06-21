@@ -30,11 +30,13 @@ private:
 
 public:
     Aabb();
+    /** @param a defines three planes x=a[0], y=a[1] and z=a[2]
+     *  @param b defines three planes x=b[0], y=b[1] and z=b[2] */
     Aabb(const Vector3D &a, const Vector3D &b);
     Vector3D getMin();
     Vector3D getMax();
 
-    /* @brief Tests if ray hits bounding box
+    /** @brief Tests if ray hits bounding box
      * @details Method proposed by Andrew Kensler
      * at Pixar. Source: Ray Tracing In The Next Week (Peter Shirley)
      * @return true when ray hits bounding box */

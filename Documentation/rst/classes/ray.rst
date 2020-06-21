@@ -12,9 +12,9 @@ Mathematically the ray can be thought of as a function
 
 .. math::
 
-    \text{ray}(c) = \hat{o} + c \cdot \hat{d}
+    \text{ray}(c) = \vec{o} + c \cdot \vec{d}
 
-where :math:`\hat{o} \in \mathbb{R}^3` is the **origin**, :math:`\hat{d} \in \mathbb{R}^3`
+where :math:`\vec{o} \in \mathbb{R}^3` is the **origin**, :math:`\vec{d} \in \mathbb{R}^3`
 is the **direction** and :math:`c \in \mathbb{R}` is scalar.
 
 

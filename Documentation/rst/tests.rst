@@ -8,7 +8,7 @@ After testing has finished the reports are uploaded to
 `codecov.io <https://codecov.io/>`_ from Travis. 
 
 Unit tests that are currently implemented are 
-straight forward. Most of them use pre-calculated 
+straightforward. Most of them use pre-calculated 
 values which are then compared against the code.
 
 

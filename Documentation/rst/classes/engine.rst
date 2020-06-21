@@ -20,13 +20,14 @@ color from these *samples* is averaged. This is called random
 final image. 
 
 Now these samples are also used to produce scatter rays. Rays can 
-be set to bounce in random directions or set to bounce by probability distribution, 
+be set to bounce by random or set to bounce by probability distribution, 
 meaning rays will bounce differently on each sample. This is helpful when trying to 
 achieve `global illumination <https://en.wikipedia.org/wiki/Global_illumination>`_.
 
 Downside of this method is that the final image is usually noisy. Increasing sample 
 count can be used to combat this issue but with diminishing returns. Another popular 
 method to combat this is to use denoise algorithm which isn't implemented in this project.
+
 
 
 API documentation

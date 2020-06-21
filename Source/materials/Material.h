@@ -18,7 +18,7 @@ public:
      *  Empty/zero vector should be given as reference parameter and the result should be used after
      *  the function has ran.
      *  @param randomFloat contains reference to random generator.
-     *  @return true when scattered ray hits primitive, otherwise false. */
+     *  @return True when scattered ray is valid  */
     virtual bool scatter(const Ray &r, const hitrecord &record, Vector3D &attenuation, Ray &scatter,
                          std::function<float()> &randomFloat) const = 0;
 };
