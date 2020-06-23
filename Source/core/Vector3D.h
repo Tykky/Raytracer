@@ -1,4 +1,3 @@
-
 #ifndef RAYTRACER_VECTOR3D_H
 #define RAYTRACER_VECTOR3D_H
 
@@ -6,24 +5,24 @@
 #include <cmath>
 #include <string>
 
-/**@brief Vector3D class containing data structure for 3D-euclidean and RGB vectors. **/
+/**
+ *  @brief Vector3D defines 3 dimensional vector and
+ *  it's operators
+ */
 class Vector3D {
 
 private:
     float x, y, z;
-
+	
 public:
-    /** @brief Initializes everything to 0. */
     Vector3D() :
             x(0), y(0), z(0) {
     }
 
-    /** @brief Initializes to parameter values. */
     Vector3D(float x, float y, float z) :
             x(x), y(y), z(z) {
     }
 
-    /**@brief Computes vector length with pythagoras \f$ l = \sqrt{x^2+y^2+z^2} \f$ */
     inline float length() const {
         return std::sqrt(x * x + y * y + z * z);
     }
@@ -31,8 +30,7 @@ public:
     inline float lengthSquared() const {
         return x * x + y * y + z * z;
     }
-
-    /**@brief Transforms vector to length 1 vector. */
+	
     inline void normalize() {
         float k = 1 / std::sqrt(x * x + y * y + z * z);
         x *= k;
@@ -45,9 +43,8 @@ public:
                y * v.getY() +
                z * v.getZ();
     }
-
+	
     inline Vector3D cross(const Vector3D &v) const {
-        // a x b = (a2b3-a3b2)i+(a3b1-a1b3)j+(a1b2-a2b1)k
         return {y * v.getZ() - z * v.getY(),
                 z * v.getX() - x * v.getZ(),
                 x * v.getY() - y * v.getX()};

@@ -4,7 +4,6 @@
 #include "core/Ray.h"
 #include <random>
 
-/** @brief Googletest fixture for testing Metal material. */
 class MetalTest : public ::testing::Test {
 protected:
 

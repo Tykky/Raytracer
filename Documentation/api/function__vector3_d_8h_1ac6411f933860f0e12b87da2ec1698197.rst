@@ -1,0 +1,13 @@
+.. _exhale_function__vector3_d_8h_1ac6411f933860f0e12b87da2ec1698197:
+
+Function operator+
+==================
+
+- Defined in :ref:`file_Source_core_Vector3D.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: operator+(const Vector3D&, const Vector3D&)

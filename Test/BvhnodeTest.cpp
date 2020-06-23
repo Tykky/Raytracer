@@ -4,7 +4,6 @@
 #include "gtest/gtest.h"
 #include <random>
 
-/** @brief Googletest fixture for testing the bvh data structure. */
 class BvhnodeTest : public ::testing::Test {
 protected:
 

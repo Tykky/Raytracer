@@ -1,13 +1,11 @@
 #include "gtest/gtest.h"
-#include "core/Engine.h"
+#include "core/Raytracer.h"
 #include "core/Camera.h"
 #include "primitives/Sphere.h"
-#include "materials/Brdf.h"
+#include "materials/Mix.h"
 #include "primitives/Bvhnode.h"
 #include <random>
 #include <fstream>
-
-/** @brief Googletest fixture for testing the Engine class. */
 
 const int w = 200;
 const int h = 200;
@@ -16,7 +14,7 @@ class EngineTest : public ::testing::Test {
 protected:
 
     Primitive *bvh;
-    Engine *engine;
+    Raytracer *engine;
     Camera *camera;
     Primitive *list[2];
     Material *mat;
@@ -26,7 +24,7 @@ protected:
     std::function<float()> randomFloat;
 
     virtual void SetUp() {
-        mat = new Brdf(Vector3D(0.5,0.5,0.5),Vector3D(1,1,1),0,0,1,1.3);
+        mat = new Mix(Vector3D(0.5,0.5,0.5),Vector3D(1,1,1),0,0,1,1.3);
         camera = new Camera(90,800/600,Vector3D(0,0.5,0),Vector3D(0,0.5,-1),Vector3D(0,1,0));
         list[0] = new Sphere(Vector3D(0,0.5,-1),0.5,mat);
         list[1] = new Sphere(Vector3D(0,-100,-1),100,mat);
@@ -37,7 +35,7 @@ protected:
 
         bvh = new Bvhnode(list,2,0,1,randomFloat);
 
-        engine = new Engine(bvh,*camera,w,h);
+        engine = new Raytracer(bvh,*camera,w,h);
     }
 
     virtual void TearDown() {

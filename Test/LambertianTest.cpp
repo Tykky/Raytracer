@@ -3,7 +3,6 @@
 #include <random>
 #include <functional>
 
-/** @brief Googletest fixture for testing Lambertian material. */
 class LambertianTest : public ::testing::Test {
 protected:
 

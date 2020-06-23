@@ -20,19 +20,39 @@ project = 'Raytracer'
 copyright = '2020, Tykky'
 author = 'Tykky'
 
-
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [ "breathe", "sphinx.ext.mathjax", "sphinx.ext.todo"]
+extensions = [ "breathe", "exhale" , "sphinx.ext.mathjax"]
 
 # Breathe Configuration
 breathe_projects = { "Raytracer": "./xml" }
 breathe_default_project = "Raytracer"
 html_show_sourcelink = False
 todo_include_todos = True
+
+# Setup the exhale extension
+exhale_args = {
+    # These arguments are required
+    "containmentFolder":     "./api",
+    "rootFileName":          "raytracer_root.rst",
+    "rootFileTitle":         "Raytracer API",
+    "doxygenStripFromPath":  "..",
+    # Suggested optional arguments
+    "createTreeView":        True,
+    # TIP: if using the sphinx-bootstrap-theme, you need
+    # "treeViewIsBootstrap": True,
+    "exhaleExecutesDoxygen": True,
+    "exhaleDoxygenStdin":    "INPUT = ../Source"
+}
+
+# Tell sphinx what the primary language being documented is.
+primary_domain = 'cpp'
+
+# Tell sphinx what the pygments highlight language should be.
+highlight_language = 'cpp'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

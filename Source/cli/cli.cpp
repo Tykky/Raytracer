@@ -7,8 +7,8 @@
 #include "primitives/Primitivelist.h"
 #include "materials/Lambertian.h"
 #include "materials/Dielectric.h"
-#include "materials/Brdf.h"
-#include "core/Engine.h"
+#include "materials/Mix.h"
+#include "core/Raytracer.h"
 #include "primitives/Bvhnode.h"
 
 
@@ -49,15 +49,15 @@ int main(int argc, char** argv) {
             Vector3D(0, 0.5, 0));
     }
 
-    const int n = 50;
+    const int n = 1000;
 
     Primitive* list[n + 5];
-    Brdf mat(Vector3D(0.3, 0.3, 0.8), Vector3D(0.2, 1, 0.1), 0.1, 0.1, 1, 1);
-    Brdf lamb(Vector3D(0.3, 0.3, 0.3), Vector3D(0.1, 0.1, 0.1), 0, 0, 0.1, 1);
+    Mix mat(Vector3D(0.3, 0.3, 0.8), Vector3D(0.2, 1, 0.1), 0.1, 0.1, 1, 1);
+    Mix lamb(Vector3D(0.3, 0.3, 0.3), Vector3D(0.1, 0.1, 0.1), 0, 0, 0.1, 1);
     Lambertian red(Vector3D(1, 0.2, 0.2));
     Dielectric glass = Dielectric(1.5);
-    Brdf close(Vector3D(0.0, 0.3, 0.3), Vector3D(1, 1, 1), 0.1, 0, 1, 1);
-    Brdf gold(Vector3D(0.85, 0.64, 0.12), Vector3D(0.85, 0.64, 0.12), 0.9, 0.1, 0, 1);
+    Mix close(Vector3D(0.0, 0.3, 0.3), Vector3D(1, 1, 1), 0.1, 0, 1, 1);
+    Mix gold(Vector3D(0.85, 0.64, 0.12), Vector3D(0.85, 0.64, 0.12), 0.9, 0.1, 0, 1);
 
     Material* matptr = &mat;
     Material* lambptr = &lamb;
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
     std::uniform_real_distribution<float> dist(0.0, 1.0);
     std::function<float()> randomFloat = std::bind(dist, gen);
 
-    int multp = 5;
+    int multp = 15;
 
 
     for (int i = 0; i < n; ++i) {
@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
 
     Primitive* bvh = new Bvhnode(list, n + 5, 0, 1, randomFloat);
 
-    Engine engine(bvh, cam, width, height);
+    Raytracer engine(bvh, cam, width, height);
 
     auto start = std::chrono::system_clock::now();
     std::cout << "rendering started.." << std::endl;

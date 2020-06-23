@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 #include "core/Vector3D.h"
 
-/** @brief Googletest fixture for Vector3D class */
 class Vector3DTest : public ::testing::Test {
 protected:
 
@@ -15,7 +14,6 @@ protected:
 
 };
 
-/**Tests operator +() */
 TEST_F(Vector3DTest, opPlusTest) {
     +(v1);
     EXPECT_FLOAT_EQ(1, v1.getX());
@@ -23,8 +21,6 @@ TEST_F(Vector3DTest, opPlusTest) {
     EXPECT_FLOAT_EQ(3, v1.getZ());
 }
 
-
-/** Tests operator += vector */
 TEST_F(Vector3DTest, opAddtVectorTest) {
     v1 += v2;
     EXPECT_FLOAT_EQ(4, v1.getX());
@@ -32,8 +28,6 @@ TEST_F(Vector3DTest, opAddtVectorTest) {
     EXPECT_FLOAT_EQ(8, v1.getZ());
 }
 
-
-/** Tests operator += constant */
 TEST_F(Vector3DTest, opAddConstantTest) {
     float c = 9;
     v1 += c;
@@ -42,7 +36,6 @@ TEST_F(Vector3DTest, opAddConstantTest) {
     EXPECT_FLOAT_EQ(3 + c, v1.getZ());
 }
 
-/** Tests operator -() */
 TEST_F(Vector3DTest, opMinusTest) {
     Vector3D negv1 = -v1;
     EXPECT_FLOAT_EQ(-1, negv1.getX());
@@ -50,8 +43,6 @@ TEST_F(Vector3DTest, opMinusTest) {
     EXPECT_FLOAT_EQ(-3, negv1.getZ());
 }
 
-
-/** Tests operator -= vector */
 TEST_F(Vector3DTest, opDecreaseVectorTest) {
     v1 -= v2;
     EXPECT_FLOAT_EQ(-2, v1.getX());
@@ -59,8 +50,6 @@ TEST_F(Vector3DTest, opDecreaseVectorTest) {
     EXPECT_FLOAT_EQ(-2, v1.getZ());
 }
 
-
-/** Tests operator -= constant */
 TEST_F(Vector3DTest, opDecreaseConstantTest) {
     float c = 5;
     v1 -= c;
@@ -69,8 +58,6 @@ TEST_F(Vector3DTest, opDecreaseConstantTest) {
     EXPECT_FLOAT_EQ(-2, v1.getZ());
 }
 
-
-/** Tests operator *= vector */
 TEST_F(Vector3DTest, opMultiplyVectorTest) {
     v1 *= v2;
     EXPECT_FLOAT_EQ(3, v1.getX());
@@ -78,7 +65,6 @@ TEST_F(Vector3DTest, opMultiplyVectorTest) {
     EXPECT_FLOAT_EQ(15, v1.getZ());
 }
 
-/** Tests operator *= constant */
 TEST_F(Vector3DTest, opMultiplyConstantTest) {
     float c = 5;
     v1 *= c;
@@ -87,7 +73,6 @@ TEST_F(Vector3DTest, opMultiplyConstantTest) {
     EXPECT_FLOAT_EQ(15, v1.getZ());
 }
 
-/** Test operator /= vector */
 TEST_F(Vector3DTest, opDivideVectorTest) {
     v1 /= v2;
     EXPECT_FLOAT_EQ(.3333333, v1.getX());
@@ -95,7 +80,6 @@ TEST_F(Vector3DTest, opDivideVectorTest) {
     EXPECT_FLOAT_EQ(.6, v1.getZ());
 }
 
-/** Test operator /= constant */
 TEST_F(Vector3DTest, opDivideConstantTest) {
     float c = 5;
     v1 /= c;
@@ -138,9 +122,6 @@ TEST_F(Vector3DTest, opIndexTest) {
     EXPECT_FLOAT_EQ(3, v1[2]);
     EXPECT_ANY_THROW(v1[3]);
 }
-
-/** Operators outside of Vector3D class */
-
 
 TEST_F(Vector3DTest, opVplusVTest) {
     Vector3D v3 = v1 + v2;

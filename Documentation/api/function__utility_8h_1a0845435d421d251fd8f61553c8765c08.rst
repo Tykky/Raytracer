@@ -1,0 +1,13 @@
+.. _exhale_function__utility_8h_1a0845435d421d251fd8f61553c8765c08:
+
+Function skyGradient
+====================
+
+- Defined in :ref:`file_Source_core_Utility.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: skyGradient(const Ray&)

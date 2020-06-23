@@ -11,9 +11,9 @@ bool Primitivelist::hit(const Ray &r, float cmin, float cmax, hitrecord &record)
     hitrecord tmprec;
     float closest = cmax;
 
-    // Test Ray r against all primitives in the world
+    // Test Ray r against all primitives
     for (int i = 0; i < size; ++i) {
-        // Preserve only closest hit
+        // Preserve only the closest hit
         if (list[i]->hit(r, cmin, closest, tmprec)) {
             hit = true;
             closest = tmprec.c;

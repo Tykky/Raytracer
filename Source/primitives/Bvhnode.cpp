@@ -15,11 +15,11 @@ int boxCompareX(const void *a, const void *b) {
 
     if(left.getMin().getX() - right.getMin().getX() < 0) {
         return -1;
-    } else {
-        return 1;
     }
+    return 1;
 
 }
+
 int boxCompareY(const void *a, const void *b) {
     Aabb left, right;
     Primitive *ah = *(Primitive**)a;
@@ -31,10 +31,8 @@ int boxCompareY(const void *a, const void *b) {
 
     if(left.getMin().getY() - right.getMin().getY() < 0) {
         return -1;
-    } else {
-        return 1;
     }
-
+    return 1;
 }
 
 int boxCompareZ(const void *a, const void *b) {
@@ -48,10 +46,8 @@ int boxCompareZ(const void *a, const void *b) {
 
     if(left.getMin().getZ() - right.getMin().getZ() < 0) {
         return -1;
-    } else {
-        return 1;
     }
-
+    return 1;
 }
 
 
@@ -78,35 +74,35 @@ Bvhnode::Bvhnode(Primitive **list, int n, float c0, float c1, std::function<floa
     }
 
     if(n == 1) {
-        left = list[0];
-        right = list[0];
+        pLeft = list[0];
+        pRight = list[0];
     } else if(n == 2) {
-        left = list[0];
-        right = list[1];
+        pLeft = list[0];
+        pRight = list[1];
     } else {
-        left = new Bvhnode(list, n/2, c0, c1, randomFloat);
-        right = new Bvhnode(list + n/2, n - n/2, c0, c1 ,randomFloat);
+        pLeft = new Bvhnode(list, n/2, c0, c1, randomFloat);
+        pRight = new Bvhnode(list + n/2, n - n/2, c0, c1 ,randomFloat);
     }
 
     Aabb leftbox;
     Aabb rightbox;
 
-    if(!left->boundingBox(c0,c1,leftbox) ||
-       !right->boundingBox(c0,c1,rightbox)) {
+    if(!pLeft->boundingBox(c0,c1,leftbox) ||
+       !pRight->boundingBox(c0,c1,rightbox)) {
         std::cerr << "Creation of bounding box failed in Bvhnode \n";
     }
 
-    rootbox = surroundingBox(leftbox,rightbox);
+    node = surroundingBox(leftbox,rightbox);
 
 }
 
 bool Bvhnode::hit(const Ray &r, float cmin, float cmax, hitrecord &record) const {
 
-    // Do search in bvh (similar to binary search)
-    if(rootbox.hit(r,cmin,cmax)) {
+    // Do search in bvh
+    if(node.hit(r,cmin,cmax)) {
         hitrecord leftrec, rightrec;
-        bool hitleft = left->hit(r,cmin,cmax, leftrec);
-        bool hitright = right->hit(r,cmin,cmax,rightrec);
+        bool hitleft = pLeft->hit(r,cmin,cmax, leftrec);
+        bool hitright = pRight->hit(r,cmin,cmax,rightrec);
         if(hitleft && hitright) {
             if(leftrec.c < rightrec.c) {
                 record = leftrec;
@@ -114,21 +110,20 @@ bool Bvhnode::hit(const Ray &r, float cmin, float cmax, hitrecord &record) const
                 record = rightrec;
             }
             return true;
-        } else if(hitleft) {
+        }
+    	if(hitleft) {
             record = leftrec;
             return true;
-        } else if(hitright) {
+        }
+    	if(hitright) {
             record = rightrec;
             return true;
-        } else {
-            return false;
         }
-    } else {
-        return false;
     }
+    return false;
 }
 
 bool Bvhnode::boundingBox(float c0, float c1, Aabb &box) const {
-    box = rootbox;
+    box = node;
     return true;
 }

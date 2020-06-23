@@ -1,14 +1,12 @@
 #include "Ray.h"
 
-Ray::Ray() {
-    origin = Vector3D(0, 0, 0);
-    direction = Vector3D(0, 0, 0);
-}
+Ray::Ray() :
+    origin({}), direction({}) {
+};
 
-Ray::Ray(const Vector3D &v1, const Vector3D &v2) {
-    origin = v1;
-    direction = v2;
-}
+Ray::Ray(const Vector3D& origin, const Vector3D& direction) :
+    origin(origin), direction(direction) {
+};
 
 Vector3D Ray::getOrigin() const {
     return origin;

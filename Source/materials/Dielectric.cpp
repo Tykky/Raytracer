@@ -20,11 +20,11 @@ bool Dielectric::scatter(const Ray &r, const hitrecord &record, Vector3D &attenu
     float probability; // reflect probability
     float cosine;
 
-    if (r.getDirection().dot(record.normal) > 0) { // Enters object
+    if (r.getDirection().dot(record.normal) > 0) { // Exits object
         outnormal = -record.normal;
         tmpior = ior;
         cosine = ior * r.getDirection().dot(record.normal) / r.getDirection().length();
-    } else { // Exits object
+    } else { // Enters object
         outnormal = record.normal;
         tmpior = 1.0 / ior;
         cosine = -r.getDirection().dot(record.normal) / r.getDirection().length();

@@ -3,7 +3,6 @@
 #include <random>
 #include <functional>
 
-/** @brief Googletest fixture for testing Dielectric material. */
 class DielectricTest : public ::testing::Test {
 protected:
 
@@ -23,7 +22,6 @@ protected:
         delete mat;
     }
 };
-
 
 TEST_F(DielectricTest, scattertest) {
 

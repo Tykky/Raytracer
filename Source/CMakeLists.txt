@@ -2,8 +2,7 @@ include_directories(.)
 
 set(RAYTRACER_SRC core/Ray.cpp
         core/Camera.cpp
-        core/Utility.cpp
-        core/Engine.cpp
+        core/Raytracer.cpp
         primitives/Sphere.cpp
         primitives/Primitivelist.cpp
         primitives/Aabb.cpp
@@ -11,7 +10,7 @@ set(RAYTRACER_SRC core/Ray.cpp
         materials/Lambertian.cpp
         materials/Metal.cpp
         materials/Dielectric.cpp
-        materials/Brdf.cpp)
+        materials/Mix.cpp)
 set(RAYTRACER_GUI gui/Window.cpp)
 
 if(BUILD_GUI)

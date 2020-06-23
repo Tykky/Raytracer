@@ -1,0 +1,13 @@
+.. _exhale_function__aabb_8h_1a6c0e01f1158f6782d071ec638683160b:
+
+Function ffmax
+==============
+
+- Defined in :ref:`file_Source_primitives_Aabb.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: ffmax(float, float)

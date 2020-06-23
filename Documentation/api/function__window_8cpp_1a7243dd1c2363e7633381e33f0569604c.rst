@@ -1,0 +1,13 @@
+.. _exhale_function__window_8cpp_1a7243dd1c2363e7633381e33f0569604c:
+
+Function error_callback
+=======================
+
+- Defined in :ref:`file_Source_gui_Window.cpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: error_callback(const int, const char *)

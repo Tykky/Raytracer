@@ -4,9 +4,7 @@
 #include "Material.h"
 #include "functional"
 
-/** @brief Lambertian material is "matte" or diffusely reflecting Material.
- *  @details The material scatters rays to random directions,
- *  producing "matte" like shading. */
+/** @brief Lambertian material is "matte" or diffusely reflecting Material. */
 class Lambertian : public Material {
 private:
     const Vector3D albedo;
