@@ -38,9 +38,9 @@ TEST_F(MetalTest, scattertest) {
 
     mat->scatter(r,record,att,scat,randomfloat);
 
-    EXPECT_EQ(0,scat.getOrigin().getX());
-    EXPECT_EQ(2,scat.getOrigin().getY());
-    EXPECT_EQ(0,scat.getOrigin().getZ());
+    EXPECT_EQ(0,scat.getPosition().getX());
+    EXPECT_EQ(2,scat.getPosition().getY());
+    EXPECT_EQ(0,scat.getPosition().getZ());
 
     EXPECT_EQ(0,scat.getDirection().getX());
     EXPECT_EQ(-2,scat.getDirection().getY());

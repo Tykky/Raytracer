@@ -40,7 +40,7 @@ TEST_F(LambertianTest, scattertest) {
     EXPECT_EQ(attenuation.getY(), 0.5);
     EXPECT_EQ(attenuation.getZ(), 0.5);
 
-    Vector3D scat = scatter.getDirection() - scatter.getOrigin();
+    Vector3D scat = scatter.getDirection() - scatter.getPosition();
     // If vector length < 1, the point is inside unit sphere.
     EXPECT_LE((record.normal - scatter.getDirection()).length(), 1);
 

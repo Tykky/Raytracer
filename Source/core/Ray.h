@@ -4,24 +4,25 @@
 #include "Vector3D.h"
 
 /**
- *  @brief Ray class handles mapping origin->direction
- *  between two Vector3D vectors.
+ *  @brief Ray class defines ray
+ *  with two vectors. One for position
+ *  and one for direction. 
  */
 class Ray {
 
 private:
-    Vector3D origin;
+    Vector3D position;
     Vector3D direction;
 	
 public:
     Ray();
     Ray(const Vector3D &origin, const Vector3D &direction);
-    Vector3D getOrigin() const;
+    Vector3D getPosition() const;
     Vector3D getDirection() const;
 
     /**
      * @return Returns coordinates for point c
-     * along line origin -> direction
+     * along line position -> direction
      */
     Vector3D pointAtC(float c) const;
 };

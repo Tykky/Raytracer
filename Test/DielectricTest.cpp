@@ -36,9 +36,9 @@ TEST_F(DielectricTest, scattertest) {
 
     mat->scatter(r,record,attenuation,scatter,randomfloat);
 
-    EXPECT_FLOAT_EQ(0,scatter.getOrigin().getX());
-    EXPECT_FLOAT_EQ(2,scatter.getOrigin().getY());
-    EXPECT_FLOAT_EQ(0,scatter.getOrigin().getZ());
+    EXPECT_FLOAT_EQ(0,scatter.getPosition().getX());
+    EXPECT_FLOAT_EQ(2,scatter.getPosition().getY());
+    EXPECT_FLOAT_EQ(0,scatter.getPosition().getZ());
 
     EXPECT_FLOAT_EQ(0,scatter.getDirection().getX());
     EXPECT_FLOAT_EQ(1,scatter.getDirection().getY());

@@ -23,9 +23,9 @@ protected:
 
 TEST_F(CameraTest, getEyetest) {
     Ray r = cam->getRay(0, 0);
-    EXPECT_FLOAT_EQ(0, r.getOrigin().getX());
-    EXPECT_FLOAT_EQ(0, r.getOrigin().getY());
-    EXPECT_FLOAT_EQ(0, r.getOrigin().getZ());
+    EXPECT_FLOAT_EQ(0, r.getPosition().getX());
+    EXPECT_FLOAT_EQ(0, r.getPosition().getY());
+    EXPECT_FLOAT_EQ(0, r.getPosition().getZ());
 }
 
 TEST_F(CameraTest, getScreenCentertest) {

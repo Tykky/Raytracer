@@ -40,8 +40,8 @@ public:
         // Source: Ray Tracing In The Next Week
         for (int a = 0; a < 3; a++) {
             float invD = 1.0f / r.getDirection()[a];
-            float t0 = (min[a] - r.getOrigin()[a]) * invD;
-            float t1 = (max[a] - r.getOrigin()[a]) * invD;
+            float t0 = (min[a] - r.getPosition()[a]) * invD;
+            float t1 = (max[a] - r.getPosition()[a]) * invD;
             if (invD < 0.0f)
                 std::swap(t0, t1);
             cmin = t0 > cmin ? t0 : cmin;

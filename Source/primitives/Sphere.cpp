@@ -7,7 +7,7 @@ Sphere::Sphere(const Vector3D &center, float radius, Material *mat) :
 
 bool Sphere::hit(const Ray &r, float cmin, float cmax, hitrecord &record) const {
 
-	Vector3D oc = r.getOrigin() - center;
+	Vector3D oc = r.getPosition() - center;
     float a = r.getDirection().dot(r.getDirection());
     float b = oc.dot(r.getDirection());
     float c = oc.dot(oc) - radius * radius;
