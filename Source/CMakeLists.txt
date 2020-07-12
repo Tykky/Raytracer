@@ -15,7 +15,7 @@ set(RAYTRACER_GUI gui/Window.cpp)
 
 if(BUILD_GUI)
     if(WIN32)
-        add_executable(raytracer core/main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
+        add_executable(raytracer WIN32 core/main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
     else()
         add_executable(raytracer core/main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
     endif()

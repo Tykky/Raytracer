@@ -1,6 +1,8 @@
 #include "Window.h"
 #include <iostream>
 #include <iomanip>
+#include <random>
+#include <functional>
 
 void error_callback(const int error, const char* description) {
   std::cerr << "ERROR::" << error << " " << description << std::endl;
@@ -35,27 +37,31 @@ void Window::render() const {
 
     const char *vertexsource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec2 aTexCoord;\n"
+    "out vec2 TexCoord;"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   TexCoord = aTexCoord;\n"
     "}\0";
   
     const char *fragmentsource = "#version 330 core\n"
     "out vec4 FragColor;\n"
+    "in vec2 TexCoord;\n"
+    "uniform sampler2D texture1;"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "   FragColor = texture(texture1, TexCoord);\n"
     "}\n\0";
 
     float vertices[] = {
-        // first triangle
-         0.5f,  0.5f, 0.0f, 
-         0.5f, -0.5f, 0.0f, 
-        -0.5f,  0.5f, 0.0f, 
-        // second triangle
-         0.5f, -0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f, 
-        -0.5f,  0.5f, 0.0f 
+         // position          // texture coordinates
+         1.0f,  1.0f, 0.0f,   1.0f, 1.0f,
+         1.0f, -1.0f, 0.0f,   1.0f, 0.0f, 
+        -1.0f,  1.0f, 0.0f,   0.0f, 1.0f,
+         1.0f, -1.0f, 0.0f,   1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,   0.0f, 0.0f,
+        -1.0f,  1.0f, 0.0f,   0.0f, 1.0f
     };
 
    unsigned int vertexshader = setupShader(vertexsource, GL_VERTEX_SHADER);
@@ -73,12 +79,34 @@ void Window::render() const {
    glBindVertexArray(VAO);
    glBindBuffer(GL_ARRAY_BUFFER, VBO);
    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
-   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
    glEnableVertexAttribArray(0);
+   glEnableVertexAttribArray(1);
 
-   glBindBuffer(GL_ARRAY_BUFFER, 0);
+   // generate textures
+   unsigned int texture;
+   glGenTextures(1, &texture);
+   glBindTexture(GL_TEXTURE_2D, texture);
+
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+   // set texture filtering parameters
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+   // Generate some texture data
+
+   std::mt19937 engine(1);
+   std::uniform_real_distribution<float> dist(0.0, 1.0);
+   std::function<float()> randomFloat = bind(dist, engine);
+
+   int n = 100;
+
+   unsigned char *data = new unsigned char[3 * n * n];
 
    glUseProgram(shaderprogram);
+   glUniform1i(glGetUniformLocation(shaderprogram, "texture1"), 0);
 
    // disable vsync
    glfwSwapInterval(0);
@@ -86,6 +114,11 @@ void Window::render() const {
     // render loop
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
+
+        for (int i = 0; i < 3 * n * n; i++) {
+            data[i] = 255 * randomFloat();
+        }
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, n, n, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
         // Draw triangles
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -118,7 +151,7 @@ unsigned int Window::setupShader(const char *source, const unsigned int &shadert
 }
 
 void Window::linkShaders(const int &shaderprogram, int shaders[], const unsigned int &size) const {
-    for (size_t i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         glAttachShader(shaderprogram, shaders[i]);
     }
     glLinkProgram(shaderprogram);
