@@ -2,6 +2,7 @@
 #define RAYTRACER_ENGINE_H
 
 #include <memory>
+#include <functional>
 #include "primitives/Primitive.h"
 #include "Vector3D.h"
 #include "Camera.h"
@@ -16,7 +17,7 @@ class Raytracer {
 
 private:
     Primitive *world;
-    std::unique_ptr<std::unique_ptr<Vector3D[]>[]> framebuffer;
+    std::unique_ptr<unsigned char[]> framebuffer;
     Camera camera;
     int width;
     int height;
@@ -40,8 +41,9 @@ public:
 	/* @brief stores frambuffer data to .ppm file */
     void frammebufferToNetpbm(std::string filename);
 
-    void bounceLimit(int limit);
+    unsigned char* getFramebuffer();
 
+    void bounceLimit(int limit);
 };
 
 

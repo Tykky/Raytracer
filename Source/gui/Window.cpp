@@ -1,14 +1,11 @@
 #include "Window.h"
-#include <iostream>
-#include <iomanip>
-#include <random>
-#include <functional>
 
 void error_callback(const int error, const char* description) {
   std::cerr << "ERROR::" << error << " " << description << std::endl;
 }
 
-Window::Window(const int width, const int height, const char *title) {
+Window::Window(const int width, const int height, const char *title, std::shared_ptr<Raytracer> raytracer) : 
+    raytracer(raytracer), width(width), height(height) {
     
     glfwSetErrorCallback(error_callback);
 	
@@ -34,6 +31,8 @@ Window::~Window() {
 }
 
 void Window::render() const {
+
+    // TODO: move to separate file(s)
 
     const char *vertexsource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
@@ -73,37 +72,14 @@ void Window::render() const {
    glDeleteShader(vertexshader);
    glDeleteShader(fragmentshader);
 
-   unsigned int VBO, VAO;
-   glGenVertexArrays(1, &VAO);
-   glGenBuffers(1, &VBO);
-   glBindVertexArray(VAO);
-   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
+   setupVertexArrayObject();
+   setupVertexBufferObject(vertices, sizeof(vertices));
    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
    glEnableVertexAttribArray(0);
    glEnableVertexAttribArray(1);
 
-   // generate textures
-   unsigned int texture;
-   glGenTextures(1, &texture);
-   glBindTexture(GL_TEXTURE_2D, texture);
-
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-   // set texture filtering parameters
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-   // Generate some texture data
-
-   std::mt19937 engine(1);
-   std::uniform_real_distribution<float> dist(0.0, 1.0);
-   std::function<float()> randomFloat = bind(dist, engine);
-
-   int n = 100;
-
-   unsigned char *data = new unsigned char[3 * n * n];
+   unsigned int texture = setupTexture();
 
    glUseProgram(shaderprogram);
    glUniform1i(glGetUniformLocation(shaderprogram, "texture1"), 0);
@@ -111,14 +87,15 @@ void Window::render() const {
    // disable vsync
    glfwSwapInterval(0);
 
+   int samples = 1;
+
     // render loop
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        for (int i = 0; i < 3 * n * n; i++) {
-            data[i] = 255 * randomFloat();
-        }
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, n, n, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+        raytracer->render(samples);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer->getFramebuffer());
 
         // Draw triangles
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -128,16 +105,41 @@ void Window::render() const {
     }
 }
 
-void Window::setupTexture() const {
+unsigned int Window::setupTexture() const {
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
+    // set wrap parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    return texture;
+}
+
+unsigned int Window::setupVertexBufferObject(const float vertices[], const unsigned int &size) const {
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+    return VBO;
+}
+
+unsigned int Window::setupVertexArrayObject() const {
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    return VAO;
 }
 
 unsigned int Window::setupShader(const char *source, const unsigned int &shadertype) const {
+    
     unsigned int shader = glCreateShader(shadertype);
-
     glShaderSource(shader, 1, &source, NULL);
     glCompileShader(shader);
-
+    
     int success;
     char infolog[512];
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);

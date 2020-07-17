@@ -30,7 +30,7 @@ inline Vector3D randomInUnitSphere(std::function<float()>& randomFloat) {
 
 /**
  *  @brief Reflects/mirrors vector from surface
- *  when normal vector \f$ \vec{n} \f$ is known. 
+ *  when normal vector is known
  *  @param v is being mirrored
  *  @param n is normal vector
  */

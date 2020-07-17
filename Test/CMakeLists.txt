@@ -24,7 +24,7 @@ add_executable(gtest_run Vector3DTest.cpp
               ../Source/materials/Metal.cpp
               "../Source/materials/Mix.cpp"
               ../Source/primitives/Aabb.cpp
-              EngineTest.cpp
+              
         "../Source/core/Raytracer.cpp"
               ../Source/primitives/Bvhnode.cpp
               MetalTest.cpp

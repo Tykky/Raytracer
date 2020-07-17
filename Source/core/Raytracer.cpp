@@ -1,5 +1,4 @@
 #include <random>
-#include <functional>
 #include <fstream>
 #include "Raytracer.h"
 #include "Utility.h"
@@ -31,10 +30,7 @@ Vector3D Raytracer::rayTrace(Ray& r, std::function<float()>& randomFloat) const 
 
 Raytracer::Raytracer(Primitive *world, const Camera &camera, int width, int height) :
         world(world), camera(camera), width(width), height(height), depthlimit(50) {
-    framebuffer = std::make_unique<std::unique_ptr<Vector3D[]>[]>(height);
-    for (int i = 0; i < height; ++i) {
-        framebuffer[i] = std::make_unique<Vector3D[]>(width);
-    }
+    framebuffer = std::make_unique<unsigned char[]>(3 * width * height);
 }
 
 void Raytracer::render(int samples) {
@@ -58,7 +54,12 @@ void Raytracer::render(int samples) {
                 }
                 color /= float(samples);
                 // Write gamma corrected pixels to framebuffer
-                framebuffer[y][x] = Vector3D(sqrt(color.getR()), sqrt(color.getG()), sqrt(color.getB()));
+                // Data format: [R, G, B, R, G, B, ...]
+                // stride = 3 bytes
+                int i = 3 * (width * y + x);
+                framebuffer[i + 0] = int(std::sqrt(color.getR()) * 255.99);
+                framebuffer[i + 1] = int(std::sqrt(color.getG()) * 255.99);
+                framebuffer[i + 2] = int(std::sqrt(color.getB()) * 255.99);
             }
         }
     }
@@ -68,14 +69,16 @@ void Raytracer::frammebufferToNetpbm(std::string filename) {
     std::ofstream of;
     of.open(filename + ".ppm");
     of << "P3\n" << width << " " << height << "\n255\n";
-    for (int y = height - 1; y >= 0; --y) {
-        for (int x = 0; x < width; ++x) {
-            of << int(framebuffer[y][x].getR() * 255.99) << " "
-               << int(framebuffer[y][x].getG() * 255.99) << " "
-               << int(framebuffer[y][x].getB() * 255.99) << "\n";
-        }
+    for (int i = 3 * width * height - 4; i >= 0; i -= 3) {
+        of << int(framebuffer[i]) << " ";
+        of << int(framebuffer[i + 1]) << " ";
+        of << int(framebuffer[i + 2]) << "\n";
     }
     of.close();
+}
+
+unsigned char* Raytracer::getFramebuffer() {
+    return framebuffer.get();
 }
 
 void Raytracer::bounceLimit(int limit) {

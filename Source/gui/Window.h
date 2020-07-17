@@ -2,15 +2,22 @@
 #define RAYTRACER_WINDOW_H
 
 #define GLEW_STATIC
-#include "GL/glew.h"
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "core/Raytracer.h"
 
 class Window {
 
 private:
+    std::shared_ptr<Raytracer> raytracer;
     GLFWwindow *window;
+    int width;
+    int height;
     void render() const;
-    void setupTexture() const;
+    unsigned int setupTexture() const;
+    /** @param size is size of vertices array in bytes */
+    unsigned int setupVertexBufferObject(const float vertices[], const unsigned int &size) const;
+    unsigned int setupVertexArrayObject() const;
 
     /**
      * @brief Creates new GLSL shader and compiles it
@@ -26,7 +33,7 @@ private:
     void linkShaders(const int &shaderprogram,int shaders[], const unsigned int &size) const;
 
 public:
-    Window(int width, int height, const char *title);
+    Window(int width, int height, const char *title, std::shared_ptr<Raytracer> raytracer);
     ~Window();
 };
 

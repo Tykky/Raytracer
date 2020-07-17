@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12.4)
 project(Raytracer)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 
 if(WIN32)
 	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
