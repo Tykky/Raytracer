@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #include "core/Raytracer.h"
 
+
+
 class Window {
 
 private:
@@ -14,6 +16,7 @@ private:
     int width;
     int height;
     void render() const;
+    /** @return texture id */
     unsigned int setupTexture() const;
     /** @param size is size of vertices array in bytes */
     unsigned int setupVertexBufferObject(const float vertices[], const unsigned int &size) const;

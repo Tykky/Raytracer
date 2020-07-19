@@ -21,7 +21,7 @@ public:
     Vector3D getDirection() const;
 
     /**
-     * @return Returns coordinates for point c
+     * @return coordinates for point c
      * along line position -> direction
      */
     Vector3D pointAtC(float c) const;

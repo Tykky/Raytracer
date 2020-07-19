@@ -1,4 +1,5 @@
 #include "Window.h"
+#include <thread>
 
 void error_callback(const int error, const char* description) {
   std::cerr << "ERROR::" << error << " " << description << std::endl;
@@ -87,22 +88,24 @@ void Window::render() const {
    // disable vsync
    glfwSwapInterval(0);
 
-   int samples = 1;
+   auto invokeRaytracerRender = [](std::shared_ptr<Raytracer> raytracer, int samples) {
+        raytracer->render(samples);
+   };
 
-    // render loop
+   int samples = 10;
+
+   // Run raytracer on separate thread
+   std::thread th(invokeRaytracerRender, raytracer, samples);
+
+    // Update framebuffer to screen
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
-
-
-        raytracer->render(samples);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer->getFramebuffer());
-
-        // Draw triangles
         glDrawArrays(GL_TRIANGLES, 0, 6);
-
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+    th.detach();
 }
 
 unsigned int Window::setupTexture() const {

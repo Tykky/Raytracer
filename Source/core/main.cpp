@@ -16,10 +16,19 @@
 int main() {
 
 
-    int width = 800;
-    int height = 600;
+    int width = 1280;
+    int height = 720;
     int fov = 90;
     int scene = 0;
+
+    std::cout << "Enter image width: ";
+    std::cin >> width;
+    std::cout << "Enter image height: ";
+    std::cin >> height;
+    std::cout << "Enter camera preset (0-3): ";
+    std::cin >> scene;
+    std::cout << "Enter fov: ";
+    std::cin >> fov;
 
     Camera cam(fov, float(width) / float(height), Vector3D(-0.2, 0.5, 1), Vector3D(0, 0.5, -1),
         Vector3D(0, 0.5, 0));
@@ -39,7 +48,7 @@ int main() {
             Vector3D(0, 0.5, 0));
     }
 
-    const int n = 100;
+    const int n = 1000;
 
     Primitive* list[n + 5];
     Mix mat(Vector3D(0.3, 0.3, 0.8), Vector3D(0.2, 1, 0.1), 0.1, 0.1, 1, 1);
@@ -59,7 +68,7 @@ int main() {
     std::uniform_real_distribution<float> dist(0.0, 1.0);
     std::function<float()> randomFloat = std::bind(dist, gen);
 
-    int multp = 5;
+    int multp = 15;
 
     for (int i = 0; i < n; ++i) {
         float randi = randomFloat();

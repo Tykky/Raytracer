@@ -3,6 +3,7 @@
 CMakeSettings.json
 /build
 Documentation/latex
+Documentation/api
 Documentation/xml
 Documentation/html
 Documentation/_build
