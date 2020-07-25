@@ -21,6 +21,7 @@ int main() {
     int fov = 90;
     int scene = 0;
 
+    /*
     std::cout << "Enter image width: ";
     std::cin >> width;
     std::cout << "Enter image height: ";
@@ -29,6 +30,7 @@ int main() {
     std::cin >> scene;
     std::cout << "Enter fov: ";
     std::cin >> fov;
+    */
 
     Camera cam(fov, float(width) / float(height), Vector3D(-0.2, 0.5, 1), Vector3D(0, 0.5, -1),
         Vector3D(0, 0.5, 0));

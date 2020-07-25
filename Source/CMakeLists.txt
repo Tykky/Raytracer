@@ -11,9 +11,16 @@ set(RAYTRACER_SRC core/Ray.cpp
         materials/Metal.cpp
         materials/Dielectric.cpp
         materials/Mix.cpp)
-set(RAYTRACER_GUI gui/Window.cpp)
+set(RAYTRACER_GUI gui/Window.cpp
+        ../lib/imgui/imgui.cpp
+        ../lib/imgui/imgui_draw.cpp
+        ../lib/imgui/imgui_widgets.cpp
+        ../lib/imgui/imgui_demo.cpp
+        ../lib/imgui/examples/imgui_impl_glfw.cpp
+        ../lib/imgui/examples/imgui_impl_opengl3.cpp)
 
 if(BUILD_GUI)
+    include_directories(../lib/imgui ../lib/imgui/examples)
     if(WIN32)
         add_executable(raytracer core/main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
     else()

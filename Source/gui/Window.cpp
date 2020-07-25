@@ -1,8 +1,11 @@
 #include "Window.h"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 #include <thread>
 
 void error_callback(const int error, const char* description) {
-  std::cerr << "ERROR::" << error << " " << description << std::endl;
+  std::cerr << "[ERROR] " << error << " " << description << std::endl;
 }
 
 Window::Window(const int width, const int height, const char *title, std::shared_ptr<Raytracer> raytracer) : 
@@ -33,57 +36,7 @@ Window::~Window() {
 
 void Window::render() const {
 
-    // TODO: move to separate file(s)
-
-    const char *vertexsource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec2 aTexCoord;\n"
-    "out vec2 TexCoord;"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "   TexCoord = aTexCoord;\n"
-    "}\0";
-  
-    const char *fragmentsource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "in vec2 TexCoord;\n"
-    "uniform sampler2D texture1;"
-    "void main()\n"
-    "{\n"
-    "   FragColor = texture(texture1, TexCoord);\n"
-    "}\n\0";
-
-    float vertices[] = {
-         // position          // texture coordinates
-         1.0f,  1.0f, 0.0f,   1.0f, 1.0f,
-         1.0f, -1.0f, 0.0f,   1.0f, 0.0f, 
-        -1.0f,  1.0f, 0.0f,   0.0f, 1.0f,
-         1.0f, -1.0f, 0.0f,   1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f,   0.0f, 0.0f,
-        -1.0f,  1.0f, 0.0f,   0.0f, 1.0f
-    };
-
-   unsigned int vertexshader = setupShader(vertexsource, GL_VERTEX_SHADER);
-   unsigned int fragmentshader = setupShader(fragmentsource, GL_FRAGMENT_SHADER);
-
-   int shaderprogram = glCreateProgram();
-   int shaders[] = { vertexshader, fragmentshader };
-   linkShaders(shaderprogram, shaders, 2);
-   glDeleteShader(vertexshader);
-   glDeleteShader(fragmentshader);
-
-   setupVertexArrayObject();
-   setupVertexBufferObject(vertices, sizeof(vertices));
-   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-   glEnableVertexAttribArray(0);
-   glEnableVertexAttribArray(1);
-
    unsigned int texture = setupTexture();
-
-   glUseProgram(shaderprogram);
-   glUniform1i(glGetUniformLocation(shaderprogram, "texture1"), 0);
 
    // disable vsync
    glfwSwapInterval(0);
@@ -92,18 +45,37 @@ void Window::render() const {
         raytracer->render(samples);
    };
 
-   int samples = 10;
+   int samples = 100;
 
    // Run raytracer on separate thread
    std::thread th(invokeRaytracerRender, raytracer, samples);
 
+   ImGui::CreateContext();
+   ImGui::StyleColorsDark();
+   ImGui_ImplGlfw_InitForOpenGL(window, true);
+   ImGui_ImplOpenGL3_Init("#version 130");
+
     // Update framebuffer to screen
     while (!glfwWindowShouldClose(window)) {
+
+        glfwPollEvents();
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("Raytracer window");
+        ImGui::Image((void*)(intptr_t)texture, ImVec2(width, height));
+        ImGui::End();
+
+        ImGui::Render();
+
         glClear(GL_COLOR_BUFFER_BIT);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer->getFramebuffer());
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        //glDrawArrays(GL_TRIANGLES, 0, 6);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         glfwSwapBuffers(window);
-        glfwPollEvents();
     }
     th.detach();
 }
@@ -149,13 +121,13 @@ unsigned int Window::setupShader(const char *source, const unsigned int &shadert
 
     if(!success) {
         glGetShaderInfoLog(shader, 512, NULL, infolog);
-        std::cerr << "ERROR::SHADER::0x" << std::hex << shadertype << "::COMPILATION_FAILED " << infolog << std::endl;
+        std::cerr << "[ERROR] shader 0x" << std::hex << shadertype << " compilation failed: " << infolog << std::endl;
     }
     
     return shader;
 }
 
-void Window::linkShaders(const int &shaderprogram, int shaders[], const unsigned int &size) const {
+void Window::linkShaders(const int &shaderprogram, unsigned int shaders[], const unsigned int &size) const {
     for (int i = 0; i < size; i++) {
         glAttachShader(shaderprogram, shaders[i]);
     }
@@ -165,6 +137,6 @@ void Window::linkShaders(const int &shaderprogram, int shaders[], const unsigned
     glGetProgramiv(shaderprogram, GL_LINK_STATUS, &success);
     if(!success) {
         glGetProgramInfoLog(shaderprogram, 512, NULL, infolog);
-        std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED " << infolog << std::endl;
+        std::cerr << "[ERROR] shader program linking failed: " << infolog << std::endl;
     }
 }

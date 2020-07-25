@@ -7,3 +7,6 @@
 [submodule "lib/glew-cmake"]
 	path = lib/glew-cmake
 	url = https://github.com/Perlmint/glew-cmake
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/ocornut/imgui

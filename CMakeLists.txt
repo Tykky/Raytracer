@@ -22,11 +22,11 @@ find_package(OpenMP REQUIRED)
 link_libraries(OpenMP::OpenMP_CXX)
 
 if(BUILD_GUI)
+	find_package(OpenGL REQUIRED)
 	include_directories(lib/glew-cmake/include)
 	add_subdirectory(lib/glfw)
 	add_subdirectory(lib/glew-cmake)
 	add_subdirectory(lib/glew-cmake/build/cmake)
-	find_package(OpenGL REQUIRED)
 endif()
 
 if(BUILD_GUI OR BUILD_CLI)

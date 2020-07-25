@@ -6,8 +6,6 @@
 #include <GLFW/glfw3.h>
 #include "core/Raytracer.h"
 
-
-
 class Window {
 
 private:
@@ -33,7 +31,7 @@ private:
      * @param shaders is a array of already compiled shaders
      * @param size is number of elements in the shaders[] array
      */
-    void linkShaders(const int &shaderprogram,int shaders[], const unsigned int &size) const;
+    void linkShaders(const int &shaderprogram, unsigned int shaders[], const unsigned int &size) const;
 
 public:
     Window(int width, int height, const char *title, std::shared_ptr<Raytracer> raytracer);

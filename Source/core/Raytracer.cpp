@@ -56,10 +56,10 @@ void Raytracer::render(int samples) {
                 // Write gamma corrected pixels to framebuffer
                 // Data format: [R, G, B, R, G, B, ...]
                 // stride = 3 bytes
-                int i = 3 * (width * y + x);
-                framebuffer[i + 0] = int(std::sqrt(color.getR()) * 255.99);
-                framebuffer[i + 1] = int(std::sqrt(color.getG()) * 255.99);
-                framebuffer[i + 2] = int(std::sqrt(color.getB()) * 255.99);
+                int i = 3 * (width * height - width * y + x);
+                framebuffer[i + 0] = static_cast<int>(std::sqrt(color.getR()) * 255.99);
+                framebuffer[i + 1] = static_cast<int>(std::sqrt(color.getG()) * 255.99);
+                framebuffer[i + 2] = static_cast<int>(std::sqrt(color.getB()) * 255.99);
             }
         }
     }
@@ -69,10 +69,10 @@ void Raytracer::frammebufferToNetpbm(std::string filename) {
     std::ofstream of;
     of.open(filename + ".ppm");
     of << "P3\n" << width << " " << height << "\n255\n";
-    for (int i = 3 * width * height - 4; i >= 0; i -= 3) {
-        of << int(framebuffer[i]) << " ";
-        of << int(framebuffer[i + 1]) << " ";
-        of << int(framebuffer[i + 2]) << "\n";
+    for (int i = 0; i < 3 * width * height; i++) {
+        of << static_cast<int>(framebuffer[i]) << " ";
+        of << static_cast<int>(framebuffer[i + 1]) << " ";
+        of << static_cast<int>(framebuffer[i + 2]) << "\n";
     }
     of.close();
 }
