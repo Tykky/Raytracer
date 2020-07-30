@@ -48,7 +48,7 @@ System depedencies
 * `Google Test <https://github.com/google/googletest>`_ (via git submodule)
 * `GLFW <https://github.com/glfw/glfw>`_ (via git submodule)
 * `GLEW <https://github.com/nigels-com/glew>`_ (via git submodule)
-* `imgui <https://github.com/ocornut/imgui>`_ (via git submodule)
+* `Dear ImGui <https://github.com/ocornut/imgui>`_ (via git submodule)
 * `OpenGL <https://www.opengl.org/>`_
 
 Build depedencies 
