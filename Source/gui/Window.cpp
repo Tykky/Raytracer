@@ -7,8 +7,8 @@ void error_callback(const int error, const char* description) {
   std::cerr << "[ERROR] " << error << " " << description << std::endl;
 }
 
-Window::Window(const int width, const int height, const char *title, std::shared_ptr<Raytracer> raytracer) : 
-    raytracer(raytracer), width(width), height(height) {
+Window::Window(const int width, const int height, const char *title) :
+    width(width), height(height) {
     
     glfwSetErrorCallback(error_callback);
 	
@@ -29,7 +29,6 @@ Window::Window(const int width, const int height, const char *title, std::shared
 }
 
 Window::~Window() {
-    glfwTerminate();
     glfwDestroyWindow(window);
 }
 

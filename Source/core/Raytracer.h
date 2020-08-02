@@ -21,7 +21,7 @@ private:
     Camera camera;
     int width;
     int height;
-    int depthlimit;
+    int bouncelimit;
 
     /**
      *  @brief Computers color for Ray r
@@ -41,9 +41,14 @@ public:
 	/* @brief stores frambuffer data to .ppm file */
     void frammebufferToNetpbm(std::string filename);
 
-    unsigned char* getFramebuffer();
+    unsigned char *getFramebuffer();
 
-    void bounceLimit(int limit);
+    void setBounceLimit(int bouncelimit);
+    void setWidth(int width);
+    void setHeight(int height);
+    void setCamera(Camera &camera);
+    void setWorld(Primitive *world);
+
 };
 
 

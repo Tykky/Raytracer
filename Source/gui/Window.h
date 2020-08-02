@@ -8,16 +8,14 @@
 class Window {
 
 private:
-    std::shared_ptr<Raytracer> raytracer;
     GLFWwindow *window;
     int width;
     int height;
     void render() const;
 
 public:
-    Window(int width, int height, const char *title, std::shared_ptr<Raytracer> raytracer);
+    Window(int width, int height, const char *title);
     ~Window();
 };
-
 
 #endif //RAYTRACER_WINDOW_H

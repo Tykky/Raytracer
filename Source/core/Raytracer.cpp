@@ -11,10 +11,10 @@ Vector3D Raytracer::rayTrace(Ray& r, std::function<float()>& randomFloat) const 
     const float floaterror = 0.001;
     Vector3D color(1, 1, 1);
 
-    while (world->hit(r, floaterror, std::numeric_limits<float>::max(), record)) {
+    while (world && world->hit(r, floaterror, std::numeric_limits<float>::max(), record)) {
         Ray scatter;
         Vector3D attenuation;
-        if (depth < depthlimit && record.matptr->scatter(r, record, attenuation, scatter, randomFloat)) {
+        if (depth < bouncelimit && record.matptr->scatter(r, record, attenuation, scatter, randomFloat)) {
             depth++;
             r = scatter;
             color *= attenuation;
@@ -29,7 +29,7 @@ Vector3D Raytracer::rayTrace(Ray& r, std::function<float()>& randomFloat) const 
 }
 
 Raytracer::Raytracer(Primitive *world, const Camera &camera, int width, int height) :
-        world(world), camera(camera), width(width), height(height), depthlimit(50) {
+        world(world), camera(camera), width(width), height(height), bouncelimit(50) {
     framebuffer = std::make_unique<unsigned char[]>(3 * width * height);
 }
 
@@ -56,7 +56,7 @@ void Raytracer::render(int samples) {
                 // Write gamma corrected pixels to framebuffer
                 // Data format: [R, G, B, R, G, B, ...]
                 // stride = 3 bytes
-                int i = 3 * (width * height - width * y + x);
+                int i = 3 * (width * height - (width * y + x)) - 3;
                 framebuffer[i + 0] = static_cast<int>(std::sqrt(color.getR()) * 255.99);
                 framebuffer[i + 1] = static_cast<int>(std::sqrt(color.getG()) * 255.99);
                 framebuffer[i + 2] = static_cast<int>(std::sqrt(color.getB()) * 255.99);
@@ -81,6 +81,25 @@ unsigned char* Raytracer::getFramebuffer() {
     return framebuffer.get();
 }
 
-void Raytracer::bounceLimit(int limit) {
-    depthlimit = limit;
+void Raytracer::setBounceLimit(int bouncelimit) {
+    this->bouncelimit = bouncelimit;
 }
+
+void Raytracer::setWidth(int width) {
+    this->width = width;
+    this->framebuffer = std::make_unique<unsigned char[]>(3 * width * height);
+}
+
+void Raytracer::setHeight(int height) {
+    this->height = height;
+    this->framebuffer = std::make_unique<unsigned char[]>(3 * width * height);
+}
+
+void Raytracer::setCamera(Camera &camera) {
+    this->camera = camera;
+}
+
+void Raytracer::setWorld(Primitive *world) {
+    this->world = world;
+}
+
