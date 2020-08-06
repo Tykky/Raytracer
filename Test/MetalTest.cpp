@@ -7,7 +7,7 @@
 class MetalTest : public ::testing::Test {
 protected:
 
-    Material *mat;
+    std::shared_ptr<Material> mat;
     std::mt19937 engine;
     std::uniform_real_distribution<float> dist;
     std::function<float()> randomfloat;
@@ -16,12 +16,9 @@ protected:
         engine = std::mt19937(1337);
         dist = std::uniform_real_distribution<float>(0, 1);
         randomfloat = bind(dist, engine);
-        mat = new Metal(Vector3D(0.5,0.5,0.5),0);
+        mat = std::make_shared<Metal>(Vector3D(0.5,0.5,0.5),0);
     }
 
-    void TearDown() {
-        delete mat;
-    }
 };
 
 TEST_F(MetalTest, scattertest) {

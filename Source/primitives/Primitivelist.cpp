@@ -1,8 +1,10 @@
 #include "Primitivelist.h"
+
+#include <utility>
 #include "core/Utility.h"
 
-Primitivelist::Primitivelist(Primitive **l, int n) :
-        size(n), list(l) {
+Primitivelist::Primitivelist(std::vector<std::shared_ptr<Primitive>> l) :
+    list(std::move(l)) {
 }
 
 bool Primitivelist::hit(const Ray &r, float cmin, float cmax, hitrecord &record) const {
@@ -12,7 +14,7 @@ bool Primitivelist::hit(const Ray &r, float cmin, float cmax, hitrecord &record)
     float closest = cmax;
 
     // Test Ray r against all primitives
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < list.size(); ++i) {
         // Preserve only the closest hit
         if (list[i]->hit(r, cmin, closest, tmprec)) {
             hit = true;
@@ -24,7 +26,7 @@ bool Primitivelist::hit(const Ray &r, float cmin, float cmax, hitrecord &record)
 }
 
 bool Primitivelist::boundingBox(float c0, float c1, Aabb &box) const {
-    if(size < 1) return false;
+    if(list.empty()) return false;
 
     Aabb tmpbox;
     bool first = list[0]->boundingBox(c0,c1,tmpbox);
@@ -32,7 +34,7 @@ bool Primitivelist::boundingBox(float c0, float c1, Aabb &box) const {
     if(!first) return false;
 
     box = tmpbox;
-    for (int i = 1; i < size; ++i) {
+    for (int i = 1; i < list.size(); ++i) {
         if(list[i]->boundingBox(c0,c1,tmpbox)) {
             box = surroundingBox(box,tmpbox);
         } else {

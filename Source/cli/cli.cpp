@@ -51,19 +51,13 @@ int main(int argc, char** argv) {
 
     const int n = 1000;
 
-    Primitive* list[n + 5];
-    Mix mat(Vector3D(0.3, 0.3, 0.8), Vector3D(0.2, 1, 0.1), 0.1, 0.1, 1, 1);
-    Mix lamb(Vector3D(0.3, 0.3, 0.3), Vector3D(0.1, 0.1, 0.1), 0, 0, 0.1, 1);
-    Lambertian red(Vector3D(1, 0.2, 0.2));
-    Dielectric glass = Dielectric(1.5);
-    Mix close(Vector3D(0.0, 0.3, 0.3), Vector3D(1, 1, 1), 0.1, 0, 1, 1);
+    std::vector<std::shared_ptr<Primitive>> list(n + 5);
+    std::shared_ptr<Material> matptr = std::make_shared<Mix>(Vector3D(0.3, 0.3, 0.8), Vector3D(0.2, 1, 0.1), 0.1, 0.1, 1, 1);
+    std::shared_ptr<Material> lambptr = std::make_shared<Mix>(Vector3D(0.3, 0.3, 0.3), Vector3D(0.1, 0.1, 0.1), 0, 0, 0.1, 1);
+    std::shared_ptr<Material> redptr = std::make_shared<Lambertian>(Vector3D(1, 0.2, 0.2));
+    std::shared_ptr<Material> glassptr = std::make_shared<Dielectric>(1.5);
+    std::shared_ptr<Material> closeptr = std::make_shared<Mix>(Vector3D(0.0, 0.3, 0.3), Vector3D(1, 1, 1), 0.1, 0, 1, 1);
     Mix gold(Vector3D(0.85, 0.64, 0.12), Vector3D(0.85, 0.64, 0.12), 0.9, 0.1, 0, 1);
-
-    Material* matptr = &mat;
-    Material* lambptr = &lamb;
-    Material* glassptr = &glass;
-    Material* redptr = &red;
-    Material* closeptr = &close;
 
     std::mt19937 gen(456);
     std::uniform_real_distribution<float> dist(0.0, 1.0);
@@ -71,28 +65,26 @@ int main(int argc, char** argv) {
 
     int multp = 15;
 
-
     for (int i = 0; i < n; ++i) {
         float randi = randomFloat();
         float radius = randomFloat();
         if (randi < 0.25) {
-            list[i] = new Sphere(Vector3D(multp * randomFloat() - multp / 2, 0.1, -multp * randomFloat()), 0.1, glassptr);
+            list[i] = std::make_shared<Sphere>(Vector3D(multp * randomFloat() - multp / 2, 0.1, -multp * randomFloat()), 0.1, glassptr);
         } else if (randi < 0.5) {
-            list[i] = new Sphere(Vector3D(multp * randomFloat() - multp / 2, 0.1, -multp * randomFloat()), 0.1, redptr);
+            list[i] = std::make_shared<Sphere>(Vector3D(multp * randomFloat() - multp / 2, 0.1, -multp * randomFloat()), 0.1, redptr);
         } else {
-            list[i] = new Sphere(Vector3D(multp * randomFloat() - multp / 2, 0.1, -multp * randomFloat()), 0.1, matptr);
+            list[i] = std::make_shared<Sphere>(Vector3D(multp * randomFloat() - multp / 2, 0.1, -multp * randomFloat()), 0.1, matptr);
         }
     }
-    list[n] = new Sphere(Vector3D(0, -1000, 0), 1000, lambptr);
+    list[n] = std::make_shared<Sphere>(Vector3D(0, -1000, 0), 1000, lambptr);
 
-    list[n + 1] = new Sphere(Vector3D(0, 0.5, -1), 0.5, closeptr);
-    list[n + 2] = new Sphere(Vector3D(-10, 4.7, -20), 5, matptr);
-    list[n + 3] = new Sphere(Vector3D(-1.5, 0.5, -3), 0.5, closeptr);
-    list[n + 4] = new Sphere(Vector3D(-1.5, 15, -3), 10, lambptr);
+    list[n + 1] = std::make_shared<Sphere>(Vector3D(0, 0.5, -1), 0.5, closeptr);
+    list[n + 2] = std::make_shared<Sphere>(Vector3D(-10, 4.7, -20), 5, matptr);
+    list[n + 3] = std::make_shared<Sphere>(Vector3D(-1.5, 0.5, -3), 0.5, closeptr);
+    list[n + 4] = std::make_shared<Sphere>(Vector3D(-1.5, 15, -3), 10, lambptr);
 
-    Primitive* world = new Primitivelist(list, n + 5);
-
-    Primitive* bvh = new Bvhnode(list, n + 5, 0, 1, randomFloat);
+    std::shared_ptr<Primitive> bvh = std::make_shared<Bvhnode>(list, 0, n + 4, 0, 1, randomFloat);
+    //std::shared_ptr<Primitive> plist = std::make_shared<Primitivelist>(list);
 
     Raytracer engine(bvh, cam, width, height);
 

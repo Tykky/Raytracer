@@ -7,8 +7,8 @@ Mix::Mix(const Vector3D &lalbedo, const Vector3D &malbedo, float metalness, floa
            float ior) :
         lalbedo(lalbedo), malbedo(malbedo), metalness(metalness), fresnelfactor(fresnelfactor), ior(ior)  {
 
-    pLambertian = std::make_unique<Lambertian>(this->lalbedo);
-    pMetal = std::make_unique<Metal>(this->malbedo,roughness);
+    lambertian = std::make_shared<Lambertian>(lalbedo);
+    metal = std::make_shared<Metal>(malbedo, roughness);
 
 }
 
@@ -27,9 +27,9 @@ bool Mix::scatter(const Ray &r, const hitrecord &record, Vector3D &attenuation, 
     }
 
     if(randomFloat() < metalness) {
-        return pMetal->scatter(r,record,attenuation,scatter,randomFloat);
+        return metal->scatter(r, record, attenuation, scatter, randomFloat);
     }
 	
-    return pLambertian->scatter(r,record,attenuation,scatter,randomFloat);
+    return lambertian->scatter(r, record, attenuation, scatter, randomFloat);
 }
 

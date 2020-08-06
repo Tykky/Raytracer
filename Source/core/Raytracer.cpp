@@ -1,17 +1,19 @@
 #include <random>
+#include <vector>
+#include <memory>
 #include <fstream>
 #include "Raytracer.h"
 #include "Utility.h"
 #include "materials/Material.h"
 
-Vector3D Raytracer::rayTrace(Ray& r, std::function<float()>& randomFloat) const {
+Vector3D Raytracer::rayTrace(Ray& r, std::function<float()> &randomFloat) const {
 	
     int depth = 0;
     hitrecord record;
-    const float floaterror = 0.001;
+    const float epsilon = 0.001f;
     Vector3D color(1, 1, 1);
 
-    while (world && world->hit(r, floaterror, std::numeric_limits<float>::max(), record)) {
+    while (world && world->hit(r, epsilon, std::numeric_limits<float>::max(), record)) {
         Ray scatter;
         Vector3D attenuation;
         if (depth < bouncelimit && record.matptr->scatter(r, record, attenuation, scatter, randomFloat)) {
@@ -28,9 +30,9 @@ Vector3D Raytracer::rayTrace(Ray& r, std::function<float()>& randomFloat) const 
     return color;
 }
 
-Raytracer::Raytracer(Primitive *world, const Camera &camera, int width, int height) :
-        world(world), camera(camera), width(width), height(height), bouncelimit(50) {
-    framebuffer = std::make_unique<unsigned char[]>(3 * width * height);
+Raytracer::Raytracer(std::shared_ptr<Primitive> world, const Camera &camera, int width, int height) :
+        world(std::move(world)), camera(camera), width(width), height(height), bouncelimit(50),
+        framebuffer(std::vector<unsigned char>(3 * width * height)) {
 }
 
 void Raytracer::render(int samples) {
@@ -42,11 +44,9 @@ void Raytracer::render(int samples) {
         std::function<float()> randomFloat = bind(dist, engine);
 
 #pragma omp for
-        // Loop through every pixel on screen
         for (int y = height - 1; y >= 0; --y) {
             for (int x = 0; x < width; ++x) {
                 Vector3D color = Vector3D();
-                // Sampling
                 for (int s = 0; s < samples; s++) {
                     Ray r = camera.getRay((float(x) + randomFloat()) / float(width),
                                           (float(y) + randomFloat()) / float(height));
@@ -69,16 +69,22 @@ void Raytracer::frammebufferToNetpbm(std::string filename) {
     std::ofstream of;
     of.open(filename + ".ppm");
     of << "P3\n" << width << " " << height << "\n255\n";
-    for (int i = 0; i < 3 * width * height; i++) {
-        of << static_cast<int>(framebuffer[i]) << " ";
-        of << static_cast<int>(framebuffer[i + 1]) << " ";
-        of << static_cast<int>(framebuffer[i + 2]) << "\n";
+    for (int y = height - 1; y >= 0; --y) {
+        for (int x = 0; x < width; ++x) {
+            int i = 3 * (width * height - (width * y + x)) - 3;
+            of << static_cast<int>(framebuffer[i + 0]) << " ";
+            of << static_cast<int>(framebuffer[i + 1]) << " ";
+            of << static_cast<int>(framebuffer[i + 2]) << "\n";
+        }
     }
     of.close();
 }
 
-unsigned char* Raytracer::getFramebuffer() {
-    return framebuffer.get();
+std::vector<unsigned char>& Raytracer::getFramebuffer() {
+    return framebuffer;
+}
+void Raytracer::clearFramebuffer() {
+    framebuffer = std::vector<unsigned char>(3 * width * height);
 }
 
 void Raytracer::setBounceLimit(int bouncelimit) {
@@ -87,19 +93,19 @@ void Raytracer::setBounceLimit(int bouncelimit) {
 
 void Raytracer::setWidth(int width) {
     this->width = width;
-    this->framebuffer = std::make_unique<unsigned char[]>(3 * width * height);
+    clearFramebuffer();
 }
 
 void Raytracer::setHeight(int height) {
     this->height = height;
-    this->framebuffer = std::make_unique<unsigned char[]>(3 * width * height);
+    clearFramebuffer();
 }
 
 void Raytracer::setCamera(Camera &camera) {
     this->camera = camera;
 }
 
-void Raytracer::setWorld(Primitive *world) {
-    this->world = world;
+void Raytracer::setWorld(std::shared_ptr<Primitive> world) {
+    this->world = std::move(world);
 }
 

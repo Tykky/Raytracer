@@ -7,17 +7,11 @@
 #include "Vector3D.h"
 #include "Camera.h"
 
-/**
- * @brief Handles the rendering, writing
- * rendered pixels to framebuffer and storing
- * framebuffer to disk.
- */
-
 class Raytracer {
 
 private:
-    Primitive *world;
-    std::unique_ptr<unsigned char[]> framebuffer;
+    std::shared_ptr<Primitive> world;
+    std::vector<unsigned char> framebuffer;
     Camera camera;
     int width;
     int height;
@@ -26,28 +20,28 @@ private:
     /**
      *  @brief Computers color for Ray r
 	 *  @param r is being traced
-	 *  @param world is data structure that contains all objects.
 	 *  @param randomFloat contains reference to random generator.
      */
-    Vector3D rayTrace(Ray& r, std::function<float()>& randomFloat) const;
+    Vector3D rayTrace(Ray& r, std::function<float()> &randomFloat) const;
 	
 public:
-    /** @param world is pointer to array which contains all primitives in the world */
-    Raytracer(Primitive *world, const Camera &camera, int width, int height);
+    /** @param world is data structure I.e primitivelist or Bvhnode */
+    Raytracer(std::shared_ptr<Primitive> world, const Camera &camera, int width, int height);
 
     /** @brief computes color for every pixel on the screen. */
     void render(int samples);
 
-	/* @brief stores frambuffer data to .ppm file */
+	/** @brief stores frambuffer data to .ppm file */
     void frammebufferToNetpbm(std::string filename);
 
-    unsigned char *getFramebuffer();
+    std::vector<unsigned char>& getFramebuffer();
+    void clearFramebuffer();
 
     void setBounceLimit(int bouncelimit);
     void setWidth(int width);
     void setHeight(int height);
     void setCamera(Camera &camera);
-    void setWorld(Primitive *world);
+    void setWorld(std::shared_ptr<Primitive> world);
 
 };
 

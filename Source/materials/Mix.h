@@ -8,8 +8,8 @@
 class Mix : public Material {
 
 private:
-    std::unique_ptr<Material> pMetal;
-    std::unique_ptr<Material> pLambertian; 
+    std::shared_ptr<Material> metal;
+    std::shared_ptr<Material> lambertian;
     const Vector3D malbedo;
     const Vector3D lalbedo;
     float metalness;

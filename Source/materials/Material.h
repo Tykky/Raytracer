@@ -4,6 +4,7 @@
 #include "core/Ray.h"
 #include "primitives/Primitive.h"
 #include <functional>
+#include <memory>
 
 /** @brief Abstract class which provides interface for all materials. */
 class Material {

@@ -1,7 +1,7 @@
 #include <cmath>
 #include "Sphere.h"
 
-Sphere::Sphere(const Vector3D &center, float radius, Material *mat) :
+Sphere::Sphere(const Vector3D &center, float radius, std::shared_ptr<Material> mat) :
         center(center), radius(radius), matptr(mat) {
 }
 
@@ -14,7 +14,7 @@ bool Sphere::hit(const Ray &r, float cmin, float cmax, hitrecord &record) const 
     float discriminant = b * b - a * c;
 
     if (discriminant > 0) {
-        const float sqroot = sqrt(discriminant);
+        const float sqroot = std::sqrt(discriminant);
         float solution = (-b - sqroot) / a;
         if (solution < cmax && solution > cmin) {
             record.c = solution;

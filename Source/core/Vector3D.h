@@ -2,204 +2,58 @@
 #define RAYTRACER_VECTOR3D_H
 
 #include <iostream>
-#include <cmath>
-#include <string>
 
-/**
- *  @brief Vector3D defines 3 dimensional vector and
- *  it's operators
- */
 class Vector3D {
 
 private:
     float x, y, z;
-	
+
 public:
-    Vector3D() :
-            x(0), y(0), z(0) {
-    }
+    Vector3D();
+    Vector3D(float x, float y, float z);
 
-    Vector3D(float x, float y, float z) :
-            x(x), y(y), z(z) {
-    }
+    float length() const;
+    float lengthSquared() const;
 
-    inline float length() const {
-        return std::sqrt(x * x + y * y + z * z);
-    }
+    void normalize();
 
-    inline float lengthSquared() const {
-        return x * x + y * y + z * z;
-    }
-	
-    inline void normalize() {
-        float k = 1 / std::sqrt(x * x + y * y + z * z);
-        x *= k;
-        y *= k;
-        z *= k;
-    }
+    float dot(const Vector3D &v) const;
 
-    inline float dot(const Vector3D &v) const {
-        return x * v.getX() +
-               y * v.getY() +
-               z * v.getZ();
-    }
-	
-    inline Vector3D cross(const Vector3D &v) const {
-        return {y * v.getZ() - z * v.getY(),
-                z * v.getX() - x * v.getZ(),
-                x * v.getY() - y * v.getX()};
-    }
+    Vector3D cross(const Vector3D &v) const;
 
-    inline float getX() const {
-        return x;
-    }
+    float getX() const;
+    float getY() const;
+    float getZ() const;
+    float getR() const;
+    float getG() const;
+    float getB() const;
 
-    inline float getY() const {
-        return y;
-    }
+    const Vector3D &operator+ () const;
+    Vector3D operator- () const;
+    float operator[] (int i) const;
+    float &operator[] (int i);
 
-    inline float getZ() const {
-        return z;
-    }
+    Vector3D &operator+= (const Vector3D &v);
+    Vector3D &operator-= (const Vector3D &v);
+    Vector3D &operator*= (const Vector3D &v);
+    Vector3D &operator/= (const Vector3D &v);
+    Vector3D &operator+= (float k);
+    Vector3D &operator-= (float k);
+    Vector3D &operator*= (float k);
+    Vector3D &operator/= (float k);
 
-    inline float getR() const {
-        return x;
-    }
-
-    inline float getG() const {
-        return y;
-    }
-
-    inline float getB() const {
-        return z;
-    }
-
-    inline const Vector3D &operator+() const {
-        return *this;
-    }
-
-    inline Vector3D operator-() const {
-        return {-x, -y, -z};
-    }
-
-    inline float operator[](int i) const {
-        if (i == 0) return x;
-        if (i == 1) return y;
-        if (i == 2) return z;
-        throw std::out_of_range("Vector3D : index " + std::to_string(i) + " is out of range");
-    }
-
-    inline float &operator[](int i) {
-        if (i == 0) return x;
-        if (i == 1) return y;
-        if (i == 2) return z;
-        throw std::out_of_range("Vector3D : index " + std::to_string(i) + " is out of range");
-    }
-
-    inline Vector3D &operator+=(const Vector3D &v) {
-        x += v.getX();
-        y += v.getY();
-        z += v.getZ();
-        return *this;
-    }
-
-    inline Vector3D &operator-=(const Vector3D &v) {
-        x -= v.getX();
-        y -= v.getY();
-        z -= v.getZ();
-        return *this;
-    }
-
-    inline Vector3D &operator*=(const Vector3D &v) {
-        x *= v.getX();
-        y *= v.getY();
-        z *= v.getZ();
-        return *this;
-    }
-
-    inline Vector3D &operator/=(const Vector3D &v) {
-        x /= v.getX();
-        y /= v.getY();
-        z /= v.getZ();
-        return *this;
-    }
-
-    inline Vector3D &operator+=(const float k) {
-        x += k;
-        y += k;
-        z += k;
-        return *this;
-    }
-
-    inline Vector3D &operator-=(const float k) {
-        x -= k;
-        y -= k;
-        z -= k;
-        return *this;
-    }
-
-    inline Vector3D &operator*=(const float k) {
-        x *= k;
-        y *= k;
-        z *= k;
-        return *this;
-    }
-
-    inline Vector3D &operator/=(const float k) {
-        x /= k;
-        y /= k;
-        z /= k;
-        return *this;
-    }
-
-    inline std::istream &operator>>(std::istream &is) {
-        is >> x >> y >> z;
-        return is;
-    }
-
-    inline std::ostream &operator<<(std::ostream &os) {
-        os << x << " " << y << " " << z;
-        return os;
-    }
+    std::istream &operator>>(std::istream &is);
+    std::ostream &operator<<(std::ostream &os);
 
 };
 
-inline Vector3D operator+(const Vector3D &v1, const Vector3D &v2) {
-    return {v1.getX() + v2.getX(),
-            v1.getY() + v2.getY(),
-            v1.getZ() + v2.getZ()};
-}
-
-inline Vector3D operator-(const Vector3D &v1, const Vector3D &v2) {
-    return {v1.getX() - v2.getX(),
-            v1.getY() - v2.getY(),
-            v1.getZ() - v2.getZ()};
-}
-
-inline Vector3D operator*(const Vector3D &v1, const Vector3D &v2) {
-    return {v1.getX() * v2.getX(),
-            v1.getY() * v2.getY(),
-            v1.getZ() * v2.getZ()};
-}
-
-inline Vector3D operator*(const float &c, const Vector3D &v) {
-    return {c * v.getX(), c * v.getY(), c * v.getZ()};
-}
-
-inline Vector3D operator*(const Vector3D &v, const float &c) {
-    return {c * v.getX(), c * v.getY(), c * v.getZ()};
-}
-
-inline Vector3D operator/(const Vector3D &v1, const Vector3D &v2) {
-    return {v1.getX() / v2.getX(),
-            v1.getY() / v2.getY(),
-            v1.getZ() / v2.getZ()};
-}
-
-inline Vector3D operator/(const Vector3D &v, const float &c) {
-    return {v.getX() / c, v.getY() / c, v.getZ() / c};
-}
+Vector3D operator+(const Vector3D &v1, const Vector3D &v2);
+Vector3D operator-(const Vector3D &v1, const Vector3D &v2);
+Vector3D operator*(const Vector3D &v1, const Vector3D& v2);
+Vector3D operator*(const float &c, const Vector3D &v);
+Vector3D operator*(const Vector3D &v, const float &c);
+Vector3D operator/(const Vector3D &v1, const Vector3D &v2);
+Vector3D operator/(const Vector3D &v, const float &c);
 
 
 #endif //RAYTRACER_VECTOR3D_H
-

@@ -3,13 +3,14 @@
 
 #include "core/Vector3D.h"
 #include "Primitive.h"
+
 class Sphere : public Primitive {
 private:
     const Vector3D center;
     float radius;
-    Material *matptr;
+    std::shared_ptr<Material> matptr;
 public:
-    Sphere(const Vector3D &center, float radius, Material *mat);
+    Sphere(const Vector3D &center, float radius, std::shared_ptr<Material> mat);
 	/**
 	 * @brief Solves the ray intersection equation
 	 * @param cmin is minimum acceptable solution for ray intersection equation

@@ -10,22 +10,19 @@
 #include "primitives/Sphere.h"
 #include "materials/Mix.h"
 
-inline void toggle(bool &value) {
-    value ? value = false : value = true;
-}
-
 struct menuitem {
-    const char *label;
+    std::string label;
     bool &display;
-    menuitem *submenu = nullptr;
-    const unsigned int submenu_size;
+    const std::vector<menuitem> &submenu = {};
 };
 
 Gui::Gui(GLFWwindow *window) :
         window(window),
-        render_width(800),
-        render_height(600),
-        render_samples(1),
+        render_width(2560),
+        render_height(1440),
+        preview_width(800),
+        preview_height(600),
+        render_samples(100),
         display_imgui_metrics(false),
         display_imgui_demo(false),
         display_imgui_about(false),
@@ -35,14 +32,12 @@ Gui::Gui(GLFWwindow *window) :
         display_menu_file(true),
         display_menu_window(true),
         display_rendered_image(true),
-        world(std::make_unique<std::vector<Primitive>>()),
-        camera(90, // default camera
+        camera(90,
                static_cast<float>(16/9),
                Vector3D(0,0,0),
                Vector3D(1,0,0),
                Vector3D(0,1,0)),
-        raytracer(std::make_shared<Raytracer>(nullptr, camera, render_width, render_height)),
-        renderthread(nullptr),
+        raytracer(nullptr, camera, render_width, render_height),
         ogl_texture_id(0) {
 }
 
@@ -52,39 +47,33 @@ Gui::~Gui() {
 
 void Gui::displayMainMenu() {
 
-    const unsigned int file_submenu_size = 1;
-    menuitem file_submenu[file_submenu_size] = {
+    const std::vector<menuitem> file_submenu = {
             {"Save as", display_save_as}
     };
 
-    const unsigned int debug_submenu_size = 4;
-    menuitem debug_submenu[debug_submenu_size] = {
+    const std::vector<menuitem> debug_submenu = {
             {"ImGui metrics",    display_imgui_metrics},
             {"ImGui demo",       display_imgui_demo},
             {"ImGui about",      display_imgui_about},
             {"ImGui user guide", display_imgui_userguide},
     };
 
-    const unsigned int window_submenu_size = 1;
-    menuitem window_submenu[window_submenu_size] = {
+    const std::vector<menuitem> window_submenu = {
             {"Rendered image", display_rendered_image}
     };
 
-    menuitem mainmenu[] = {
-            {"File",   display_menu_file,   file_submenu,   file_submenu_size},
-            {"Window", display_menu_window, window_submenu, window_submenu_size},
-            {"Debug",  display_menu_debug,  debug_submenu,  debug_submenu_size}
+    const std::vector<menuitem> mainmenu = {
+            {"File",   display_menu_file,   file_submenu},
+            {"Window", display_menu_window, window_submenu},
+            {"Debug",  display_menu_debug,  debug_submenu}
     };
 
     if(ImGui::BeginMainMenuBar()) {
-        for(menuitem item : mainmenu) {
-            if(item.display && ImGui::BeginMenu(item.label)) {
-                if(item.submenu) {
-                    for (int i = 0; i < item.submenu_size; ++i) {
-                        menuitem &subitem = item.submenu[i];
-                        if(ImGui::MenuItem(subitem.label, 0, subitem.display)) {
-                            toggle(subitem.display);
-                        }
+        for(const menuitem &item : mainmenu) {
+            if(item.display && ImGui::BeginMenu(item.label.c_str())) {
+                for (menuitem subitem : item.submenu) {
+                    if(ImGui::MenuItem(subitem.label.c_str(), nullptr, subitem.display)) {
+                        subitem.display ^= true;
                     }
                 }
                 ImGui::EndMenu();
@@ -148,25 +137,29 @@ void Gui::displaySaveAs() {
 }
 
 void Gui::displayRenderedImage() {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width, render_height, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer->getFramebuffer());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width, render_height, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
     ImGui::Begin("Rendered image", &display_rendered_image);
-    ImGui::Image((void*)(intptr_t)ogl_texture_id, ImVec2(render_width, render_height));
+    ImGui::Image((void*)(intptr_t)ogl_texture_id, ImVec2(800, 600));
     ImGui::BeginGroup();
+
     if(ImGui::Button("Render")) {
         startRaytracer();
     }
+
     ImGui::SameLine();
+
     if(ImGui::Button("Clear")) {
-        raytracer->setWidth(render_width);
+        raytracer.clearFramebuffer();
     }
+
     ImGui::EndGroup();
     ImGui::End();
 }
 
 void Gui::startRaytracer() {
-    auto invokeRaytracerRender = [](std::shared_ptr<Raytracer> &raytracer, int samples) {
-        raytracer->render(samples);
+    auto invokeRaytraceRender = [](Raytracer &raytracer, int samples) {
+        raytracer.render(samples);
     };
-    renderthread = std::make_shared<std::thread>(invokeRaytracerRender, raytracer, render_samples);
-    renderthread->detach();
+    render_thread = std::thread(invokeRaytraceRender, std::ref(raytracer), render_samples);
+    render_thread.detach();
 }

@@ -6,23 +6,17 @@
 class PrimitivelistTest : public ::testing::Test {
 protected:
 
-    Primitive *list[3];
-    Material *mat;
-    Primitivelist *plist;
+    std::vector<std::shared_ptr<Primitive>> list;
+    std::shared_ptr<Material> mat;
+    std::shared_ptr<Primitivelist> plist;
 
     void SetUp() {
-        mat = new Lambertian(Vector3D(1,1,1));
-        list[0] = new Sphere(Vector3D(0,0,0),0.5,mat);
-        list[1] = new Sphere(Vector3D(-1,0,0),0.5,mat);
-        list[2] = new Sphere(Vector3D(1,0,0),0.5,mat);
-        plist = new Primitivelist(list,3);
-    }
-
-    void TearDown() {
-        for (int i = 0; i < 3; ++i) {
-            delete list[i];
-        }
-        delete plist;
+        list = std::vector<std::shared_ptr<Primitive>>(3);
+        mat = std::make_shared<Lambertian>(Vector3D(1,1,1));
+        list[0] = std::make_unique<Sphere>(Vector3D(0,0,0),0.5,mat);
+        list[1] = std::make_unique<Sphere>(Vector3D(-1,0,0),0.5,mat);
+        list[2] = std::make_unique<Sphere>(Vector3D(1,0,0),0.5,mat);
+        plist = std::make_shared<Primitivelist>(list);
     }
 };
 

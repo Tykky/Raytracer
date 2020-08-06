@@ -25,11 +25,13 @@ private:
 
     int render_width;
     int render_height;
+    int preview_width;
+    int preview_height;
+
     int render_samples;
     Camera camera;
-    std::shared_ptr<Raytracer> raytracer;
-    std::shared_ptr<std::thread> renderthread;
-    std::unique_ptr<std::vector<Primitive>> world;
+    Raytracer raytracer;
+    std::thread render_thread;
 
     GLuint ogl_texture_id;
 

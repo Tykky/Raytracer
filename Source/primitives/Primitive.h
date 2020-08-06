@@ -1,6 +1,7 @@
 #ifndef RAYTRACER_PRIMITIVE_H
 #define RAYTRACER_PRIMITIVE_H
 
+#include <memory>
 #include "core/Ray.h"
 #include "Aabb.h"
 
@@ -20,7 +21,7 @@ struct hitrecord {
     Vector3D normal;
 
     /** @brief Pointer to material. */
-    Material *matptr;
+    std::shared_ptr<Material> matptr;
 };
 
 /** @brief Primitive is abstract class which provides interface for all primitives
