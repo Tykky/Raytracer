@@ -102,7 +102,7 @@ void Raytracer::setHeight(int height) {
 }
 
 void Raytracer::setCamera(Camera &camera) {
-    this->camera = camera;
+    camera = camera;
 }
 
 void Raytracer::setWorld(std::shared_ptr<Primitive> world) {

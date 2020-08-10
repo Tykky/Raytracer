@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include <cmath>
 
-Camera::Camera(float fov, float aspectratio, Vector3D origin, Vector3D pointat, Vector3D up) :
+Camera::Camera(float fov, float aspectratio,const Vector3D &origin,const Vector3D &pointat,const Vector3D &up) :
         aspectratio(aspectratio), origin(origin) {
 
     const float pi = 3.14159265359;

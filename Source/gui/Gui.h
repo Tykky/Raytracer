@@ -2,6 +2,7 @@
 #define RAYTRACER_GUI_H
 
 #include <GLFW/glfw3.h>
+#include <imgui.h>
 #include <core/Raytracer.h>
 #include <core/Camera.h>
 #include <primitives/Primitive.h>
@@ -11,6 +12,13 @@
 class Gui {
 
 private:
+
+    struct menuitem {
+        std::string label;
+        bool *display = nullptr;
+        std::vector<menuitem> *submenu = nullptr;
+    };
+
     GLFWwindow *window;
 
     bool display_imgui_metrics;
@@ -23,17 +31,26 @@ private:
     bool display_menu_window;
     bool display_rendered_image;
 
+    std::vector<menuitem> file_submenu;
+    std::vector<menuitem> debug_submenu;
+    std::vector<menuitem> window_submenu;
+    std::vector<menuitem> mainmenu;
+
     int render_width;
     int render_height;
-    int preview_width;
-    int preview_height;
 
     int render_samples;
     Camera camera;
     Raytracer raytracer;
     std::thread render_thread;
 
-    GLuint ogl_texture_id;
+    GLuint framebuffer_texture_id;
+
+    // Upper left corner of texture
+    ImVec2 framebuffer_texture_uv0;
+
+    // Bottom right corner of the texture
+    ImVec2 framebuffer_texture_uv1;
 
     unsigned int setupTexture() const;
     void displayMainMenu();

@@ -39,8 +39,8 @@ public:
      * @param up defines "up" direction for the camera. This
      * determines the roll angle.
      */
-    Camera(float fov, float aspectratio, Vector3D origin, Vector3D pointat,
-           Vector3D up);
+    Camera(float fov, float aspectratio,const Vector3D &origin,const Vector3D &pointat,
+           const Vector3D &up);
 
     Ray getRay(float x, float y) const;
 };

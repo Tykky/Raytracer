@@ -5,24 +5,18 @@
 #include <iostream>
 #include <random>
 #include <primitives/Sphere.h>
-#include <imgui_internal.h>
+#include <string>
 #include "primitives/Bvhnode.h"
 #include "primitives/Sphere.h"
 #include "materials/Mix.h"
 
-struct menuitem {
-    std::string label;
-    bool &display;
-    const std::vector<menuitem> &submenu = {};
-};
-
 Gui::Gui(GLFWwindow *window) :
+
         window(window),
-        render_width(2560),
-        render_height(1440),
-        preview_width(800),
-        preview_height(600),
-        render_samples(100),
+        render_width(200),
+        render_height(100),
+        render_samples(1),
+
         display_imgui_metrics(false),
         display_imgui_demo(false),
         display_imgui_about(false),
@@ -32,13 +26,38 @@ Gui::Gui(GLFWwindow *window) :
         display_menu_file(true),
         display_menu_window(true),
         display_rendered_image(true),
+
         camera(90,
                static_cast<float>(16/9),
                Vector3D(0,0,0),
                Vector3D(1,0,0),
                Vector3D(0,1,0)),
         raytracer(nullptr, camera, render_width, render_height),
-        ogl_texture_id(0) {
+
+        framebuffer_texture_id(0),
+        framebuffer_texture_uv0(ImVec2(0, 0)),
+        framebuffer_texture_uv1(ImVec2(1, 1))
+
+
+        {
+
+    file_submenu = {
+            {"Save as", &display_save_as}
+    };
+    debug_submenu = {
+            {"ImGui metrics",    &display_imgui_metrics},
+            {"ImGui demo",       &display_imgui_demo},
+            {"ImGui about",      &display_imgui_about},
+            {"ImGui user guide", &display_imgui_userguide},
+    };
+    window_submenu = {
+            {"Rendered image", &display_rendered_image}
+    };
+    mainmenu = {
+            {"File",   &display_menu_file,   &file_submenu},
+            {"Window", &display_menu_window, &window_submenu},
+            {"Debug",  &display_menu_debug,  &debug_submenu}
+    };
 }
 
 Gui::~Gui() {
@@ -46,34 +65,12 @@ Gui::~Gui() {
 }
 
 void Gui::displayMainMenu() {
-
-    const std::vector<menuitem> file_submenu = {
-            {"Save as", display_save_as}
-    };
-
-    const std::vector<menuitem> debug_submenu = {
-            {"ImGui metrics",    display_imgui_metrics},
-            {"ImGui demo",       display_imgui_demo},
-            {"ImGui about",      display_imgui_about},
-            {"ImGui user guide", display_imgui_userguide},
-    };
-
-    const std::vector<menuitem> window_submenu = {
-            {"Rendered image", display_rendered_image}
-    };
-
-    const std::vector<menuitem> mainmenu = {
-            {"File",   display_menu_file,   file_submenu},
-            {"Window", display_menu_window, window_submenu},
-            {"Debug",  display_menu_debug,  debug_submenu}
-    };
-
     if(ImGui::BeginMainMenuBar()) {
         for(const menuitem &item : mainmenu) {
             if(item.display && ImGui::BeginMenu(item.label.c_str())) {
-                for (menuitem subitem : item.submenu) {
+                for (menuitem subitem : *item.submenu) {
                     if(ImGui::MenuItem(subitem.label.c_str(), nullptr, subitem.display)) {
-                        subitem.display ^= true;
+                        *subitem.display ^= true;
                     }
                 }
                 ImGui::EndMenu();
@@ -89,8 +86,8 @@ unsigned int Gui::setupTexture() const {
     glBindTexture(GL_TEXTURE_2D, texture);
 
     // set wrap parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -102,7 +99,7 @@ void Gui::init() {
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
-    ogl_texture_id = setupTexture();
+    framebuffer_texture_id = setupTexture();
 }
 
 void Gui::renderGui() {
@@ -137,9 +134,27 @@ void Gui::displaySaveAs() {
 }
 
 void Gui::displayRenderedImage() {
+
+    if(ImGui::IsMouseDragging(0,10)) {
+        ImVec2 delta = ImGui::GetMouseDragDelta();
+        delta.x = delta.x / 10000 * (-1);
+        delta.y = delta.y / 10000 * (-1);
+
+        framebuffer_texture_uv0.x += delta.x;
+        framebuffer_texture_uv1.x += delta.x;
+        framebuffer_texture_uv0.y += delta.y;
+        framebuffer_texture_uv1.y += delta.y;
+    }
+
+    float zoom = ImGui::GetIO().MouseWheel/100;
+
+    framebuffer_texture_uv1.x += zoom;
+    framebuffer_texture_uv1.y += zoom;
+
+    auto flags = ImGuiWindowFlags_NoMove + ImGuiWindowFlags_NoTitleBar + ImGuiWindowFlags_NoResize;
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width, render_height, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
-    ImGui::Begin("Rendered image", &display_rendered_image);
-    ImGui::Image((void*)(intptr_t)ogl_texture_id, ImVec2(800, 600));
+    ImGui::Begin("Rendered image", &display_rendered_image, flags);
+    ImGui::Image((void*)(intptr_t)framebuffer_texture_id, ImVec2(800, 600), framebuffer_texture_uv0, framebuffer_texture_uv1);
     ImGui::BeginGroup();
 
     if(ImGui::Button("Render")) {
@@ -153,6 +168,13 @@ void Gui::displayRenderedImage() {
     }
 
     ImGui::EndGroup();
+
+    std::string pt = std::to_string(framebuffer_texture_uv0.x) + " " + std::to_string(framebuffer_texture_uv0.y);
+    std::string p2 = std::to_string(framebuffer_texture_uv1.x) + " " + std::to_string(framebuffer_texture_uv1.y);
+    ImGui::Text(pt.c_str());
+    ImGui::Text(p2.c_str());
+
+
     ImGui::End();
 }
 
