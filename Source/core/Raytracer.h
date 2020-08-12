@@ -31,7 +31,7 @@ public:
     /** @brief computes color for every pixel on the screen. */
     void render(int samples);
 
-	/** @brief stores frambuffer data to .ppm file */
+	/** @brief stores framebuffer data to .ppm file */
     void frammebufferToNetpbm(std::string filename);
 
     std::vector<unsigned char>& getFramebuffer();

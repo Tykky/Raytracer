@@ -13,9 +13,9 @@
 Gui::Gui(GLFWwindow *window) :
 
         window(window),
-        render_width(800),
-        render_height(600),
-        render_samples(2000),
+        render_width(100),
+        render_height(100),
+        render_samples(10),
 
         display_imgui_metrics(false),
         display_imgui_demo(false),
@@ -42,22 +42,25 @@ Gui::Gui(GLFWwindow *window) :
     file_submenu = {
             {"Save as", &display_save_as}
     };
+
     debug_submenu = {
             {"ImGui metrics",    &display_imgui_metrics},
             {"ImGui demo",       &display_imgui_demo},
             {"ImGui about",      &display_imgui_about},
             {"ImGui user guide", &display_imgui_userguide},
     };
+
     window_submenu = {
     };
+
     mainmenu = {
             {"File",   &display_menu_file,   &file_submenu},
             {"Window", &display_menu_window, &window_submenu},
             {"Debug",  &display_menu_debug,  &debug_submenu}
     };
 
-    texture_width = render_width;
-    texture_height = render_height;
+    texture_width = static_cast<float>(render_width);
+    texture_height = static_cast<float>(render_height);
 
 }
 
@@ -100,6 +103,7 @@ void Gui::init() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
     framebuffer_texture_id = setupTexture();
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width, render_height, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
     ImGui::StyleColorsDark();
 }
 
@@ -154,7 +158,7 @@ void Gui::displayRenderedImage() {
                                    (window_size.y - texture_height) * 0.5f + texture_offset.y);
 
     ImGui::SetCursorPos(texture_center);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width, render_height, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, render_width, render_height, GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
     ImGui::Image((void*)(intptr_t)framebuffer_texture_id, ImVec2(texture_width, texture_height));
     ImGui::BeginGroup();
 
@@ -199,12 +203,12 @@ void Gui::moveTextureWhenDragged() {
 }
 
 void Gui::zoomTextureWhenScrolled() {
-    float zoom = ImGui::GetIO().MouseWheel * 10;
+    float zoom = 1 + ImGui::GetIO().MouseWheel/10;
     if(zoom != 0) {
-        if(texture_height + zoom > 0 &&
-           texture_width + zoom > 0) {
-            texture_height += zoom;
-            texture_width += zoom;
+        if(texture_height * zoom > 0 &&
+           texture_width * zoom > 0) {
+            texture_height *= zoom;
+            texture_width *= zoom;
         }
     }
 }
