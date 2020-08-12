@@ -7,13 +7,15 @@ void error_callback(const int error, const char* description) {
   std::cerr << "[ERROR] " << error << " " << description << std::endl;
 }
 
-Window::Window(const int width, const int height, const char *title) :
-    width(width), height(height) {
+Window::Window(const char *title) {
     
     glfwSetErrorCallback(error_callback);
 	
     if (glfwInit()) {
-    	window = glfwCreateWindow(width, height, title, NULL, NULL);
+        glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
+        GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+    	window = glfwCreateWindow(800, 600, title, NULL, NULL);
     	if(!window) {
             glfwTerminate();
             throw std::runtime_error("[ERROR] glfwCreateWindow failed");

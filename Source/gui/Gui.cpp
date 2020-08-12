@@ -13,9 +13,9 @@
 Gui::Gui(GLFWwindow *window) :
 
         window(window),
-        render_width(200),
-        render_height(100),
-        render_samples(1),
+        render_width(800),
+        render_height(600),
+        render_samples(2000),
 
         display_imgui_metrics(false),
         display_imgui_demo(false),
@@ -25,10 +25,11 @@ Gui::Gui(GLFWwindow *window) :
         display_menu_debug(true),
         display_menu_file(true),
         display_menu_window(true),
-        display_rendered_image(true),
+
+        texture_offset(ImVec2(0, 0)),
 
         camera(90,
-               static_cast<float>(16/9),
+               static_cast<float>(render_width/render_height),
                Vector3D(0,0,0),
                Vector3D(1,0,0),
                Vector3D(0,1,0)),
@@ -36,10 +37,7 @@ Gui::Gui(GLFWwindow *window) :
 
         framebuffer_texture_id(0),
         framebuffer_texture_uv0(ImVec2(0, 0)),
-        framebuffer_texture_uv1(ImVec2(1, 1))
-
-
-        {
+        framebuffer_texture_uv1(ImVec2(1, 1)) {
 
     file_submenu = {
             {"Save as", &display_save_as}
@@ -51,13 +49,16 @@ Gui::Gui(GLFWwindow *window) :
             {"ImGui user guide", &display_imgui_userguide},
     };
     window_submenu = {
-            {"Rendered image", &display_rendered_image}
     };
     mainmenu = {
             {"File",   &display_menu_file,   &file_submenu},
             {"Window", &display_menu_window, &window_submenu},
             {"Debug",  &display_menu_debug,  &debug_submenu}
     };
+
+    texture_width = render_width;
+    texture_height = render_height;
+
 }
 
 Gui::~Gui() {
@@ -68,8 +69,8 @@ void Gui::displayMainMenu() {
     if(ImGui::BeginMainMenuBar()) {
         for(const menuitem &item : mainmenu) {
             if(item.display && ImGui::BeginMenu(item.label.c_str())) {
-                for (menuitem subitem : *item.submenu) {
-                    if(ImGui::MenuItem(subitem.label.c_str(), nullptr, subitem.display)) {
+                for (const menuitem &subitem : *item.submenu) {
+                    if(ImGui::MenuItem(subitem.label.c_str(), nullptr, *subitem.display)) {
                         *subitem.display ^= true;
                     }
                 }
@@ -96,10 +97,10 @@ unsigned int Gui::setupTexture() const {
 
 void Gui::init() {
     ImGui::CreateContext();
-    ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
     framebuffer_texture_id = setupTexture();
+    ImGui::StyleColorsDark();
 }
 
 void Gui::renderGui() {
@@ -109,12 +110,12 @@ void Gui::renderGui() {
     ImGui::NewFrame();
 
     displayMainMenu();
+    displayRenderedImage();
     if(display_imgui_metrics) ImGui::ShowMetricsWindow();
     if(display_imgui_demo) ImGui::ShowDemoWindow();
     if(display_imgui_about) ImGui::ShowAboutWindow();
     if(display_imgui_userguide) ImGui::ShowUserGuide();
     if(display_save_as) displaySaveAs();
-    if(display_rendered_image) displayRenderedImage();
 
     ImGui::Render();
 }
@@ -135,26 +136,26 @@ void Gui::displaySaveAs() {
 
 void Gui::displayRenderedImage() {
 
-    if(ImGui::IsMouseDragging(0,10)) {
-        ImVec2 delta = ImGui::GetMouseDragDelta();
-        delta.x = delta.x / 10000 * (-1);
-        delta.y = delta.y / 10000 * (-1);
+    int screen_width = 0;
+    int screen_height = 0;
+    glfwGetWindowSize(window, &screen_width, &screen_height);
 
-        framebuffer_texture_uv0.x += delta.x;
-        framebuffer_texture_uv1.x += delta.x;
-        framebuffer_texture_uv0.y += delta.y;
-        framebuffer_texture_uv1.y += delta.y;
+    ImGui::SetNextWindowPos(ImVec2(0,19));
+    ImGui::SetNextWindowSize(ImVec2(screen_width, screen_height));
+    ImGui::Begin("Rendered image", nullptr, static_window_flags);
+    ImVec2 window_size = ImGui::GetWindowSize();
+
+    if(ImGui::IsWindowFocused()) {
+        moveTextureWhenDragged();
+        zoomTextureWhenScrolled();
     }
 
-    float zoom = ImGui::GetIO().MouseWheel/100;
+    ImVec2 texture_center = ImVec2((window_size.x - texture_width) * 0.5f + texture_offset.x,
+                                   (window_size.y - texture_height) * 0.5f + texture_offset.y);
 
-    framebuffer_texture_uv1.x += zoom;
-    framebuffer_texture_uv1.y += zoom;
-
-    auto flags = ImGuiWindowFlags_NoMove + ImGuiWindowFlags_NoTitleBar + ImGuiWindowFlags_NoResize;
+    ImGui::SetCursorPos(texture_center);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width, render_height, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
-    ImGui::Begin("Rendered image", &display_rendered_image, flags);
-    ImGui::Image((void*)(intptr_t)framebuffer_texture_id, ImVec2(800, 600), framebuffer_texture_uv0, framebuffer_texture_uv1);
+    ImGui::Image((void*)(intptr_t)framebuffer_texture_id, ImVec2(texture_width, texture_height));
     ImGui::BeginGroup();
 
     if(ImGui::Button("Render")) {
@@ -182,6 +183,28 @@ void Gui::startRaytracer() {
     auto invokeRaytraceRender = [](Raytracer &raytracer, int samples) {
         raytracer.render(samples);
     };
-    render_thread = std::thread(invokeRaytraceRender, std::ref(raytracer), render_samples);
-    render_thread.detach();
+    auto th = std::thread(invokeRaytraceRender, std::ref(raytracer), render_samples);
+    th.detach();
+}
+
+void Gui::moveTextureWhenDragged() {
+    if(ImGui::IsMouseDragging(0)) {
+        ImVec2 mouse_delta = ImGui::GetMouseDragDelta();
+        ImGui::ResetMouseDragDelta();
+        mouse_delta.x = mouse_delta.x;
+        mouse_delta.y = mouse_delta.y;
+        texture_offset.x += mouse_delta.x;
+        texture_offset.y += mouse_delta.y;
+    }
+}
+
+void Gui::zoomTextureWhenScrolled() {
+    float zoom = ImGui::GetIO().MouseWheel * 10;
+    if(zoom != 0) {
+        if(texture_height + zoom > 0 &&
+           texture_width + zoom > 0) {
+            texture_height += zoom;
+            texture_width += zoom;
+        }
+    }
 }

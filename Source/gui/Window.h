@@ -9,12 +9,10 @@ class Window {
 
 private:
     GLFWwindow *window;
-    int width;
-    int height;
     void render() const;
 
 public:
-    Window(int width, int height, const char *title);
+    Window(const char *title);
     ~Window();
 };
 
