@@ -13,8 +13,8 @@
 Gui::Gui(GLFWwindow *window) :
 
         window(window),
-        render_width(100),
-        render_height(100),
+        render_width(2560),
+        render_height(1440),
         render_samples(10),
 
         display_imgui_metrics(false),
@@ -26,18 +26,29 @@ Gui::Gui(GLFWwindow *window) :
         display_menu_file(true),
         display_menu_window(true),
 
+        main_menubar_height(19),
+
         texture_offset(ImVec2(0, 0)),
+        right_side_bar_width(300.f),
+        right_side_bar_min_width(10.f),
+        right_side_bar_max_width(300.f),
+        is_right_side_bar_resizing(false),
+
+        static_window_flags(ImGuiWindowFlags_NoMove +
+                            ImGuiWindowFlags_NoTitleBar +
+                            ImGuiWindowFlags_NoResize +
+                            ImGuiWindowFlags_NoBringToFrontOnFocus +
+                            ImGuiWindowFlags_NoScrollWithMouse +
+                            ImGuiWindowFlags_NoScrollbar),
 
         camera(90,
-               static_cast<float>(render_width/render_height),
+               static_cast<float>(render_width)/static_cast<float>(render_height),
                Vector3D(0,0,0),
                Vector3D(1,0,0),
                Vector3D(0,1,0)),
         raytracer(nullptr, camera, render_width, render_height),
 
-        framebuffer_texture_id(0),
-        framebuffer_texture_uv0(ImVec2(0, 0)),
-        framebuffer_texture_uv1(ImVec2(1, 1)) {
+        framebuffer_texture_id(0) {
 
     file_submenu = {
             {"Save as", &display_save_as}
@@ -88,44 +99,11 @@ unsigned int Gui::setupTexture() const {
     unsigned int texture = 0;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
-
-    // set wrap parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     return texture;
-}
-
-void Gui::init() {
-    ImGui::CreateContext();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 130");
-    framebuffer_texture_id = setupTexture();
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width, render_height, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
-    ImGui::StyleColorsDark();
-}
-
-void Gui::renderGui() {
-
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    displayMainMenu();
-    displayRenderedImage();
-    if(display_imgui_metrics) ImGui::ShowMetricsWindow();
-    if(display_imgui_demo) ImGui::ShowDemoWindow();
-    if(display_imgui_about) ImGui::ShowAboutWindow();
-    if(display_imgui_userguide) ImGui::ShowUserGuide();
-    if(display_save_as) displaySaveAs();
-
-    ImGui::Render();
-}
-
-void Gui::renderDrawData() const {
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Gui::displaySaveAs() {
@@ -139,13 +117,8 @@ void Gui::displaySaveAs() {
 }
 
 void Gui::displayRenderedImage() {
-
-    int screen_width = 0;
-    int screen_height = 0;
-    glfwGetWindowSize(window, &screen_width, &screen_height);
-
-    ImGui::SetNextWindowPos(ImVec2(0,19));
-    ImGui::SetNextWindowSize(ImVec2(screen_width, screen_height));
+    ImGui::SetNextWindowPos(ImVec2(0,main_menubar_height));
+    ImGui::SetNextWindowSize(ImVec2(window_width - right_side_bar_width, window_height));
     ImGui::Begin("Rendered image", nullptr, static_window_flags);
     ImVec2 window_size = ImGui::GetWindowSize();
 
@@ -158,28 +131,29 @@ void Gui::displayRenderedImage() {
                                    (window_size.y - texture_height) * 0.5f + texture_offset.y);
 
     ImGui::SetCursorPos(texture_center);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, render_width, render_height, GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
-    ImGui::Image((void*)(intptr_t)framebuffer_texture_id, ImVec2(texture_width, texture_height));
-    ImGui::BeginGroup();
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, render_width, render_height,
+                    GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
 
+    ImGui::Image((void*)(intptr_t)framebuffer_texture_id, ImVec2(texture_width, texture_height));
+}
+
+void Gui::displayRightSideBar() {
+    ImGui::SetNextWindowSize(ImVec2(right_side_bar_width,static_cast<float>(window_height) - main_menubar_height));
+    ImGui::SetNextWindowPos(ImVec2(window_width - right_side_bar_width,main_menubar_height));
+    ImGui::Begin("",nullptr, static_window_flags);
+    ImGui::BeginChild("render_settings",ImVec2(right_side_bar_width,120), true);
+    ImGui::Text("Render settings");
+    int *res[] = {&render_width, &render_height};
+    ImGui::InputInt2("Resolution", *res);
+    ImGui::InputInt("Samples", &render_samples);
     if(ImGui::Button("Render")) {
         startRaytracer();
     }
-
-    ImGui::SameLine();
-
+    ImGui::SameLine(65);
     if(ImGui::Button("Clear")) {
         raytracer.clearFramebuffer();
     }
-
-    ImGui::EndGroup();
-
-    std::string pt = std::to_string(framebuffer_texture_uv0.x) + " " + std::to_string(framebuffer_texture_uv0.y);
-    std::string p2 = std::to_string(framebuffer_texture_uv1.x) + " " + std::to_string(framebuffer_texture_uv1.y);
-    ImGui::Text(pt.c_str());
-    ImGui::Text(p2.c_str());
-
-
+    ImGui::EndChild();
     ImGui::End();
 }
 
@@ -189,6 +163,30 @@ void Gui::startRaytracer() {
     };
     auto th = std::thread(invokeRaytraceRender, std::ref(raytracer), render_samples);
     th.detach();
+}
+
+void Gui::rightSideBarResize() {
+    float hover_margin = 10;
+    ImVec2 hover_min(window_width - right_side_bar_width, 0);
+    ImVec2 hover_max(window_width - right_side_bar_width + hover_margin, window_height);
+    if(ImGui::IsMouseHoveringRect(hover_min, hover_max, false)) {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+        if(ImGui::IsMouseClicked(0)) {
+            is_right_side_bar_resizing = true;
+        }
+    }
+    if(is_right_side_bar_resizing) {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+        if(ImGui::IsMouseReleased(0)) {
+            is_right_side_bar_resizing = false;
+        }
+        float amount = ImGui::GetMouseDragDelta(0).x * (-1);
+        ImGui::ResetMouseDragDelta();
+        if(right_side_bar_width + amount < right_side_bar_max_width &&
+           right_side_bar_width + amount > right_side_bar_min_width) {
+            right_side_bar_width += amount;
+        }
+    }
 }
 
 void Gui::moveTextureWhenDragged() {
@@ -204,11 +202,46 @@ void Gui::moveTextureWhenDragged() {
 
 void Gui::zoomTextureWhenScrolled() {
     float zoom = 1 + ImGui::GetIO().MouseWheel/10;
-    if(zoom != 0) {
-        if(texture_height * zoom > 0 &&
-           texture_width * zoom > 0) {
-            texture_height *= zoom;
-            texture_width *= zoom;
-        }
+    if(zoom != 0 && texture_height * zoom > 0 && texture_width * zoom > 0) {
+        texture_width *= zoom;
+        texture_height *= zoom;
     }
+}
+
+void Gui::init() {
+    ImGui::CreateContext();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+    framebuffer_texture_id = setupTexture();
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width, render_height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
+
+    ImGui::StyleColorsDark();
+
+}
+
+void Gui::renderGui() {
+    glfwGetWindowSize(window, &window_width, &window_height);
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    rightSideBarResize();
+
+    displayMainMenu();
+    displayRenderedImage();
+    displayRightSideBar();
+    if(display_imgui_metrics) ImGui::ShowMetricsWindow();
+    if(display_imgui_demo) ImGui::ShowDemoWindow();
+    if(display_imgui_about) ImGui::ShowAboutWindow();
+    if(display_imgui_userguide) ImGui::ShowUserGuide();
+    if(display_save_as) displaySaveAs();
+
+    ImGui::Render();
+}
+
+void Gui::renderDrawData() const {
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

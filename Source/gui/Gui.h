@@ -21,6 +21,9 @@ private:
 
     GLFWwindow *window;
 
+    int window_width;
+    int window_height;
+
     bool display_imgui_metrics;
     bool display_imgui_demo;
     bool display_imgui_about;
@@ -35,6 +38,13 @@ private:
     std::vector<menuitem> window_submenu;
     std::vector<menuitem> mainmenu;
 
+    float main_menubar_height;
+
+    float right_side_bar_width;
+    float right_side_bar_min_width;
+    float right_side_bar_max_width;
+    bool is_right_side_bar_resizing;
+
     float texture_width;
     float texture_height;
     ImVec2 texture_offset;
@@ -44,33 +54,29 @@ private:
     int render_samples;
     Camera camera;
     Raytracer raytracer;
-    bool render_running;
 
     GLuint framebuffer_texture_id;
 
-    // Upper left corner of texture
-    ImVec2 framebuffer_texture_uv0;
-
-    // Bottom right corner of the texture
-    ImVec2 framebuffer_texture_uv1;
-
-    unsigned int static_window_flags = ImGuiWindowFlags_NoMove +
-                                       ImGuiWindowFlags_NoTitleBar +
-                                       ImGuiWindowFlags_NoResize +
-                                       ImGuiWindowFlags_NoBringToFrontOnFocus +
-                                       ImGuiWindowFlags_NoScrollWithMouse +
-                                       ImGuiWindowFlags_NoScrollbar;
+    unsigned int static_window_flags;
 
     unsigned int setupTexture() const;
     void displayMainMenu();
     void displaySaveAs();
     void displayRenderedImage();
+    void displayRightSideBar();
+
     void startRaytracer();
+    void rightSideBarResize();
 
     void moveTextureWhenDragged();
     void zoomTextureWhenScrolled();
 
 public:
+    /**
+     * @brief Handles everything gui related
+     * @param pointer to GLFW window,
+     * initialize glfw before calling this.
+     */
     Gui(GLFWwindow *window);
     ~Gui();
 
@@ -81,7 +87,7 @@ public:
     /** @Brief Call this in between init() and renderDrawData() */
     void renderGui();
 
-    /** @brief Draws the rendered data to screen. Call this
+    /** @brief Draws the rendered data to the screen. Call this
      * after renderGui(). */
     void renderDrawData() const;
 };

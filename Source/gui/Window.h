@@ -12,6 +12,10 @@ private:
     void render() const;
 
 public:
+    /**
+     * @brief Handles window creation and
+     * displaying Gui.
+     */
     Window(const char *title);
     ~Window();
 };

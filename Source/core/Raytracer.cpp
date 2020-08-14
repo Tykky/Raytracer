@@ -84,7 +84,10 @@ std::vector<unsigned char>& Raytracer::getFramebuffer() {
     return framebuffer;
 }
 void Raytracer::clearFramebuffer() {
-    framebuffer = std::vector<unsigned char>(3 * width * height);
+    int framebuffer_size = 3 * width * height;
+    for (int i = 0; i < framebuffer_size; ++i) {
+        framebuffer[i] = 0;
+    }
 }
 
 void Raytracer::setBounceLimit(int bouncelimit) {

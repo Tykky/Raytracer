@@ -13,8 +13,6 @@ Window::Window(const char *title) {
 	
     if (glfwInit()) {
         glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
-        GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-        const GLFWvidmode *mode = glfwGetVideoMode(monitor);
     	window = glfwCreateWindow(800, 600, title, NULL, NULL);
     	if(!window) {
             glfwTerminate();
@@ -40,8 +38,9 @@ void Window::render() const {
    //glfwSwapInterval(0);
 
    Gui gui(window);
-   gui.init();
+   gui.init(); // Creates OpenGl context etc...
 
+   // Main render loop
    while(!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         gui.renderGui();
