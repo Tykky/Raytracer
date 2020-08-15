@@ -10,6 +10,9 @@
 #include "primitives/Sphere.h"
 #include "materials/Mix.h"
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+
+
 Gui::Gui(GLFWwindow *window) :
 
         window(window),
@@ -29,9 +32,11 @@ Gui::Gui(GLFWwindow *window) :
         main_menubar_height(19),
 
         texture_offset(ImVec2(0, 0)),
-        right_side_bar_width(300.f),
-        right_side_bar_min_width(10.f),
-        right_side_bar_max_width(300.f),
+        right_side_bar_width(300),
+        right_side_bar_min_width(10),
+        right_side_bar_max_width(300),
+        right_side_bar_hover_margin(10),
+
         is_right_side_bar_resizing(false),
 
         static_window_flags(ImGuiWindowFlags_NoMove +
@@ -81,9 +86,9 @@ Gui::~Gui() {
 
 void Gui::displayMainMenu() {
     if(ImGui::BeginMainMenuBar()) {
-        for(const menuitem &item : mainmenu) {
+        for(const Menuitem &item : mainmenu) {
             if(item.display && ImGui::BeginMenu(item.label.c_str())) {
-                for (const menuitem &subitem : *item.submenu) {
+                for (const Menuitem &subitem : *item.submenu) {
                     if(ImGui::MenuItem(subitem.label.c_str(), nullptr, *subitem.display)) {
                         *subitem.display ^= true;
                     }
@@ -117,8 +122,8 @@ void Gui::displaySaveAs() {
 }
 
 void Gui::displayRenderedImage() {
-    ImGui::SetNextWindowPos(ImVec2(0,main_menubar_height));
-    ImGui::SetNextWindowSize(ImVec2(window_width - right_side_bar_width, window_height));
+    ImGui::SetNextWindowPos(ImVec2(0, main_menubar_height));
+    ImGui::SetNextWindowSize(ImVec2(static_cast<float>(window_width) - right_side_bar_width, static_cast<float>(window_height)));
     ImGui::Begin("Rendered image", nullptr, static_window_flags);
     ImVec2 window_size = ImGui::GetWindowSize();
 
@@ -139,20 +144,28 @@ void Gui::displayRenderedImage() {
 
 void Gui::displayRightSideBar() {
     ImGui::SetNextWindowSize(ImVec2(right_side_bar_width,static_cast<float>(window_height) - main_menubar_height));
-    ImGui::SetNextWindowPos(ImVec2(window_width - right_side_bar_width,main_menubar_height));
+    ImGui::SetNextWindowPos(ImVec2(static_cast<float>(window_width) - right_side_bar_width,main_menubar_height));
     ImGui::Begin("",nullptr, static_window_flags);
     ImGui::BeginChild("render_settings",ImVec2(right_side_bar_width,120), true);
     ImGui::Text("Render settings");
     int *res[] = {&render_width, &render_height};
-    ImGui::InputInt2("Resolution", *res);
+
+    if(ImGui::InputInt2("Resolution", *res)) {
+        raytracer.setWidth(render_width);
+        raytracer.setHeight(render_height);
+        raytracer.getFramebuffer();
+    }
+
     ImGui::InputInt("Samples", &render_samples);
     if(ImGui::Button("Render")) {
         startRaytracer();
     }
+
     ImGui::SameLine(65);
     if(ImGui::Button("Clear")) {
         raytracer.clearFramebuffer();
     }
+
     ImGui::EndChild();
     ImGui::End();
 }
@@ -166,9 +179,8 @@ void Gui::startRaytracer() {
 }
 
 void Gui::rightSideBarResize() {
-    float hover_margin = 10;
-    ImVec2 hover_min(window_width - right_side_bar_width, 0);
-    ImVec2 hover_max(window_width - right_side_bar_width + hover_margin, window_height);
+    ImVec2 hover_min(static_cast<float>(window_width) - right_side_bar_width, 0);
+    ImVec2 hover_max(static_cast<float>(window_width) - right_side_bar_width + right_side_bar_hover_margin, static_cast<float>(window_height));
     if(ImGui::IsMouseHoveringRect(hover_min, hover_max, false)) {
         ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
         if(ImGui::IsMouseClicked(0)) {
@@ -176,16 +188,49 @@ void Gui::rightSideBarResize() {
         }
     }
     if(is_right_side_bar_resizing) {
-        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
         if(ImGui::IsMouseReleased(0)) {
             is_right_side_bar_resizing = false;
         }
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
         float amount = ImGui::GetMouseDragDelta(0).x * (-1);
         ImGui::ResetMouseDragDelta();
-        if(right_side_bar_width + amount < right_side_bar_max_width &&
-           right_side_bar_width + amount > right_side_bar_min_width) {
+        if(right_side_bar_width + amount > right_side_bar_max_width) {
+            right_side_bar_width = right_side_bar_max_width;
+        } else if(right_side_bar_width + amount < right_side_bar_min_width) {
+            right_side_bar_width = right_side_bar_min_width;
+        } else {
             right_side_bar_width += amount;
         }
+    }
+}
+
+void Gui::resizeWindow(const ImVec2 &hover_min, const ImVec2 &hover_max, float &resize_pos,
+                       const float &resize_pos_min, const float &resize_pos_max, bool &is_resizing,
+                       const orientation &resize_orientation) {
+
+    ImGuiMouseCursor cursor_type;
+    switch(resize_orientation) {
+        case(orientation::HORIZONTAL) :
+            cursor_type = ImGuiMouseCursor_ResizeEW;
+            break;
+        case(orientation::VERTICAL) :
+            cursor_type = ImGuiMouseCursor_ResizeNS;
+            break;
+    }
+    if(ImGui::IsMouseHoveringRect(hover_min, hover_max, false)) {
+        ImGui::SetMouseCursor(cursor_type);
+        if(ImGui::IsMouseClicked(0)) {
+            is_resizing = true;
+        }
+    }
+    if(is_resizing) {
+        ImGui::SetMouseCursor(cursor_type);
+        if(ImGui::IsMouseReleased(0)) {
+            is_resizing = false;
+        }
+        ImGui::SetMouseCursor(cursor_type);
+        float amount = ImGui::GetMouseDragDelta(0).x * (-1);
+        ImGui::ResetMouseDragDelta();
     }
 }
 
@@ -213,12 +258,8 @@ void Gui::init() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
     framebuffer_texture_id = setupTexture();
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width, render_height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
-
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width, render_height, 0,GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
     ImGui::StyleColorsDark();
-
 }
 
 void Gui::renderGui() {

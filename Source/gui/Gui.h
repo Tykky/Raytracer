@@ -13,11 +13,13 @@ class Gui {
 
 private:
 
-    struct menuitem {
+    struct Menuitem {
         std::string label;
         bool *display = nullptr;
-        std::vector<menuitem> *submenu = nullptr;
+        std::vector<Menuitem> *submenu = nullptr;
     };
+
+    enum class orientation { HORIZONTAL, VERTICAL};
 
     GLFWwindow *window;
 
@@ -33,16 +35,17 @@ private:
     bool display_menu_debug;
     bool display_menu_window;
 
-    std::vector<menuitem> file_submenu;
-    std::vector<menuitem> debug_submenu;
-    std::vector<menuitem> window_submenu;
-    std::vector<menuitem> mainmenu;
+    std::vector<Menuitem> file_submenu;
+    std::vector<Menuitem> debug_submenu;
+    std::vector<Menuitem> window_submenu;
+    std::vector<Menuitem> mainmenu;
 
     float main_menubar_height;
 
     float right_side_bar_width;
-    float right_side_bar_min_width;
-    float right_side_bar_max_width;
+    const float right_side_bar_min_width;
+    const float right_side_bar_max_width;
+    const float right_side_bar_hover_margin;
     bool is_right_side_bar_resizing;
 
     float texture_width;
@@ -57,7 +60,7 @@ private:
 
     GLuint framebuffer_texture_id;
 
-    unsigned int static_window_flags;
+    const unsigned int static_window_flags;
 
     unsigned int setupTexture() const;
     void displayMainMenu();
@@ -67,16 +70,18 @@ private:
 
     void startRaytracer();
     void rightSideBarResize();
+    void resizeWindow(const ImVec2 &hover_min, const ImVec2 &hover_max, float &resize_pos,
+                      const float &resize_pos_min, const float &resize_pos_max, bool &is_resizing,
+                      const orientation &resize_orientation);
 
     void moveTextureWhenDragged();
     void zoomTextureWhenScrolled();
 
 public:
     /**
-     * @brief Handles everything gui related
-     * @param pointer to GLFW window,
-     * initialize glfw before calling this.
-     */
+     * @brief Handles everything gui related.
+     * Initialize GLFW before calling this.
+     * */
     Gui(GLFWwindow *window);
     ~Gui();
 
