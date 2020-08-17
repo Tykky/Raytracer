@@ -1,12 +1,15 @@
-[submodule "Test/lib/googletest"]
-	path = Test/lib/googletest
-	url = https://github.com/google/googletest
-[submodule "lib/glfw"]
-	path = lib/glfw
-	url = https://github.com/glfw/glfw
-[submodule "lib/glew-cmake"]
-	path = lib/glew-cmake
+[submodule "external/glew-cmake"]
+	path = external/glew-cmake
 	url = https://github.com/Perlmint/glew-cmake
-[submodule "lib/imgui"]
-	path = lib/imgui
+[submodule "external/glfw"]
+	path = external/glfw
+	url = https://github.com/glfw/glfw
+[submodule "external/imgui"]
+	path = external/imgui
 	url = https://github.com/ocornut/imgui
+[submodule "external/googletest"]
+	path = external/googletest
+	url = https://github.com/google/googletest
+[submodule "external/doxygen-bootstrapped"]
+	path = external/doxygen-bootstrapped
+	url = https://github.com/Velron/doxygen-bootstrapped

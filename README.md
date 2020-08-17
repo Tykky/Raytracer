@@ -30,7 +30,7 @@ cmake --build . --config release
 ````
 ## Current state of the project
 
-![](Documentation/data/renders/demo.png)
+![](doc/data/renders/demo.png)
 The renderer is now more efficient in rendering 
 multiple objects. This is due to use of bounding 
 volume hierarchy data structure. Hit testing is done 

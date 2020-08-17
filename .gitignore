@@ -2,11 +2,11 @@
 /cmake-*
 CMakeSettings.json
 /build
-Documentation/latex
-Documentation/api
-Documentation/xml
-Documentation/html
-Documentation/_build
+doc/latex
+doc/api
+doc/xml
+doc/html
+doc/_build
 *.vs
 *.vscode
 /out
