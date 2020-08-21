@@ -3,13 +3,13 @@
 #include <random>
 #include "core/Vector3D.h"
 #include "core/Camera.h"
-#include "primitives/Sphere.h"
-#include "primitives/Hitlist.h"
+#include "hittables/Sphere.h"
+#include "hittables/Hitlist.h"
 #include "materials/Lambertian.h"
 #include "materials/Dielectric.h"
 #include "materials/Mix.h"
 #include "core/Raytracer.h"
-#include "primitives/Bvhnode.h"
+#include "hittables/Bvhnode.h"
 
 
 int main(int argc, char** argv) {
