@@ -20,15 +20,20 @@ public:
 
     /**
      * @brief Solves hit equation.
-     * @param cmin is minimum acceptable value for hit equations solution.
-     * @param cmax is maximum acceptable value for hit equations solution.
-     * @param record is SET by this member function. Empty hitrecord
-     * should be given as reference and used after function has ran.
-     * @return true when hit equation has solution between cmin and cmax, otherwise
+     * @param [in] cmin is minimum acceptable value for ray intersection equation
+     * @param [in] cmax is maximum acceptable value for ray intersection equation
+     * @param [out] record stores intersection details
+     * @return true when ray intersection equation has solution between cmin and cmax
      * false.
      */
     virtual bool hit(const Ray &r, float cmin, float cmax, Hitrecord &record) const = 0;
 
+    /**
+     * @param [in] c0
+     * @param [in] c1
+     * @param [out] box
+     * @return when forming bounding box is possible
+     */
     virtual bool boundingBox(float c0, float c1, Aabb &box) const = 0;
 
 };

@@ -1,8 +1,8 @@
 #include <cmath>
 #include "Sphere.h"
 
-Sphere::Sphere(const Vector3D &center, float radius, std::shared_ptr<Material> mat) :
-        center(center), radius(radius), matptr(mat) {
+Sphere::Sphere(const Vector3D &center, float radius, std::shared_ptr<Material> material) :
+        center(center), radius(radius), matptr(material) {
 }
 
 bool Sphere::hit(const Ray &r, float cmin, float cmax, Hitrecord &record) const {

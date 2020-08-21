@@ -107,7 +107,7 @@ Vector3D Raytracer::rayTrace(Ray& r, std::function<float()> &randomFloat) const 
             return {};
         }
     }
-    if (depth == 0) {
+    if (depth == 0) { // ray hits void
         return skyGradient(r);
     }
     return color;

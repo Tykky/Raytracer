@@ -8,7 +8,8 @@ class Metal : public Material {
 
 public:
     /**
-     * @param b is blurriness, value in between 0 and 1
+     * @param [in] albedo is same as color
+     * @param [in] b is blurriness, value in between 0 and 1
      * should be given, where 1 is heavy blurriness and
      * 0 is no blurriness at all.
      */

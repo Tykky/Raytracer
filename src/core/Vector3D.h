@@ -7,6 +7,11 @@ class Vector3D {
 
 public:
     Vector3D();
+    /**
+     * @param [in] x
+     * @param [in] y
+     * @param [in] z
+     */
     Vector3D(float x, float y, float z);
 
     float length() const;
@@ -14,8 +19,16 @@ public:
 
     void normalize();
 
+    /**
+     * @brief dot product between this and v
+     * @param [in] v
+     */
     float dot(const Vector3D &v) const;
 
+    /**
+     * @brief cross product between this and v
+     * @param [in] v
+     */
     Vector3D cross(const Vector3D &v) const;
 
     float getX() const;

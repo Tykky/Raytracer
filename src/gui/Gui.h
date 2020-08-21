@@ -15,7 +15,8 @@ public:
     /**
      * @brief Handles everything gui related.
      * Initialize GLFW before calling this.
-     * */
+     * @param [in] window
+     */
     Gui(GLFWwindow *window);
     ~Gui();
 

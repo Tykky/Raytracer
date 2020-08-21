@@ -14,8 +14,8 @@ public:
     Aabb();
 	
     /**
-     *  @param a defines three planes x=a[0], y=a[1] and z=a[2]
-     *  @param b defines three planes x=b[0], y=b[1] and z=b[2]
+     *  @param [in] a defines three planes where each (x,y,z) is constant
+     *  @param [in] b defines three planes where each (x,y,z) is constant
      */
     Aabb(const Vector3D &a, const Vector3D &b);
     Vector3D getMin();

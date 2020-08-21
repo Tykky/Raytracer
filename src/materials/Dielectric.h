@@ -10,7 +10,7 @@
 class Dielectric : public Material {
 
 public:
-    /** @param ior = index of refraction */
+    /** @param [in] ior = index of refraction */
     Dielectric(float ior);
 
     virtual bool scatter(const Ray &r, const Hitrecord &record, Vector3D &attenuation, Ray &scatter,

@@ -12,13 +12,18 @@ class Ray {
 
 public:
     Ray();
+    /**
+     * @param [] origin
+     * @param [] direction
+     */
     Ray(const Vector3D &origin, const Vector3D &direction);
     Vector3D getPosition() const;
     Vector3D getDirection() const;
 
     /**
-     * @return coordinates for point c
-     * along line position -> direction
+     * @param [in] c
+     * @return coordinates for scalar multiplication
+     * \f$ \text{ray}(c) = \text{origin} + c \cdot \text{direction} \f$
      */
     Vector3D pointAtC(float c) const;
 

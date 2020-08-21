@@ -11,6 +11,7 @@ public:
     /**
      * @brief Handles window creation and
      * displaying Gui.
+     * @param [in] title
      */
     Window(const char *title);
     ~Window();

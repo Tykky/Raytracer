@@ -51,6 +51,7 @@ Gui::Gui(GLFWwindow *window) :
                Vector3D(0,0,0),
                Vector3D(1,0,0),
                Vector3D(0,1,0)),
+
         raytracer(nullptr, camera, render_width, render_height),
 
         framebuffer_texture_id(0) {
@@ -140,12 +141,13 @@ void Gui::displayRenderedImage() {
                     GL_RGB, GL_UNSIGNED_BYTE, raytracer.getFramebuffer().data());
 
     ImGui::Image((void*)(intptr_t)framebuffer_texture_id, ImVec2(texture_width, texture_height));
+    ImGui::End();
 }
 
 void Gui::displayRightSideBar() {
     ImGui::SetNextWindowSize(ImVec2(right_side_bar_width,static_cast<float>(window_height) - main_menubar_height));
     ImGui::SetNextWindowPos(ImVec2(static_cast<float>(window_width) - right_side_bar_width,main_menubar_height));
-    ImGui::Begin("",nullptr, static_window_flags);
+    ImGui::Begin("right_side_bar",nullptr, static_window_flags);
     ImGui::BeginChild("render_settings",ImVec2(right_side_bar_width,120), true);
     ImGui::Text("Render settings");
     int *res[] = {&render_width, &render_height};

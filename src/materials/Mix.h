@@ -9,13 +9,13 @@ class Mix : public Material {
 
 public:
     /**
-     *  @param metalness is the probability that material is treated as metal.
+     *  @param [in] metalness is the probability that material is treated as metal.
      *  Probability that material is treated as lambertian is 1 - metalness.
      *  When metalness = 1, the material is pure metal, when metalness = 0 it's
      *  pure lambertian.
-     *  @param roughness defines accuracy of metal reflections. Value between 0 and 1
+     *  @param [in] roughness defines accuracy of metal reflections. Value between 0 and 1
      *  should be given.
-     *  @param fresnelfactor defines how strong the fresnel effect should be. Value between
+     *  @param [in] fresnelfactor defines how strong the fresnel effect should be. Value between
      *  0 and 1 should be given, 1 being the full effect and 0 no effect.
      */
     Mix(const Vector3D &lalbedo, const Vector3D &malbedo, float metalness, float roughness, float fresnel,
