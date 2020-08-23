@@ -17,9 +17,9 @@ public:
     virtual bool boundingBox(float c0, float c1, Aabb &box) const override;
 
 private:
-    const Vector3D center;
-    float radius;
-    std::shared_ptr<Material> matptr;
+    const Vector3D center_;
+    float radius_;
+    std::shared_ptr<Material> matptr_;
 
 };
 

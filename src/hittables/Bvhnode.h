@@ -24,9 +24,9 @@ public:
     virtual bool boundingBox(float c0, float c1, Aabb &box) const;
 
 private:
-    std::shared_ptr<Hittable> right;
-    std::shared_ptr<Hittable> left;
-    Aabb node;
+    std::shared_ptr<Hittable> right_;
+    std::shared_ptr<Hittable> left_;
+    Aabb node_;
 };
 
 

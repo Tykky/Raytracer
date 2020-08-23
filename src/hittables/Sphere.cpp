@@ -2,15 +2,15 @@
 #include "Sphere.h"
 
 Sphere::Sphere(const Vector3D &center, float radius, std::shared_ptr<Material> material) :
-        center(center), radius(radius), matptr(material) {
+        center_(center), radius_(radius), matptr_(material) {
 }
 
 bool Sphere::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const {
 
-	Vector3D oc = r.getPosition() - center;
+	Vector3D oc = r.getPosition() - center_;
     float a = r.getDirection().dot(r.getDirection());
     float b = oc.dot(r.getDirection());
-    float c = oc.dot(oc) - radius * radius;
+    float c = oc.dot(oc) - radius_ * radius_;
     float discriminant = b * b - a * c;
 
     if (discriminant > 0) {
@@ -19,8 +19,8 @@ bool Sphere::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const 
         if (solution < dmax && solution > dmin) {
             record.distance = solution;
             record.p = r.pointAtDistance(record.distance);
-            record.normal = (record.p - center) / radius;
-            record.matptr = matptr;
+            record.normal = (record.p - center_) / radius_;
+            record.matptr = matptr_;
             return true;
         }
 
@@ -28,8 +28,8 @@ bool Sphere::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const 
         if (solution < dmax && solution > dmin) {
             record.distance = solution;
             record.p = r.pointAtDistance(record.distance);
-            record.normal = (record.p - center) / radius;
-            record.matptr = matptr;
+            record.normal = (record.p - center_) / radius_;
+            record.matptr = matptr_;
             return true;
         }
     }
@@ -37,7 +37,7 @@ bool Sphere::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const 
 }
 
 bool Sphere::boundingBox(float c0, float c1, Aabb &box) const {
-    box = Aabb(center - Vector3D(radius,radius,radius),
-               center + Vector3D(radius,radius,radius));
+    box = Aabb(center_ - Vector3D(radius_, radius_, radius_),
+               center_ + Vector3D(radius_, radius_, radius_));
     return true;
 }

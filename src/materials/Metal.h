@@ -19,8 +19,8 @@ public:
                          std::function<float()> &randomFloat) const;
 
 private:
-    const Vector3D albedo;
-    float blur;
+    const Vector3D albedo_;
+    float blur_;
 
 };
 

@@ -34,42 +34,42 @@ Bvhnode::Bvhnode(std::vector<std::shared_ptr<Hittable>> &list,
     auto comparator = comparators[axis];
 
     if(span == 1) {
-        left = list[start];
-        right = list[start];
+        left_ = list[start];
+        right_ = list[start];
     } else if(span == 2) {
         if(comparator(list[start], list[start + 1])) {
-            left = list[start];
-            right = list[start + 1];
+            left_ = list[start];
+            right_ = list[start + 1];
         } else {
-            right = list[start];
-            left = list[start + 1];
+            right_ = list[start];
+            left_ = list[start + 1];
         }
     } else {
         std::sort(list.begin() + start, list.begin() + end, comparator);
         auto middle = start + span/2;
-        left = std::make_shared<Bvhnode>(list, start, middle, c0, c1, randomFloat);
-        right = std::make_shared<Bvhnode>(list, middle, end, c0, c1, randomFloat);
+        left_ = std::make_shared<Bvhnode>(list, start, middle, c0, c1, randomFloat);
+        right_ = std::make_shared<Bvhnode>(list, middle, end, c0, c1, randomFloat);
     }
 
     Aabb leftbox;
     Aabb rightbox;
 
-    if(!left->boundingBox(c0, c1, leftbox) ||
-       !right->boundingBox(c0, c1, rightbox)) {
+    if(!left_->boundingBox(c0, c1, leftbox) ||
+       !right_->boundingBox(c0, c1, rightbox)) {
         std::cerr << "[ERROR] Creation of bounding box failed in Bvhnode" << std::endl;
     }
 
-    node = surroundingBox(leftbox,rightbox);
+    node_ = surroundingBox(leftbox, rightbox);
 
 }
 
 bool Bvhnode::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const {
 
     // Do search in bvh
-    if(node.hit(r, dmin, dmax)) {
+    if(node_.hit(r, dmin, dmax)) {
         Hitrecord leftrec, rightrec;
-        bool hitleft = left->hit(r, dmin, dmax, leftrec);
-        bool hitright = right->hit(r, dmin, dmax, rightrec);
+        bool hitleft = left_->hit(r, dmin, dmax, leftrec);
+        bool hitright = right_->hit(r, dmin, dmax, rightrec);
         if(hitleft && hitright) {
             if(leftrec.distance < rightrec.distance) {
                 record = leftrec;
@@ -91,7 +91,7 @@ bool Bvhnode::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const
 }
 
 bool Bvhnode::boundingBox(float c0, float c1, Aabb &box) const {
-    box = node;
+    box = node_;
     return true;
 }
 

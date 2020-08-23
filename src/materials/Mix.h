@@ -25,13 +25,13 @@ public:
                          std::function<float()> &randomFloat) const;
 
 private:
-    std::shared_ptr<Material> metal;
-    std::shared_ptr<Material> lambertian;
-    const Vector3D malbedo;
-    const Vector3D lalbedo;
-    float metalness;
-    float fresnelfactor;
-    float ior;
+    std::shared_ptr<Material> metal_;
+    std::shared_ptr<Material> lambertian_;
+    const Vector3D malbedo_;
+    const Vector3D lalbedo_;
+    float metalness_;
+    float fresnelfactor_;
+    float ior_;
 
 };
 

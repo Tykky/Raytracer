@@ -24,11 +24,11 @@ public:
      * @param [in] c
      * @return coordinates for scalar multiplication origin + distance * direction
      */
-    Vector3D pointAtDistance(float distance) const;
+    Vector3D pointAtDistance(const float &distance) const;
 
 private:
-    Vector3D position;
-    Vector3D direction;
+    Vector3D position_;
+    Vector3D direction_;
 
 
 };

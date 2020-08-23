@@ -17,7 +17,7 @@ public:
                          std::function<float()> &randomFloat) const;
 
 private:
-    const float ior;
+    const float ior_;
 
 };
 

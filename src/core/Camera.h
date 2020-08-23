@@ -22,17 +22,17 @@ public:
      * @param [in] x
      * @param [in] y
      */
-    Ray getRay(float x, float y) const;
+    Ray getRay(const float &x, const float &y) const;
 
 private:
-    float aspectratio;
-    float theta;
-    float halfheight;
-    float halfwidth;
-    Vector3D lowerleftcorner;
-    Vector3D vertical;
-    Vector3D horizontal;
-    Vector3D origin;
+    float aspectratio_;
+    float theta_;
+    float halfheight_;
+    float halfwidth_;
+    Vector3D lowerleftcorner_;
+    Vector3D vertical_;
+    Vector3D horizontal_;
+    Vector3D origin_;
 };
 
 

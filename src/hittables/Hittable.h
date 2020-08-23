@@ -9,6 +9,7 @@
 // Including Material.h would cause circular dependency
 class Material;
 
+/** @brief Stores information about Ray - Hittable intersection. */
 struct Hitrecord;
 
 /**
@@ -23,7 +24,7 @@ public:
      * @param [in] dmin is minimum acceptable value for ray intersection equation
      * @param [in] dmax is maximum acceptable value for ray intersection equation
      * @param [out] record stores intersection details
-     * @return true when ray intersection equation has solution between cmin and cmax
+     * @return true when ray intersection equation has solution between dmin and dmax
      * false.
      */
     virtual bool hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const = 0;
@@ -38,7 +39,6 @@ public:
 
 };
 
-/** @brief Stores information about Ray - Hittable intersection. */
 struct Hitrecord {
 
     /** @brief Solution to hit equation. */

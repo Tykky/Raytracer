@@ -24,8 +24,8 @@ public:
     bool hit(const Ray &r, float dmin, float dmax) const;
 
 private:
-    Vector3D min;
-    Vector3D max;
+    Vector3D min_;
+    Vector3D max_;
 
 };
 

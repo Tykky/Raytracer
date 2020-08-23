@@ -2,7 +2,7 @@
 #include "core/Utility.h"
 
 Dielectric::Dielectric(float ior) :
-        ior(ior) {
+        ior_(ior) {
 }
 
 bool Dielectric::scatter(const Ray &r, const Hitrecord &record, Vector3D &attenuation, Ray &scatter,
@@ -22,16 +22,16 @@ bool Dielectric::scatter(const Ray &r, const Hitrecord &record, Vector3D &attenu
 
     if (r.getDirection().dot(record.normal) > 0) { // Exits object
         outnormal = -record.normal;
-        tmpior = ior;
-        cosine = ior * r.getDirection().dot(record.normal) / r.getDirection().length();
+        tmpior = ior_;
+        cosine = ior_ * r.getDirection().dot(record.normal) / r.getDirection().length();
     } else { // Enters object
         outnormal = record.normal;
-        tmpior = 1.0 / ior;
+        tmpior = 1.0 / ior_;
         cosine = -r.getDirection().dot(record.normal) / r.getDirection().length();
     }
 
     if (refract(r.getDirection(), outnormal, tmpior, refraction)) { // Refract
-        probability = fresnel(cosine, ior);
+        probability = fresnel(cosine, ior_);
     } else { // Reflect
         probability = 1;
     }

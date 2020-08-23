@@ -42,46 +42,46 @@ private:
 
     enum class orientation { HORIZONTAL, VERTICAL};
 
-    GLFWwindow *window;
+    GLFWwindow *window_;
 
-    int window_width;
-    int window_height;
+    int window_width_;
+    int window_height_;
 
-    bool display_imgui_metrics;
-    bool display_imgui_demo;
-    bool display_imgui_about;
-    bool display_imgui_userguide;
-    bool display_save_as;
-    bool display_menu_file;
-    bool display_menu_debug;
-    bool display_menu_window;
+    bool display_imgui_metrics_;
+    bool display_imgui_demo_;
+    bool display_imgui_about_;
+    bool display_imgui_userguide_;
+    bool display_save_as_;
+    bool display_menu_file_;
+    bool display_menu_debug_;
+    bool display_menu_window_;
 
-    std::vector<Menuitem> file_submenu;
-    std::vector<Menuitem> debug_submenu;
-    std::vector<Menuitem> window_submenu;
-    std::vector<Menuitem> mainmenu;
+    std::vector<Menuitem> file_submenu_;
+    std::vector<Menuitem> debug_submenu_;
+    std::vector<Menuitem> window_submenu_;
+    std::vector<Menuitem> mainmenu_;
 
-    float main_menubar_height;
+    float main_menubar_height_;
 
-    float right_side_bar_width;
-    const float right_side_bar_min_width;
-    const float right_side_bar_max_width;
-    const float right_side_bar_hover_margin;
-    bool is_right_side_bar_resizing;
+    float right_side_bar_width_;
+    const float right_side_bar_min_width_;
+    const float right_side_bar_max_width_;
+    const float right_side_bar_hover_margin_;
+    bool is_right_side_bar_resizing_;
 
-    float texture_width;
-    float texture_height;
-    ImVec2 texture_offset;
+    float texture_width_;
+    float texture_height_;
+    ImVec2 texture_offset_;
 
-    int render_width;
-    int render_height;
-    int render_samples;
-    Camera camera;
-    Raytracer raytracer;
+    int render_width_;
+    int render_height_;
+    int render_samples_;
+    Camera camera_;
+    Raytracer raytracer_;
 
-    GLuint framebuffer_texture_id;
+    GLuint framebuffer_texture_id_;
 
-    const unsigned int static_window_flags;
+    const unsigned int static_window_flags_;
 
     unsigned int setupTexture() const;
     void displayMainMenu();

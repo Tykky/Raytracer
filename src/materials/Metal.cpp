@@ -2,8 +2,8 @@
 #include "core/Utility.h"
 
 Metal::Metal(const Vector3D &albedo, float blur) :
-        albedo(albedo), blur(blur) {
-    if (blur > 1) this->blur = 1;
+        albedo_(albedo), blur_(blur) {
+    if (blur > 1) this->blur_ = 1;
 }
 
 bool Metal::scatter(const Ray &r, const Hitrecord &record, Vector3D &attenuation, Ray &scatter,
@@ -11,12 +11,12 @@ bool Metal::scatter(const Ray &r, const Hitrecord &record, Vector3D &attenuation
 
     Vector3D reflection = reflect(r.getDirection(), record.normal);
 
-    if (blur > 0) {
-        scatter = Ray(record.p, reflection + blur * randomInUnitSphere(randomFloat));
+    if (blur_ > 0) {
+        scatter = Ray(record.p, reflection + blur_ * randomInUnitSphere(randomFloat));
     } else {
         scatter = Ray(record.p, reflection);
     }
 
-    attenuation = albedo;
+    attenuation = albedo_;
     return ((scatter.getDirection().dot(record.normal)) > 0);
 }

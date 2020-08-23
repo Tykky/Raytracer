@@ -17,7 +17,7 @@ public:
     virtual bool boundingBox(float c0, float c1, Aabb &box) const;
 
 private:
-    std::vector<std::shared_ptr<Hittable>> list;
+    std::vector<std::shared_ptr<Hittable>> list_;
 
 };
 

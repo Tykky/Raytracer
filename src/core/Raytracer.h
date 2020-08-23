@@ -46,13 +46,13 @@ public:
     void setWorld(std::shared_ptr<Hittable> world);
 
 private:
-    std::shared_ptr<Hittable> world;
-    std::vector<unsigned char> framebuffer;
-    std::vector<float> colorbuffer;
-    Camera camera;
-    int width;
-    int height;
-    int bouncelimit;
+    std::shared_ptr<Hittable> world_;
+    std::vector<unsigned char> framebuffer_;
+    std::vector<float> colorbuffer_;
+    Camera camera_;
+    int width_;
+    int height_;
+    int bouncelimit_;
 
     /**
      *  @brief Computers color for Ray r

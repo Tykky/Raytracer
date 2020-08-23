@@ -16,24 +16,24 @@ namespace {
 }
 
 Aabb::Aabb(const Vector3D &a, const Vector3D &b) {
-    min = a;
-    max = b;
+    min_ = a;
+    max_ = b;
 }
 
 Vector3D Aabb::getMin() {
-    return min;
+    return min_;
 }
 
 Vector3D Aabb::getMax() {
-    return max;
+    return max_;
 }
 
 bool Aabb::hit(const Ray &r, float dmin, float dmax) const {
     // src: Ray Tracing In The Next Week
     for (int a = 0; a < 3; a++) {
         float invD = 1.0f / r.getDirection()[a];
-        float t0 = (min[a] - r.getPosition()[a]) * invD;
-        float t1 = (max[a] - r.getPosition()[a]) * invD;
+        float t0 = (min_[a] - r.getPosition()[a]) * invD;
+        float t1 = (max_[a] - r.getPosition()[a]) * invD;
         if (invD < 0.0f)
             std::swap(t0, t1);
         dmin = t0 > dmin ? t0 : dmin;

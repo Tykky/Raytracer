@@ -14,7 +14,7 @@ public:
                          std::function<float()> &randomFloat) const;
 
 private:
-    const Vector3D albedo;
+    const Vector3D albedo_;
 
 };
 

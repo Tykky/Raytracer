@@ -1,21 +1,21 @@
 #include "Ray.h"
 
 Ray::Ray() :
-    position({}), direction({}) {
+        position_({}), direction_({}) {
 };
 
 Ray::Ray(const Vector3D& origin, const Vector3D& direction) :
-    position(origin), direction(direction) {
+        position_(origin), direction_(direction) {
 };
 
 Vector3D Ray::getPosition() const {
-    return position;
+    return position_;
 }
 
 Vector3D Ray::getDirection() const {
-    return direction;
+    return direction_;
 }
 
-Vector3D Ray::pointAtDistance(float distance) const {
-    return position + distance * direction;
+Vector3D Ray::pointAtDistance(const float &distance) const {
+    return position_ + distance * direction_;
 }

@@ -13,12 +13,12 @@ Window::Window(const char *title) {
 	
     if (glfwInit()) {
         glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
-    	window = glfwCreateWindow(800, 600, title, NULL, NULL);
-    	if(!window) {
+        window_ = glfwCreateWindow(800, 600, title, NULL, NULL);
+    	if(!window_) {
             glfwTerminate();
             throw std::runtime_error("[ERROR] glfwCreateWindow failed");
         }
-        glfwMakeContextCurrent(window);
+        glfwMakeContextCurrent(window_);
         if (glewInit() != GLEW_OK) {
             throw std::runtime_error("[ERROR] glewInit failed");
         }
@@ -29,7 +29,7 @@ Window::Window(const char *title) {
 }
 
 Window::~Window() {
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(window_);
 }
 
 void Window::render() const {
@@ -37,16 +37,16 @@ void Window::render() const {
    // disable vsync
    //glfwSwapInterval(0);
 
-   Gui gui(window);
+   Gui gui(window_);
    gui.init(); // Creates OpenGl context etc...
 
    // Main render loop
-   while(!glfwWindowShouldClose(window)) {
+   while(!glfwWindowShouldClose(window_)) {
         glfwPollEvents();
         gui.renderGui();
         glClear(GL_COLOR_BUFFER_BIT);
         gui.renderDrawData();
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window_);
    }
 
 }

@@ -56,7 +56,7 @@ public:
     std::ostream &operator<<(std::ostream &os);
 
 private:
-    float x, y, z;
+    float x_, y_, z_;
 
 };
 

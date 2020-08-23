@@ -17,10 +17,8 @@ public:
     ~Window();
 
 private:
-    GLFWwindow *window;
+    GLFWwindow *window_;
     void render() const;
-
-
 };
 
 #endif //RAYTRACER_WINDOW_H
