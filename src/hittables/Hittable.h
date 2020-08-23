@@ -20,13 +20,13 @@ public:
 
     /**
      * @brief Solves hit equation.
-     * @param [in] cmin is minimum acceptable value for ray intersection equation
-     * @param [in] cmax is maximum acceptable value for ray intersection equation
+     * @param [in] dmin is minimum acceptable value for ray intersection equation
+     * @param [in] dmax is maximum acceptable value for ray intersection equation
      * @param [out] record stores intersection details
      * @return true when ray intersection equation has solution between cmin and cmax
      * false.
      */
-    virtual bool hit(const Ray &r, float cmin, float cmax, Hitrecord &record) const = 0;
+    virtual bool hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const = 0;
 
     /**
      * @param [in] c0
@@ -42,7 +42,7 @@ public:
 struct Hitrecord {
 
     /** @brief Solution to hit equation. */
-    float c;
+    float distance;
 
     /** @brief Point where the ray hit. */
     Vector3D p;

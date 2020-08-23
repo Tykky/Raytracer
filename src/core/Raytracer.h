@@ -48,6 +48,7 @@ public:
 private:
     std::shared_ptr<Hittable> world;
     std::vector<unsigned char> framebuffer;
+    std::vector<float> colorbuffer;
     Camera camera;
     int width;
     int height;

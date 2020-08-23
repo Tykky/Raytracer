@@ -5,7 +5,7 @@ Sphere::Sphere(const Vector3D &center, float radius, std::shared_ptr<Material> m
         center(center), radius(radius), matptr(material) {
 }
 
-bool Sphere::hit(const Ray &r, float cmin, float cmax, Hitrecord &record) const {
+bool Sphere::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const {
 
 	Vector3D oc = r.getPosition() - center;
     float a = r.getDirection().dot(r.getDirection());
@@ -16,18 +16,18 @@ bool Sphere::hit(const Ray &r, float cmin, float cmax, Hitrecord &record) const 
     if (discriminant > 0) {
         const float sqroot = std::sqrt(discriminant);
         float solution = (-b - sqroot) / a;
-        if (solution < cmax && solution > cmin) {
-            record.c = solution;
-            record.p = r.pointAtC(record.c);
+        if (solution < dmax && solution > dmin) {
+            record.distance = solution;
+            record.p = r.pointAtDistance(record.distance);
             record.normal = (record.p - center) / radius;
             record.matptr = matptr;
             return true;
         }
 
         solution = (-b + sqroot) / a;
-        if (solution < cmax && solution > cmin) {
-            record.c = solution;
-            record.p = r.pointAtC(record.c);
+        if (solution < dmax && solution > dmin) {
+            record.distance = solution;
+            record.p = r.pointAtDistance(record.distance);
             record.normal = (record.p - center) / radius;
             record.matptr = matptr;
             return true;

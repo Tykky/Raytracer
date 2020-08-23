@@ -8,7 +8,6 @@
 class Camera {
 
 public:
-
     /**
      * @param [in] fov = field of view (vertical) in degrees
      * @param [in] aspectratio = screen width/height

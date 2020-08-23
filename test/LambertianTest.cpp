@@ -30,7 +30,7 @@ TEST_F(LambertianTest, scattertest) {
     Hitrecord record;
     record.normal = Vector3D(-1, 1, 0);
     record.p = Vector3D(1, 1, 0);
-    record.c = 1;
+    record.distance = 1;
 
     Vector3D attenuation;
     Ray scatter;

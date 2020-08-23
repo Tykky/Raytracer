@@ -8,7 +8,7 @@
 
 Raytracer::Raytracer(std::shared_ptr<Hittable> world, const Camera &camera, int width, int height) :
         world(std::move(world)), camera(camera), width(width), height(height), bouncelimit(50),
-        framebuffer(std::vector<unsigned char>(3 * width * height)) {
+        framebuffer(std::vector<unsigned char>(3 * width * height)), colorbuffer(std::vector<float>(3 * width *height)) {
 }
 
 void Raytracer::render(int samples) {
@@ -19,23 +19,25 @@ void Raytracer::render(int samples) {
         std::uniform_real_distribution<float> dist(0.0, 1.0);
         std::function<float()> randomFloat = bind(dist, engine);
 
-#pragma omp for
-        for (int y = height - 1; y >= 0; --y) {
-            for (int x = 0; x < width; ++x) {
-                Vector3D color = Vector3D();
-                for (int s = 0; s < samples; s++) {
+        for(int s = 1; s < samples; s++) {
+            #pragma omp for collapse(2) schedule(dynamic, 10)
+            for (int y = height - 1; y >= 0; --y) {
+                for (int x = 0; x < width; ++x) {
                     Ray r = camera.getRay((float(x) + randomFloat()) / float(width),
                                           (float(y) + randomFloat()) / float(height));
-                    color += rayTrace(r, randomFloat);
+                    int i = 3 * (width * height - (width * y + x)) - 3;
+                    Vector3D color = rayTrace(r, randomFloat);
+                    colorbuffer[i] += color.getR();
+                    colorbuffer[i + 1] += color.getG();
+                    colorbuffer[i + 2] += color.getB();
+                    color = Vector3D(colorbuffer[i]/s, colorbuffer[i + 1]/s, colorbuffer[i + 2]/s);
+                    // Write gamma corrected pixels to framebuffer
+                    // Data format: [R, G, B, R, G, B, ...]
+                    // stride = 3 bytes
+                    framebuffer[i + 0] = static_cast<int>(std::sqrt(color.getR()) * 255.99);
+                    framebuffer[i + 1] = static_cast<int>(std::sqrt(color.getG()) * 255.99);
+                    framebuffer[i + 2] = static_cast<int>(std::sqrt(color.getB()) * 255.99);
                 }
-                color /= float(samples);
-                // Write gamma corrected pixels to framebuffer
-                // Data format: [R, G, B, R, G, B, ...]
-                // stride = 3 bytes
-                int i = 3 * (width * height - (width * y + x)) - 3;
-                framebuffer[i + 0] = static_cast<int>(std::sqrt(color.getR()) * 255.99);
-                framebuffer[i + 1] = static_cast<int>(std::sqrt(color.getG()) * 255.99);
-                framebuffer[i + 2] = static_cast<int>(std::sqrt(color.getB()) * 255.99);
             }
         }
     }

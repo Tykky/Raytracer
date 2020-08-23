@@ -4,7 +4,7 @@
 Camera::Camera(float fov, float aspectratio,const Vector3D &origin,const Vector3D &pointat,const Vector3D &up) :
         aspectratio(aspectratio), origin(origin) {
 
-    const float pi = 3.14159265359;
+    const float pi = 3.14159265359f;
 	
     theta = fov * pi / 180; // fov to radians
     halfwidth = tan(theta / 2); // tan(theta/2) = (w/2)/(1) = w/2

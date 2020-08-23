@@ -13,7 +13,7 @@ public:
      * @param [in] material
      */
     Sphere(const Vector3D &center, float radius, std::shared_ptr<Material> material);
-    bool hit(const Ray &r, float cmin, float cmax, Hitrecord &record) const override;
+    bool hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const override;
     virtual bool boundingBox(float c0, float c1, Aabb &box) const override;
 
 private:

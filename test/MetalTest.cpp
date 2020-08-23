@@ -26,7 +26,7 @@ TEST_F(MetalTest, scattertest) {
     Hitrecord record;
     record.p = Vector3D(0,2,0);
     record.normal = Vector3D(0,-1,0);
-    record.c = 1;
+    record.distance = 1;
     record.matptr = mat;
 
     Ray r = Ray(Vector3D(-2,0,0),Vector3D(0,2,0));

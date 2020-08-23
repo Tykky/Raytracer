@@ -21,7 +21,7 @@ public:
     Vector3D getMin();
     Vector3D getMax();
 
-    bool hit(const Ray &r, float cmin, float cmax) const;
+    bool hit(const Ray &r, float dmin, float dmax) const;
 
 private:
     Vector3D min;

@@ -13,19 +13,18 @@ class Ray {
 public:
     Ray();
     /**
-     * @param [] origin
-     * @param [] direction
+     * @param [in] position
+     * @param [in] direction
      */
-    Ray(const Vector3D &origin, const Vector3D &direction);
+    Ray(const Vector3D &position, const Vector3D &direction);
     Vector3D getPosition() const;
     Vector3D getDirection() const;
 
     /**
      * @param [in] c
-     * @return coordinates for scalar multiplication
-     * \f$ \text{ray}(c) = \text{origin} + c \cdot \text{direction} \f$
+     * @return coordinates for scalar multiplication origin + distance * direction
      */
-    Vector3D pointAtC(float c) const;
+    Vector3D pointAtDistance(float distance) const;
 
 private:
     Vector3D position;

@@ -16,6 +16,6 @@ Vector3D Ray::getDirection() const {
     return direction;
 }
 
-Vector3D Ray::pointAtC(float c) const {
-    return position + c * direction;
+Vector3D Ray::pointAtDistance(float distance) const {
+    return position + distance * direction;
 }

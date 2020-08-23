@@ -28,7 +28,7 @@ Vector3D Aabb::getMax() {
     return max;
 }
 
-bool Aabb::hit(const Ray &r, float cmin, float cmax) const {
+bool Aabb::hit(const Ray &r, float dmin, float dmax) const {
     // src: Ray Tracing In The Next Week
     for (int a = 0; a < 3; a++) {
         float invD = 1.0f / r.getDirection()[a];
@@ -36,9 +36,9 @@ bool Aabb::hit(const Ray &r, float cmin, float cmax) const {
         float t1 = (max[a] - r.getPosition()[a]) * invD;
         if (invD < 0.0f)
             std::swap(t0, t1);
-        cmin = t0 > cmin ? t0 : cmin;
-        cmax = t1 < cmax ? t1 : cmax;
-        if (cmax <= cmin)
+        dmin = t0 > dmin ? t0 : dmin;
+        dmax = t1 < dmax ? t1 : dmax;
+        if (dmax <= dmin)
             return false;
     }
     return true;

@@ -63,15 +63,15 @@ Bvhnode::Bvhnode(std::vector<std::shared_ptr<Hittable>> &list,
 
 }
 
-bool Bvhnode::hit(const Ray &r, float cmin, float cmax, Hitrecord &record) const {
+bool Bvhnode::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const {
 
     // Do search in bvh
-    if(node.hit(r,cmin,cmax)) {
+    if(node.hit(r, dmin, dmax)) {
         Hitrecord leftrec, rightrec;
-        bool hitleft = left->hit(r, cmin, cmax, leftrec);
-        bool hitright = right->hit(r, cmin, cmax, rightrec);
+        bool hitleft = left->hit(r, dmin, dmax, leftrec);
+        bool hitright = right->hit(r, dmin, dmax, rightrec);
         if(hitleft && hitright) {
-            if(leftrec.c < rightrec.c) {
+            if(leftrec.distance < rightrec.distance) {
                 record = leftrec;
             } else {
                 record = rightrec;

@@ -7,18 +7,18 @@ Hitlist::Hitlist(std::vector<std::shared_ptr<Hittable>> l) :
     list(std::move(l)) {
 }
 
-bool Hitlist::hit(const Ray &r, float cmin, float cmax, Hitrecord &record) const {
+bool Hitlist::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const {
 
     bool hit = false;
     Hitrecord tmprec;
-    float closest = cmax;
+    float closest = dmax;
 
     // test Ray r against all hittables
     for (int i = 0; i < list.size(); ++i) {
         // Preserve only the closest hit
-        if (list[i]->hit(r, cmin, closest, tmprec)) {
+        if (list[i]->hit(r, dmin, closest, tmprec)) {
             hit = true;
-            closest = tmprec.c;
+            closest = tmprec.distance;
             record = tmprec;
         }
     }
