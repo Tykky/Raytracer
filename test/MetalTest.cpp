@@ -27,7 +27,7 @@ TEST_F(MetalTest, scattertest) {
     record.p = Vector3D(0,2,0);
     record.normal = Vector3D(0,-1,0);
     record.distance = 1;
-    record.matptr = mat;
+    record.matptr = mat.get();
 
     Ray r = Ray(Vector3D(-2,0,0),Vector3D(0,2,0));
     Vector3D att(1,1,1);

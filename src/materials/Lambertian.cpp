@@ -1,5 +1,5 @@
 #include "Lambertian.h"
-#include "core/Utility.h"
+#include "core/utility.h"
 
 Lambertian::Lambertian(const Vector3D &albedo) :
         albedo_(albedo) {

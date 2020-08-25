@@ -1,14 +1,11 @@
 # Raytracer
 
-
 This repository contains a raytracer for University of Helsinki's course Data Structures Project.
 The course has ended but development of this project continues. 
 
+[![Generic badge](https://img.shields.io/badge/Docs-doxygen-blue.svg)](https://tykky.github.io/)
 [![Build Status](https://travis-ci.org/Tykky/Raytracer.svg?branch=master)](https://travis-ci.org/Tykky/Raytracer)
 [![codecov](https://codecov.io/gh/Tykky/Raytracer/branch/master/graph/badge.svg)](https://codecov.io/gh/Tykky/Raytracer)
-## Documentation
-
-[Documentation](https://tykky.github.io/)
 
 ## Dependencies
 

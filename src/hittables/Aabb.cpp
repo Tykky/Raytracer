@@ -29,7 +29,6 @@ Vector3D Aabb::getMax() {
 }
 
 bool Aabb::hit(const Ray &r, float dmin, float dmax) const {
-    // src: Ray Tracing In The Next Week
     for (int a = 0; a < 3; a++) {
         float invD = 1.0f / r.getDirection()[a];
         float t0 = (min_[a] - r.getPosition()[a]) * invD;

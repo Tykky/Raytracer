@@ -4,7 +4,7 @@ set(RAYTRACER_SRC core/Ray.cpp
         core/Camera.cpp
         core/Raytracer.cpp
         core/Vector3D.cpp
-        core/Utility.cpp
+        core/utility.cpp
         hittables/Sphere.cpp
         hittables/Hitlist.cpp
         hittables/Aabb.cpp

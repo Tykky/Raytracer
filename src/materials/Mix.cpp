@@ -1,7 +1,7 @@
 #include "Mix.h"
 #include "Metal.h"
 #include "Lambertian.h"
-#include "core/Utility.h"
+#include "core/utility.h"
 
 Mix::Mix(const Vector3D &lalbedo, const Vector3D &malbedo, float metalness, float roughness, float fresnelfactor,
            float ior) :

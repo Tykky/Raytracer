@@ -52,7 +52,7 @@ struct Hitrecord {
     Vector3D normal;
 
     /** @brief Pointer to material. */
-    std::shared_ptr<Material> matptr;
+    Material *matptr;
 };
 
 #endif //RAYTRACER_HITTABLE_H

@@ -1,7 +1,7 @@
 #include "Hitlist.h"
 
 #include <utility>
-#include "core/Utility.h"
+#include "core/utility.h"
 
 Hitlist::Hitlist(std::vector<std::shared_ptr<Hittable>> l) :
         list_(std::move(l)) {

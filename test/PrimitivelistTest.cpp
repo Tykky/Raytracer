@@ -13,9 +13,9 @@ protected:
     void SetUp() {
         list = std::vector<std::shared_ptr<Hittable>>(3);
         mat = std::make_shared<Lambertian>(Vector3D(1,1,1));
-        list[0] = std::make_unique<Sphere>(Vector3D(0,0,0),0.5,mat);
-        list[1] = std::make_unique<Sphere>(Vector3D(-1,0,0),0.5,mat);
-        list[2] = std::make_unique<Sphere>(Vector3D(1,0,0),0.5,mat);
+        list[0] = std::make_unique<Sphere>(Vector3D(0,0,0),0.5,mat.get());
+        list[1] = std::make_unique<Sphere>(Vector3D(-1,0,0),0.5,mat.get());
+        list[2] = std::make_unique<Sphere>(Vector3D(1,0,0),0.5,mat.get());
         plist = std::make_shared<Hitlist>(list);
     }
 };

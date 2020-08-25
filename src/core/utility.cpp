@@ -1,4 +1,4 @@
-#include "Utility.h"
+#include "utility.h"
 
 Vector3D skyGradient(const Ray& r) {
     Vector3D direction = r.getDirection();

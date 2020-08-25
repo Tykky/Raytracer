@@ -1,8 +1,10 @@
 #ifndef RAYTRACER_ENGINE_H
 #define RAYTRACER_ENGINE_H
 
+#include <vector>
 #include <memory>
 #include <functional>
+#include <atomic>
 #include "hittables/Hittable.h"
 #include "Vector3D.h"
 #include "Camera.h"
@@ -17,50 +19,49 @@ public:
      * @param [in] width
      * @param [in] height
      */
-    Raytracer(std::shared_ptr<Hittable> world, const Camera &camera, int width, int height);
+    Raytracer(Hittable *world, Camera *camera, int width, int height);
 
     /**
      * @brief computes color for every pixel on the screen.
      * @param [in] samples
      */
-    void render(int samples);
+    void render(unsigned int samples);
 
 	/**
 	 * @brief stores framebuffer data to .ppm file
 	 * @param [in] filename
 	 */
-    void frammebufferToNetpbm(std::string filename);
+    void frammebufferToNetpbm(const std::string &filename);
 
     std::vector<unsigned char> &getFramebuffer();
     void clearFramebuffer();
+    void resize(int width, int height);
 
     /** @param [in] bouncelimit */
     void setBounceLimit(int bouncelimit);
-    /** @param [in] width */
-    void setWidth(int width);
-    /** @param [in] height */
-    void setHeight(int height);
     /** @param [in] camera */
-    void setCamera(Camera &camera);
+    void setCamera(Camera *camera);
     /** @param [in] world */
-    void setWorld(std::shared_ptr<Hittable> world);
+    void setWorld(Hittable *world);
+    void haltRendering();
 
 private:
-    std::shared_ptr<Hittable> world_;
+    Hittable *world_;
     std::vector<unsigned char> framebuffer_;
     std::vector<float> colorbuffer_;
-    Camera camera_;
+    Camera *camera_;
     int width_;
     int height_;
     int bouncelimit_;
+    std::atomic<bool> is_rendering_;
 
     /**
      *  @brief Computers color for Ray r
 	 *  @param [in] r is being traced
 	 *  @param [in] randomFloat contains reference to random generator.
      */
-    Vector3D rayTrace(Ray& r, std::function<float()> &randomFloat) const;
-
+    Vector3D rayTrace(Ray &r, std::function<float()> &randomFloat) const;
+    void clearColorbuffer();
 
 };
 

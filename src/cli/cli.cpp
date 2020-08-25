@@ -86,12 +86,12 @@ int main(int argc, char** argv) {
     std::shared_ptr<Hittable> bvh = std::make_shared<Bvhnode>(list, 0, n + 4, 0, 1, randomFloat);
     //std::shared_ptr<Hittable> plist = std::make_shared<Hitlist>(list);
 
-    Raytracer engine(bvh, cam, width, height);
+    Raytracer raytracer(&bvh, &cam, width, height);
 
     auto start = std::chrono::system_clock::now();
     std::cout << "rendering started.." << std::endl;
 
-    engine.render(samples);
+    raytracer.render(samples);
 
     auto end = std::chrono::system_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
 
     start = std::chrono::system_clock::now();
     std::cout << "writing to a file... " << std::endl;
-    engine.frammebufferToNetpbm("image");
+    raytracer.frammebufferToNetpbm("image");
     end = std::chrono::system_clock::now();
     elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::cout << "writing finished in " << double(elapsed.count()) << " ms" << std::endl;

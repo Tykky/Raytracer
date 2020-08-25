@@ -52,7 +52,13 @@ Gui::Gui(GLFWwindow *window) :
                 Vector3D(1,0,0),
                 Vector3D(0,1,0)),
 
-        raytracer_(nullptr, camera_, render_width_, render_height_),
+        raytracer_(nullptr, &camera_, render_width_, render_height_),
+
+        file_submenu_({
+                              {"Save as", &display_save_as_}
+                      }),
+
+
 
         framebuffer_texture_id_(0) {
 
@@ -153,9 +159,8 @@ void Gui::displayRightSideBar() {
     int *res[] = {&render_width_, &render_height_};
 
     if(ImGui::InputInt2("Resolution", *res)) {
-        raytracer_.setWidth(render_width_);
-        raytracer_.setHeight(render_height_);
-        raytracer_.getFramebuffer();
+        raytracer_.resize(render_width_, render_height_);
+        raytracer_.clearFramebuffer();
     }
 
     ImGui::InputInt("Samples", &render_samples_);

@@ -1,7 +1,7 @@
 #include <cmath>
 #include "Sphere.h"
 
-Sphere::Sphere(const Vector3D &center, float radius, std::shared_ptr<Material> material) :
+Sphere::Sphere(const Vector3D &center, float radius, Material *material) :
         center_(center), radius_(radius), matptr_(material) {
 }
 

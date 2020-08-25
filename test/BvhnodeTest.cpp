@@ -20,10 +20,10 @@ protected:
         dist = std::uniform_real_distribution<float>(0, 1);
         randomfloat = bind(dist, engine);
         mat = std::make_shared<Lambertian>(Vector3D(1,1,1));
-        list[0] = std::make_unique<Sphere>(Vector3D(0,0,0),0.5,mat);
-        list[1] = std::make_unique<Sphere>(Vector3D(-1,0,0),0.5,mat);
-        list[2] = std::make_unique<Sphere>(Vector3D(1,0,0),0.5,mat);
-        list[3] = std::make_unique<Sphere>(Vector3D(0,2,0),0.5,mat);
+        list[0] = std::make_unique<Sphere>(Vector3D(0,0,0),0.5,mat.get());
+        list[1] = std::make_unique<Sphere>(Vector3D(-1,0,0),0.5,mat.get());
+        list[2] = std::make_unique<Sphere>(Vector3D(1,0,0),0.5,mat.get());
+        list[3] = std::make_unique<Sphere>(Vector3D(0,2,0),0.5,mat.get());
         bvh = std::make_shared<Bvhnode>(list,0,3,-999,999,randomfloat);
     }
 };
