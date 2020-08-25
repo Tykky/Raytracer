@@ -4,6 +4,7 @@
 This repository contains a raytracer for University of Helsinki's course Data Structures Project.
 The course has ended but development of this project continues. 
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/faf5f517c8a54a5384c3906068b91a22)](https://app.codacy.com/manual/Tykky/Raytracer?utm_source=github.com&utm_medium=referral&utm_content=Tykky/Raytracer&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/Tykky/Raytracer.svg?branch=master)](https://travis-ci.org/Tykky/Raytracer)
 [![codecov](https://codecov.io/gh/Tykky/Raytracer/branch/master/graph/badge.svg)](https://codecov.io/gh/Tykky/Raytracer)
 ## Documentation
