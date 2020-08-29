@@ -8,6 +8,7 @@
 class Camera {
 
 public:
+    Camera();
     /**
      * @param [in] fov = field of view (vertical) in degrees
      * @param [in] aspectratio = screen width/height
@@ -23,6 +24,17 @@ public:
      * @param [in] y
      */
     Ray getRay(const float &x, const float &y) const;
+    void setFov(const float &fov);
+    void setPos(const Vector3D &pos);
+    void setUp(const Vector3D &up);
+    void setAspectRatio(const float &ratio);
+
+    /**
+     * @brief Updates all vectors used internally. Call this
+     * when you want to apply changes to fov, position, up vector
+     * and aspectratio.
+     */
+    void applyChanges();
 
 private:
     float aspectratio_;
@@ -33,6 +45,9 @@ private:
     Vector3D vertical_;
     Vector3D horizontal_;
     Vector3D origin_;
+    Vector3D pointat_;
+    Vector3D up_;
+
 };
 
 

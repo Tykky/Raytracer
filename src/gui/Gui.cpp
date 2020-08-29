@@ -9,16 +9,16 @@
 #include "hittables/Bvhnode.h"
 #include "hittables/Sphere.h"
 #include "materials/Mix.h"
-
-#define IMGUI_DEFINE_MATH_OPERATORS
-
+#include "materials/Lambertian.h"
+#include "materials/Dielectric.h"
+#include "materials/Metal.h"
 
 Gui::Gui(GLFWwindow *window) :
 
         window_(window),
         render_width_(2560),
         render_height_(1440),
-        render_samples_(10),
+        render_samples_(1),
 
         display_imgui_metrics_(false),
         display_imgui_demo_(false),
@@ -42,46 +42,67 @@ Gui::Gui(GLFWwindow *window) :
         static_window_flags_(ImGuiWindowFlags_NoMove |
                              ImGuiWindowFlags_NoTitleBar |
                              ImGuiWindowFlags_NoResize |
-                             ImGuiWindowFlags_NoBringToFrontOnFocus |
-                             ImGuiWindowFlags_NoScrollWithMouse |
-                             ImGuiWindowFlags_NoScrollbar),
+                             ImGuiWindowFlags_NoBringToFrontOnFocus),
 
-        camera_(90,
-               static_cast<float>(render_width_) / static_cast<float>(render_height_),
-                Vector3D(0,0,0),
-                Vector3D(1,0,0),
-                Vector3D(0,1,0)),
+        camera_(),
+        camera_pos_x_(0),
+        camera_pos_y_(0),
+        camera_pos_z_(0),
+        camera_up_x_(0),
+        camera_up_y_(1),
+        camera_up_z_(0),
+        camera_fov_(90),
 
-        raytracer_(nullptr, &camera_, render_width_, render_height_),
+        current_hittable(0),
+        current_hittable_name(),
+        current_hittable_pos_x_(0),
+        current_hittable_pos_y_(0),
+        current_hittable_pos_z_(0),
+        current_material(0),
+
+        hittable_names_(),
+        material_names({
+            "Lambertian",
+            "Metal",
+            "Dielectric"
+        }),
+        world_(),
+
+        lambertian(std::make_unique<Lambertian>(Vector3D(0.5f,0.5f,0.5f))),
+        metal(std::make_unique<Metal>(Vector3D(0.8,0.6,0.4), 0.3f)),
+        dielectric(std::make_unique<Dielectric>(1.3f)),
+
+        generator(std::mt19937()),
+        dist(std::uniform_real_distribution<float>(0,1)),
+        randomFloat(std::bind(dist, generator)),
+
+        raytracer_( nullptr, &camera_, render_width_, render_height_),
+
+        framebuffer_texture_id_(0),
+
 
         file_submenu_({
-                              {"Save as", &display_save_as_}
-                      }),
-
-
-
-        framebuffer_texture_id_(0) {
-
-    file_submenu_ = {
             {"Save as", &display_save_as_}
-    };
+        }),
 
-    debug_submenu_ = {
+        debug_submenu_({
             {"ImGui metrics",    &display_imgui_metrics_},
             {"ImGui demo",       &display_imgui_demo_},
             {"ImGui about",      &display_imgui_about_},
             {"ImGui user guide", &display_imgui_userguide_},
-    };
+        }),
 
-    window_submenu_ = {
-    };
+        window_submenu_({}),
 
-    mainmenu_ = {
+        mainmenu_({
             {"File",   &display_menu_file_,   &file_submenu_},
             {"Window", &display_menu_window_, &window_submenu_},
             {"Debug",  &display_menu_debug_,  &debug_submenu_}
-    };
+        })
 
+        {
+
+    world_.push_back(std::make_shared<Sphere>(Vector3D(0,-1001,0), 1000, lambertian.get()));
     texture_width_ = static_cast<float>(render_width_);
     texture_height_ = static_cast<float>(render_height_);
 
@@ -124,17 +145,20 @@ void Gui::displaySaveAs() {
     const unsigned int size = 512;
     char filename[size] = {};
     ImGui::InputText("filename", filename, size);
-    ImGui::Button("Save");
+    if(ImGui::Button("Save")) {
+        std::string fname = filename;
+        raytracer_.frammebufferToNetpbm(fname);
+    }
     ImGui::End();
 }
 
 void Gui::displayRenderedImage() {
     ImGui::SetNextWindowPos(ImVec2(0, main_menubar_height_));
     ImGui::SetNextWindowSize(ImVec2(static_cast<float>(window_width_) - right_side_bar_width_, static_cast<float>(window_height_)));
-    ImGui::Begin("Rendered image", nullptr, static_window_flags_);
+    ImGui::Begin("Rendered image", nullptr, static_window_flags_ | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     ImVec2 window_size = ImGui::GetWindowSize();
 
-    if(ImGui::IsWindowFocused()) {
+    if(ImGui::IsWindowHovered()) {
         moveTextureWhenDragged();
         zoomTextureWhenScrolled();
     }
@@ -154,7 +178,18 @@ void Gui::displayRightSideBar() {
     ImGui::SetNextWindowSize(ImVec2(right_side_bar_width_, static_cast<float>(window_height_) - main_menubar_height_));
     ImGui::SetNextWindowPos(ImVec2(static_cast<float>(window_width_) - right_side_bar_width_, main_menubar_height_));
     ImGui::Begin("right_side_bar", nullptr, static_window_flags_);
-    ImGui::BeginChild("render_settings", ImVec2(right_side_bar_width_, 120), true);
+
+    if(ImGui::IsWindowHovered()) {
+        ImGui::SetWindowFocus();
+    }
+    displayRenderSettingsChild(ImVec2(right_side_bar_max_width_, 120));
+    displayCameraSettingsChild(ImVec2(right_side_bar_max_width_, 120));
+    displayObjectsChild(ImVec2(right_side_bar_width_, 300));
+    ImGui::End();
+}
+
+void Gui::displayRenderSettingsChild(const ImVec2 &size) {
+    ImGui::BeginChild("render_settings", size, true);
     ImGui::Text("Render settings");
     int *res[] = {&render_width_, &render_height_};
 
@@ -165,6 +200,8 @@ void Gui::displayRightSideBar() {
 
     ImGui::InputInt("Samples", &render_samples_);
     if(ImGui::Button("Render")) {
+        bvh = std::make_shared<Bvhnode>(world_,0, world_.size(), -99999, 99999, randomFloat);
+        raytracer_.setWorld(bvh.get());
         startRaytracer();
     }
 
@@ -172,9 +209,64 @@ void Gui::displayRightSideBar() {
     if(ImGui::Button("Clear")) {
         raytracer_.clearFramebuffer();
     }
+    ImGui::SameLine(115);
+    if(ImGui::Button("Halt")) {
+        raytracer_.haltRendering();
+    }
 
     ImGui::EndChild();
-    ImGui::End();
+}
+
+void Gui::displayCameraSettingsChild(const ImVec2 &size) {
+    ImGui::BeginChild("camera_Settings", ImVec2(right_side_bar_width_,120), true);
+    ImGui::Text("Camera settings");
+    float *pos[] = {&camera_pos_x_, &camera_pos_y_, &camera_pos_z_};
+    if(ImGui::InputFloat3("Position", *pos)) {
+        camera_.setPos({camera_pos_x_, camera_pos_y_, camera_pos_z_});
+        camera_.applyChanges();
+    }
+    float *up[] = {&camera_up_x_, &camera_up_y_, &camera_pos_z_};
+    if(ImGui::InputFloat3("Up pos", *up)) {
+        camera_.setUp({camera_up_x_, camera_up_y_, camera_up_z_});
+        camera_.applyChanges();
+    }
+    if(ImGui::SliderFloat("Fov", &camera_fov_, 0, 110)) {
+        camera_.setFov(camera_fov_);
+        camera_.applyChanges();
+    }
+    ImGui::EndChild();
+}
+
+void Gui::displayObjectsChild(const ImVec2 &size) {
+    ImGui::BeginChild("add_obj", size, true);
+    ImGui::Text("Spheres ");
+    ImGui::ListBox("", &current_hittable, hittable_names_.data(), hittable_names_.size(), 5);
+    constexpr int buf_size = 20;
+    ImGui::InputText("Name", current_hittable_name, buf_size);
+    ImGui::Combo("Material", &current_material, material_names.data(), material_names.size());
+    float *pos[] = {&current_hittable_pos_x_, &current_hittable_pos_y_, &current_hittable_pos_z_};
+    ImGui::InputFloat3("Position ", *pos);
+    if(ImGui::Button("Add")) {
+        char *text = new char[buf_size];
+        strcpy_s(text, buf_size, current_hittable_name);
+        hittable_names_.push_back(text);
+        Material *mat;
+        if(current_material == 0) {
+            mat = lambertian.get();
+        } else if(current_material == 1) {
+            mat = metal.get();
+        } else if(current_material == 2) {
+            mat = dielectric.get();
+        }
+        world_.push_back(std::make_shared<Sphere>(Vector3D(current_hittable_pos_x_, current_hittable_pos_y_, current_hittable_pos_z_), 0.5f, mat));
+    }
+    ImGui::SameLine(40);
+    if(ImGui::Button("Delete") && current_hittable < hittable_names_.size()) {
+        delete[] hittable_names_.at(current_hittable);
+        hittable_names_.erase(hittable_names_.begin() + current_hittable);
+        world_.erase(world_.begin() + current_hittable);
+    }
+    ImGui::EndChild();
 }
 
 void Gui::startRaytracer() {
@@ -188,27 +280,8 @@ void Gui::startRaytracer() {
 void Gui::rightSideBarResize() {
     ImVec2 hover_min(static_cast<float>(window_width_) - right_side_bar_width_, 0);
     ImVec2 hover_max(static_cast<float>(window_width_) - right_side_bar_width_ + right_side_bar_hover_margin_, static_cast<float>(window_height_));
-    if(ImGui::IsMouseHoveringRect(hover_min, hover_max, false)) {
-        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
-        if(ImGui::IsMouseClicked(0)) {
-            is_right_side_bar_resizing_ = true;
-        }
-    }
-    if(is_right_side_bar_resizing_) {
-        if(ImGui::IsMouseReleased(0)) {
-            is_right_side_bar_resizing_ = false;
-        }
-        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
-        float amount = ImGui::GetMouseDragDelta(0).x * (-1);
-        ImGui::ResetMouseDragDelta();
-        if(right_side_bar_width_ + amount > right_side_bar_max_width_) {
-            right_side_bar_width_ = right_side_bar_max_width_;
-        } else if(right_side_bar_width_ + amount < right_side_bar_min_width_) {
-            right_side_bar_width_ = right_side_bar_min_width_;
-        } else {
-            right_side_bar_width_ += amount;
-        }
-    }
+    resizeWindow(hover_min, hover_max, right_side_bar_width_, right_side_bar_min_width_, right_side_bar_max_width_,
+                 is_right_side_bar_resizing_, orientation::HORIZONTAL);
 }
 
 void Gui::resizeWindow(const ImVec2 &hover_min, const ImVec2 &hover_max, float &resize_pos,
@@ -236,8 +309,20 @@ void Gui::resizeWindow(const ImVec2 &hover_min, const ImVec2 &hover_max, float &
             is_resizing = false;
         }
         ImGui::SetMouseCursor(cursor_type);
-        float amount = ImGui::GetMouseDragDelta(0).x * (-1);
+        float amount;
+        if(resize_orientation == orientation::HORIZONTAL) {
+            amount = ImGui::GetMouseDragDelta(0).x * (-1);
+        } else {
+            amount = ImGui::GetMouseDragDelta(0).y * (-1);
+        }
         ImGui::ResetMouseDragDelta();
+        if(resize_pos + amount >= resize_pos_max) {
+            resize_pos = resize_pos_max;
+        } else if(resize_pos + amount <= resize_pos_min) {
+            resize_pos = resize_pos_min;
+        } else {
+            resize_pos += amount;
+        }
     }
 }
 
@@ -281,6 +366,7 @@ void Gui::renderGui() {
     displayMainMenu();
     displayRenderedImage();
     displayRightSideBar();
+
     if(display_imgui_metrics_) ImGui::ShowMetricsWindow();
     if(display_imgui_demo_) ImGui::ShowDemoWindow();
     if(display_imgui_about_) ImGui::ShowAboutWindow();

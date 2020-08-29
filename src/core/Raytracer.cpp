@@ -23,7 +23,7 @@ void Raytracer::render(unsigned int samples) {
         std::uniform_real_distribution<float> dist(0.0, 1.0);
         std::function<float()> randomFloat = bind(dist, engine);
 
-        for(unsigned int s = 1; s < samples; s++) {
+        for(unsigned int s = 1; s <= samples; s++) {
             #pragma omp for collapse(2) schedule(dynamic, 10)
             for (int y = height_ - 1; y >= 0; --y) {
                 for (int x = 0; x < width_; ++x) {
@@ -75,7 +75,7 @@ void Raytracer::clearFramebuffer() {
 }
 
 void Raytracer::resize(int width, int height) {
-    haltRendering();
+    is_rendering_ = false;
     width_ = width;
     height_ = height;
     framebuffer_.resize(3 * width_ * height_);
@@ -101,6 +101,7 @@ void Raytracer::setWorld(Hittable *world) {
 
 void Raytracer::haltRendering() {
     is_rendering_ = false;
+    clearColorbuffer();
 }
 
 Vector3D Raytracer::rayTrace(Ray& r, std::function<float()> &randomFloat) const {

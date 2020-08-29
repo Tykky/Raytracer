@@ -1,7 +1,6 @@
 #include <algorithm>
 #include "Bvhnode.h"
 #include "core/utility.h"
-#include "hittables/Hitlist.h"
 
 namespace {
 

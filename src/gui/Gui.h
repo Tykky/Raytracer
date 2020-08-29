@@ -8,6 +8,7 @@
 #include <hittables/Hittable.h>
 #include <thread>
 #include <vector>
+#include <random>
 
 class Gui {
 
@@ -77,6 +78,38 @@ private:
     int render_height_;
     int render_samples_;
     Camera camera_;
+
+    float camera_fov_;
+    float camera_pos_x_;
+    float camera_pos_y_;
+    float camera_pos_z_;
+    float camera_up_x_;
+    float camera_up_y_;
+    float camera_up_z_;
+
+    int current_hittable;
+    char current_hittable_name[20];
+    float current_hittable_pos_x_;
+    float current_hittable_pos_y_;
+    float current_hittable_pos_z_;
+    int current_material;
+
+    // Indexes match between hittable_names and world
+    std::vector<char *> hittable_names_; // used only for GUI
+    std::vector<char *> material_names; // used only for GUi
+    std::vector<std::shared_ptr<Hittable>> world_; // used for rendering
+    std::shared_ptr<Hittable> bvh;
+
+    std::unique_ptr<Material> lambertian;
+    std::unique_ptr<Material> metal;
+    std::unique_ptr<Material> dielectric;
+    std::unique_ptr<Material> mix;
+
+    // random generator
+    std::mt19937 generator;
+    std::uniform_real_distribution<float> dist;
+    std::function<float()> randomFloat;
+
     Raytracer raytracer_;
 
     GLuint framebuffer_texture_id_;
@@ -87,7 +120,11 @@ private:
     void displayMainMenu();
     void displaySaveAs();
     void displayRenderedImage();
+
     void displayRightSideBar();
+    void displayRenderSettingsChild(const ImVec2 &size);
+    void displayCameraSettingsChild(const ImVec2 &size);
+    void displayObjectsChild(const ImVec2 &size);
 
     void startRaytracer();
     void rightSideBarResize();
