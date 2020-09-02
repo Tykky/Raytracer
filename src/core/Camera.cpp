@@ -34,6 +34,10 @@ void Camera::setUp(const Vector3D &up) {
     up_ = up;
 }
 
+void Camera::setPointAt(const Vector3D &lookat) {
+    pointat_ = lookat;
+}
+
 void Camera::setAspectRatio(const float &ratio) {
     aspectratio_ = ratio;
 }

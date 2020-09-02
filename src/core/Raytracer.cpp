@@ -7,7 +7,7 @@
 #include "materials/Material.h"
 
 Raytracer::Raytracer(Hittable *world, Camera *camera, int width, int height) :
-        world_(world), camera_(camera), width_(width), height_(height), bouncelimit_(50), is_rendering_(false),
+        world_(world), camera_(camera), width_(width), height_(height), bouncelimit_(50), is_rendering_(false), updateCallback_(nullptr),
         framebuffer_(std::vector<unsigned char>(3 * width * height)), colorbuffer_(std::vector<float>(3 * width * height)) {
 }
 
@@ -19,12 +19,12 @@ void Raytracer::render(unsigned int samples) {
 #pragma omp parallel
     {
         // Each thread has it's own random generator
-        std::mt19937 engine(1337);
+        std::mt19937 engine;
         std::uniform_real_distribution<float> dist(0.0, 1.0);
         std::function<float()> randomFloat = bind(dist, engine);
 
         for(unsigned int s = 1; s <= samples; s++) {
-            #pragma omp for collapse(2) schedule(dynamic, 10)
+            #pragma omp for collapse(2) schedule(static, 12)
             for (int y = height_ - 1; y >= 0; --y) {
                 for (int x = 0; x < width_; ++x) {
                     if(is_rendering_) {
@@ -32,18 +32,23 @@ void Raytracer::render(unsigned int samples) {
                                                 (float(y) + randomFloat()) / float(height_));
                         int i = 3 * (width_ * height_ - (width_ * y + x)) - 3;
                         Vector3D color = rayTrace(r, randomFloat);
-                        // Write gamma corrected pixels to framebuffer & colorbuffer
+                        // Write gamma corrected pixels to framebuffer and raw pixels colorbuffer
                         // Data format: [R, G, B, R, G, B, ...]
                         // stride = 3 bytes
                         colorbuffer_[i] += color.getR();
                         colorbuffer_[i + 1] += color.getG();
                         colorbuffer_[i + 2] += color.getB();
-                        framebuffer_[i + 0] = static_cast<int>(std::sqrt(colorbuffer_[i]     / s) * 255.99);
+                        framebuffer_[i + 0] = static_cast<int>(std::sqrt(colorbuffer_[i] / s) * 255.99);
                         framebuffer_[i + 1] = static_cast<int>(std::sqrt(colorbuffer_[i + 1] / s) * 255.99);
                         framebuffer_[i + 2] = static_cast<int>(std::sqrt(colorbuffer_[i + 2] / s) * 255.99);
+                    } else {
+                        break;
                     }
                 }
+                if(!is_rendering_) break;
             }
+            if(updateCallback_) updateCallback_();
+            if(!is_rendering_) break;
         }
     }
     is_rendering_ = false;
@@ -104,6 +109,20 @@ void Raytracer::haltRendering() {
     clearColorbuffer();
 }
 
+void Raytracer::continueRendering() {
+    is_rendering_ = true;
+}
+
+void Raytracer::setUpdateCallback(std::function<void ()> &callback) {
+    updateCallback_ = callback;
+}
+
+void Raytracer::clearColorbuffer() {
+    is_rendering_ = false;
+    std::fill(colorbuffer_.begin(), colorbuffer_.end(), 0);
+}
+
+
 Vector3D Raytracer::rayTrace(Ray& r, std::function<float()> &randomFloat) const {
 
     int depth = 0;
@@ -127,9 +146,3 @@ Vector3D Raytracer::rayTrace(Ray& r, std::function<float()> &randomFloat) const 
     }
     return color;
 }
-
-void Raytracer::clearColorbuffer() {
-    is_rendering_ = false;
-    std::fill(colorbuffer_.begin(), colorbuffer_.end(), 0);
-}
-

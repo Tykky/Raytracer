@@ -44,6 +44,8 @@ public:
     /** @param [in] world */
     void setWorld(Hittable *world);
     void haltRendering();
+    void continueRendering();
+    void setUpdateCallback(std::function<void()> &callback);
 
 private:
     Hittable *world_;
@@ -54,6 +56,7 @@ private:
     int height_;
     int bouncelimit_;
     std::atomic<bool> is_rendering_;
+    std::function<void()> updateCallback_;
 
     /**
      *  @brief Computers color for Ray r
