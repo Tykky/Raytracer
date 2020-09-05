@@ -42,7 +42,7 @@ void Window::render() const {
 
    // Main render loop
    while(!glfwWindowShouldClose(window_)) {
-        glfwWaitEvents();
+        glfwPollEvents();
         gui.renderGui();
         glClear(GL_COLOR_BUFFER_BIT);
         gui.renderDrawData();

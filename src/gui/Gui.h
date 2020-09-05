@@ -94,8 +94,6 @@ private:
     float current_hittable_pos_z_;
     int current_material;
 
-    bool move_image_mode;
-
     // Indexes match between hittable_names and world
     std::vector<char *> hittable_names_; // used only for GUI
     std::vector<char *> material_names; // used only for GUi
@@ -136,8 +134,6 @@ private:
 
     void moveTextureWhenDragged();
     void zoomTextureWhenScrolled();
-
-    void sendEmptyEvent();
 
 };
 

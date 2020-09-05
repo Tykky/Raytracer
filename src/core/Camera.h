@@ -27,7 +27,6 @@ public:
     void setFov(const float &fov);
     void setPos(const Vector3D &pos);
     void setUp(const Vector3D &up);
-    void setPointAt(const Vector3D &lookat);
     void setAspectRatio(const float &ratio);
 
     /**

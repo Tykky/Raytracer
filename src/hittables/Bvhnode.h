@@ -30,4 +30,4 @@ private:
 };
 
 
-#endif //RAYTRACER_BVHNODE_H
+#endif //RAYTRACER_BVHNODE_Hear

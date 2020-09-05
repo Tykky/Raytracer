@@ -16,9 +16,9 @@
 Gui::Gui(GLFWwindow *window) :
 
         window_(window),
-        render_width_(1280),
-        render_height_(720),
-        render_samples_(999999),
+        render_width_(2560),
+        render_height_(1440),
+        render_samples_(10),
 
         display_imgui_metrics_(false),
         display_imgui_demo_(false),
@@ -159,36 +159,9 @@ void Gui::displayRenderedImage() {
     ImVec2 window_size = ImGui::GetWindowSize();
 
     if(ImGui::IsWindowHovered()) {
-        if(ImGui::IsKeyPressed(GLFW_KEY_LEFT_ALT)) {
-            moveTextureWhenDragged();
-            zoomTextureWhenScrolled();
-        } else if(ImGui::IsKeyPressed(GLFW_KEY_W)) {
-            camera_pos_x_ += 1;
-            camera_.setPos(Vector3D(camera_pos_x_,camera_pos_y_,camera_pos_y_));
-            camera_.applyChanges();
-            raytracer_.haltRendering();
-            startRaytracer();
-        } else if(ImGui::IsKeyPressed(GLFW_KEY_A)) {
-            camera_pos_z_ -= 1;
-            camera_.setPos(Vector3D(camera_pos_x_,camera_pos_y_,camera_pos_y_));
-            camera_.applyChanges();
-            raytracer_.haltRendering();
-            startRaytracer();
-        } else if(ImGui::IsKeyPressed(GLFW_KEY_D)) {
-            camera_pos_z_ += 1;
-            camera_.setPos(Vector3D(camera_pos_x_,camera_pos_y_,camera_pos_y_));
-            camera_.applyChanges();
-            raytracer_.haltRendering();
-            startRaytracer();
-        } else if(ImGui::IsKeyPressed(GLFW_KEY_S)) {
-            camera_pos_x_ -= 1;
-            camera_.setPos(Vector3D(camera_pos_x_,camera_pos_y_,camera_pos_y_));
-            camera_.applyChanges();
-            raytracer_.haltRendering();
-            startRaytracer();
-        }
+        moveTextureWhenDragged();
+        zoomTextureWhenScrolled();
     }
-
 
     ImVec2 texture_center = ImVec2((window_size.x - texture_width_) * 0.5f + texture_offset_.x,
                                    (window_size.y - texture_height_) * 0.5f + texture_offset_.y);
@@ -275,7 +248,7 @@ void Gui::displayObjectsChild(const ImVec2 &size) {
     ImGui::InputFloat3("Position ", *pos);
     if(ImGui::Button("Add")) {
         char *text = new char[buf_size];
-        strcpy_s(text, buf_size, current_hittable_name);
+        strcpy(text, current_hittable_name);
         hittable_names_.push_back(text);
         Material *mat;
         if(current_material == 0) {
@@ -372,10 +345,6 @@ void Gui::zoomTextureWhenScrolled() {
     }
 }
 
-void Gui::sendEmptyEvent() {
-    glfwPostEmptyEvent();
-}
-
 void Gui::init() {
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(window_, true);
@@ -383,7 +352,6 @@ void Gui::init() {
     framebuffer_texture_id_ = setupTexture();
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width_, render_height_, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer_.getFramebuffer().data());
     ImGui::StyleColorsDark();
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
 }
 
 void Gui::renderGui() {

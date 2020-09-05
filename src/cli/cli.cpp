@@ -69,24 +69,24 @@ int main(int argc, char** argv) {
         float randi = randomFloat();
         float radius = randomFloat();
         if (randi < 0.25) {
-            list[i] = std::make_shared<Sphere>(Vector3D(multp * randomFloat() - multp / 2, 0.1, -multp * randomFloat()), 0.1, glassptr);
+            list[i] = std::make_shared<Sphere>(Vector3D(multp * randomFloat() - multp / 2, 0.1, -multp * randomFloat()), 0.1, glassptr.get());
         } else if (randi < 0.5) {
-            list[i] = std::make_shared<Sphere>(Vector3D(multp * randomFloat() - multp / 2, 0.1, -multp * randomFloat()), 0.1, redptr);
+            list[i] = std::make_shared<Sphere>(Vector3D(multp * randomFloat() - multp / 2, 0.1, -multp * randomFloat()), 0.1, redptr.get());
         } else {
-            list[i] = std::make_shared<Sphere>(Vector3D(multp * randomFloat() - multp / 2, 0.1, -multp * randomFloat()), 0.1, matptr);
+            list[i] = std::make_shared<Sphere>(Vector3D(multp * randomFloat() - multp / 2, 0.1, -multp * randomFloat()), 0.1, matptr.get());
         }
     }
-    list[n] = std::make_shared<Sphere>(Vector3D(0, -1000, 0), 1000, lambptr);
+    list[n] = std::make_shared<Sphere>(Vector3D(0, -1000, 0), 1000, lambptr.get());
 
-    list[n + 1] = std::make_shared<Sphere>(Vector3D(0, 0.5, -1), 0.5, closeptr);
-    list[n + 2] = std::make_shared<Sphere>(Vector3D(-10, 4.7, -20), 5, matptr);
-    list[n + 3] = std::make_shared<Sphere>(Vector3D(-1.5, 0.5, -3), 0.5, closeptr);
-    list[n + 4] = std::make_shared<Sphere>(Vector3D(-1.5, 15, -3), 10, lambptr);
+    list[n + 2] = std::make_shared<Sphere>(Vector3D(0, 0.5, -1), 0.5, closeptr.get());
+    list[n + 2] = std::make_shared<Sphere>(Vector3D(-10, 4.7, -20), 5, matptr.get());
+    list[n + 3] = std::make_shared<Sphere>(Vector3D(-1.5, 0.5, -3), 0.5, closeptr.get());
+    list[n + 4] = std::make_shared<Sphere>(Vector3D(-1.5, 15, -3), 10, lambptr.get());
 
     std::shared_ptr<Hittable> bvh = std::make_shared<Bvhnode>(list, 0, n + 4, 0, 1, randomFloat);
     //std::shared_ptr<Hittable> plist = std::make_shared<Hitlist>(list);
 
-    Raytracer raytracer(&bvh, &cam, width, height);
+    Raytracer raytracer(bvh.get(), &cam, width, height);
 
     auto start = std::chrono::system_clock::now();
     std::cout << "rendering started.." << std::endl;
