@@ -2,10 +2,6 @@ project(Googletest)
 
 set(SRC ${CMAKE_SOURCE_DIR}/Source)
 
-if(LINUX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
-endif()
-
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 include_directories(../src)
 
