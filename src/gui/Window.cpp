@@ -13,6 +13,7 @@ Window::Window(const char *title) {
 	
     if(glfwInit()) {
         glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
+        glfwWindowHint(GLFW_DECORATED, GL_FALSE);
         window_ = glfwCreateWindow(800, 600, title, NULL, NULL);
     	if(!window_) {
             glfwTerminate();

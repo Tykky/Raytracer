@@ -4,14 +4,9 @@
 #include "core/Vector3D.h"
 #include "Hittable.h"
 
-class Sphere : public Hittable {
-
+class Sphere : public Hittable 
+{
 public:
-    /**
-     * @param [in] center
-     * @param [in] radius
-     * @param [in] material
-     */
     Sphere(const Vector3D &center, float radius, Material *material);
     bool hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const override;
     virtual bool boundingBox(float c0, float c1, Aabb &box) const override;

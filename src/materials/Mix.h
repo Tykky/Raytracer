@@ -9,13 +9,13 @@ class Mix : public Material {
 
 public:
     /**
-     *  @param [in] metalness is the probability that material is treated as metal.
+     *  @param metalness is the probability that material is treated as metal.
      *  Probability that material is treated as lambertian is 1 - metalness.
      *  When metalness = 1, the material is pure metal, when metalness = 0 it's
      *  pure lambertian.
-     *  @param [in] roughness defines accuracy of metal reflections. Value between 0 and 1
+     *  @param roughness defines accuracy of metal reflections. Value between 0 and 1
      *  should be given.
-     *  @param [in] fresnelfactor defines how strong the fresnel effect should be. Value between
+     *  @param fresnelfactor defines how strong the fresnel effect should be. Value between
      *  0 and 1 should be given, 1 being the full effect and 0 no effect.
      */
     Mix(const Vector3D &lalbedo, const Vector3D &malbedo, float metalness, float roughness, float fresnel,
@@ -23,7 +23,6 @@ public:
 
     virtual bool scatter(const Ray &r, const Hitrecord &record, Vector3D &attenuation, Ray &scatter,
                          std::function<float()> &randomFloat) const;
-
 private:
     std::shared_ptr<Material> metal_;
     std::shared_ptr<Material> lambertian_;
@@ -32,7 +31,6 @@ private:
     float metalness_;
     float fresnelfactor_;
     float ior_;
-
 };
 
 

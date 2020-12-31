@@ -4,7 +4,7 @@
 
 namespace {
 
-    bool boxCompare(const std::shared_ptr<Hittable> &a, const std::shared_ptr<Hittable> &b,
+bool boxCompare(const std::shared_ptr<Hittable> &a, const std::shared_ptr<Hittable> &b,
                     int axis);
 
 }
@@ -18,7 +18,8 @@ Bvhnode::Bvhnode(std::vector<std::shared_ptr<Hittable>> &list,
     size_t span = end - start;
 
     // Comparators for each axis
-    const std::function<bool(std::shared_ptr<Hittable>, std::shared_ptr<Hittable>)> comparators[] = {
+    const std::function<bool(std::shared_ptr<Hittable>, std::shared_ptr<Hittable>)> comparators[] = 
+    {
         {[](auto a, auto b) { return boxCompare(a, b, 0);}}, // x
         {[](auto a, auto b) { return boxCompare(a, b, 1);}}, // y
         {[](auto a, auto b) { return boxCompare(a, b, 2);}}  // z
@@ -32,18 +33,23 @@ Bvhnode::Bvhnode(std::vector<std::shared_ptr<Hittable>> &list,
     int axis = static_cast<int>(3 * randomFloat());
     auto comparator = comparators[axis];
 
-    if(span == 1) {
+    if(span == 1) 
+    {
         left_ = list[start];
         right_ = list[start];
-    } else if(span == 2) {
-        if(comparator(list[start], list[start + 1])) {
+    } else if(span == 2) 
+    {
+        if(comparator(list[start], list[start + 1])) 
+        {
             left_ = list[start];
             right_ = list[start + 1];
-        } else {
+        } else 
+        {
             right_ = list[start];
             left_ = list[start + 1];
         }
-    } else {
+    } else 
+    {
         std::sort(list.begin() + start, list.begin() + end, comparator);
         auto middle = start + span/2;
         left_ = std::make_shared<Bvhnode>(list, start, middle, c0, c1, randomFloat);
@@ -54,7 +60,8 @@ Bvhnode::Bvhnode(std::vector<std::shared_ptr<Hittable>> &list,
     Aabb rightbox;
 
     if(!left_->boundingBox(c0, c1, leftbox) ||
-       !right_->boundingBox(c0, c1, rightbox)) {
+       !right_->boundingBox(c0, c1, rightbox)) 
+    {
         std::cerr << "[ERROR] Creation of bounding box failed in Bvhnode" << std::endl;
     }
 
@@ -62,26 +69,29 @@ Bvhnode::Bvhnode(std::vector<std::shared_ptr<Hittable>> &list,
 
 }
 
-bool Bvhnode::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const {
-
-    // Do search in bvh
-    if(node_.hit(r, dmin, dmax)) {
+bool Bvhnode::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const 
+{
+    if(node_.hit(r, dmin, dmax)) 
+    {
         Hitrecord leftrec, rightrec;
         bool hitleft = left_->hit(r, dmin, dmax, leftrec);
         bool hitright = right_->hit(r, dmin, dmax, rightrec);
         if(hitleft && hitright) {
-            if(leftrec.distance < rightrec.distance) {
+            if(leftrec.distance < rightrec.distance) 
+            {
                 record = leftrec;
             } else {
                 record = rightrec;
             }
             return true;
         }
-    	if(hitleft) {
+    	if(hitleft) 
+        {
             record = leftrec;
             return true;
         }
-    	if(hitright) {
+    	if(hitright) 
+        {
             record = rightrec;
             return true;
         }
@@ -89,23 +99,23 @@ bool Bvhnode::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const
     return false;
 }
 
-bool Bvhnode::boundingBox(float c0, float c1, Aabb &box) const {
+bool Bvhnode::boundingBox(float c0, float c1, Aabb &box) const 
+{
     box = node_;
     return true;
 }
 
 namespace {
 
-    bool boxCompare(const std::shared_ptr<Hittable> &a, const std::shared_ptr<Hittable> &b, int axis) {
-
-        Aabb box_a;
-        Aabb box_b;
-
-        if (!a->boundingBox(0, 0, box_a) || !b->boundingBox(0, 0, box_b)) {
-            std::cerr << "[ERROR] No bounding box in bvh constructor" << std::endl;
-        }
-
-        return box_a.getMin()[axis] < box_b.getMin()[axis];
+bool boxCompare(const std::shared_ptr<Hittable> &a, const std::shared_ptr<Hittable> &b, int axis) 
+{
+    Aabb box_a;
+    Aabb box_b;
+    if (!a->boundingBox(0, 0, box_a) || !b->boundingBox(0, 0, box_b)) 
+    {
+        std::cerr << "[ERROR] No bounding box in bvh constructor" << std::endl;
     }
+    return box_a.getMin()[axis] < box_b.getMin()[axis];
+}
 
 }

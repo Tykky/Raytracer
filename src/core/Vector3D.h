@@ -3,15 +3,10 @@
 
 #include <iostream>
 
-class Vector3D {
-
+class Vector3D 
+{
 public:
     Vector3D();
-    /**
-     * @param [in] x
-     * @param [in] y
-     * @param [in] z
-     */
     Vector3D(float x, float y, float z);
 
     float length() const;
@@ -19,16 +14,10 @@ public:
 
     void normalize();
 
-    /**
-     * @brief dot product between this and v
-     * @param [in] v
-     */
+    /** @brief dot product between this and v */
     float dot(const Vector3D &v) const;
 
-    /**
-     * @brief cross product between this and v
-     * @param [in] v
-     */
+    /** @brief cross product between this */
     Vector3D cross(const Vector3D &v) const;
 
     float getX() const;
@@ -57,7 +46,6 @@ public:
 
 private:
     float x_, y_, z_;
-
 };
 
 Vector3D operator+(const Vector3D &v1, const Vector3D &v2);

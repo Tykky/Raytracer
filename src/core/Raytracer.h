@@ -9,39 +9,26 @@
 #include "Vector3D.h"
 #include "Camera.h"
 
-class Raytracer {
-
+class Raytracer 
+{
 public:
     /**
-     * @param [in] world is data structure that returns closest
+     * @param world is data structure that returns closest
      * hit when .hit() is called, i.e Hitlist or Bvhnode.
-     * @param [in] camera
-     * @param [in] width
-     * @param [in] height
      */
     Raytracer(Hittable *world, Camera *camera, int width, int height);
 
-    /**
-     * @brief computes color for every pixel on the screen.
-     * @param [in] samples
-     */
+    /** @brief computes color for every pixel on the screen. */
     void render(unsigned int samples);
 
-	/**
-	 * @brief stores framebuffer data to .ppm file
-	 * @param [in] filename
-	 */
+	/** @brief stores framebuffer data to .ppm file */
     void frammebufferToNetpbm(const std::string &filename);
 
     std::vector<unsigned char> &getFramebuffer();
     void clearFramebuffer();
     void resize(int width, int height);
-
-    /** @param [in] bouncelimit */
     void setBounceLimit(int bouncelimit);
-    /** @param [in] camera */
     void setCamera(Camera *camera);
-    /** @param [in] world */
     void setWorld(Hittable *world);
     void haltRendering();
 
@@ -57,8 +44,6 @@ private:
 
     /**
      *  @brief Computers color for Ray r
-	 *  @param [in] r is being traced
-	 *  @param [in] randomFloat contains reference to random generator.
      */
     Vector3D rayTrace(Ray &r, std::function<float()> &randomFloat) const;
     void clearColorbuffer();

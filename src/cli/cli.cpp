@@ -11,7 +11,6 @@
 #include "core/Raytracer.h"
 #include "hittables/Bvhnode.h"
 
-
 int main(int argc, char** argv) {
 
     int width = 800;
