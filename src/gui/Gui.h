@@ -32,7 +32,6 @@ public:
      * after renderGui(). */
     void renderDrawData() const;
 
-
 private:
 
     struct Menuitem {
@@ -92,18 +91,27 @@ private:
     float current_hittable_pos_x_;
     float current_hittable_pos_y_;
     float current_hittable_pos_z_;
-    int current_material;
+    int current_material_;
+
+    float current_sphere_radius_;
+
+    int randomizer_sphere_count_;
+    int randomizer_scatter_multiplier_;
 
     // Indexes match between hittable_names and world
     std::vector<char *> hittable_names_; // used only for GUI
-    std::vector<char *> material_names; // used only for GUi
+    std::vector<char *> material_names; // used only for GUI
     std::vector<std::shared_ptr<Hittable>> world_; // used for rendering
     std::shared_ptr<Hittable> bvh;
 
-    std::unique_ptr<Material> lambertian;
-    std::unique_ptr<Material> metal;
-    std::unique_ptr<Material> dielectric;
-    std::unique_ptr<Material> mix;
+    // Randomized materials are inserted here
+    std::vector<std::unique_ptr<Material>> world_materials_;
+
+    // Materials used for "Add spheres" section
+    std::unique_ptr<Material> lambertian_;
+    std::unique_ptr<Material> metal_;
+    std::unique_ptr<Material> dielectric_;
+    std::unique_ptr<Material> mix_;
 
     // random generator
     std::mt19937 generator;
@@ -125,6 +133,7 @@ private:
     void displayRenderSettingsChild(const ImVec2 &size);
     void displayCameraSettingsChild(const ImVec2 &size);
     void displayObjectsChild(const ImVec2 &size);
+    void displayRandomizerChild(const ImVec2 &size);
 
     void startRaytracer();
     void rightSideBarResize();
@@ -135,6 +144,7 @@ private:
     void moveTextureWhenDragged();
     void zoomTextureWhenScrolled();
 
+    void randomizeWorld(const int &spheres, const int &scatter);
 };
 
 

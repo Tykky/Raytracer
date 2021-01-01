@@ -12,8 +12,7 @@ Window::Window(const char *title) {
     glfwSetErrorCallback(error_callback);
 	
     if(glfwInit()) {
-        glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
-        glfwWindowHint(GLFW_DECORATED, GL_FALSE);
+        //glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
         window_ = glfwCreateWindow(800, 600, title, NULL, NULL);
     	if(!window_) {
             glfwTerminate();
@@ -23,6 +22,9 @@ Window::Window(const char *title) {
         if (glewInit() != GLEW_OK) {
             throw std::runtime_error("glewInit failed");
         }
+        double xpos, ypos;
+        glfwGetCursorPos(window_, &xpos, &ypos);
+        glfwSetWindowPos(window_, xpos, ypos);
         render();
     } else {
         throw std::runtime_error("glfwinit failed");
