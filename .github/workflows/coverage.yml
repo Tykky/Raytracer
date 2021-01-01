@@ -15,26 +15,26 @@ jobs:
         submodules: true
       
     - name: Install packages
-      run: sudo apt-get update ; sudo apt-get install doxygen xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+      run: sudo apt-get update ; sudo apt-get install xorg-dev libgl1-mesa-dev libglu1-mesa-dev lcov gcovr
 
     - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build
+      run: cmake -E make_directory ${{runner.workspace}}/Raytracer/build
       
     - name: Configure CMake
       shell: bash
-      working-directory: ${{runner.workspace}}/build
+      working-directory: ${{runner.workspace}}/Raytracer/build
       run: cmake -DCMAKE_CXX_FLAGS="--coverage" $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
       
     - name: Build
-      working-directory: ${{runner.workspace}}/build
+      working-directory: ${{runner.workspace}}/Raytracer/build
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
 
     - name: Test
-      working-directory: ${{runner.workspace}}/build
+      working-directory: ${{runner.workspace}}/Raytracer
       shell: bash
-      run: cd ${{runner.workspace}} ; build/bin/gtest_run ; gcov build/**/**/**/**/**
+      run: build/bin/gtest_run
 
-    - name: Upload to Codecov.io
+    - name: Upload coverage to codecov.io
+      working-directory: ${{runner.workspace}}/Raytracer
       run: bash <(curl -s https://codecov.io/bash)
-
