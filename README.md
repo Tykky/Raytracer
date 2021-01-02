@@ -2,7 +2,7 @@
 
 A Monte Carlo Path Tracer built from scratch.
 
-[![Build Status](https://travis-ci.org/Tykky/Raytracer.svg?branch=master)](https://travis-ci.org/Tykky/Raytracer)
+![linux](https://github.com/Tykky/Raytracer/workflows/Linux/badge.svg)
 [![codecov](https://codecov.io/gh/Tykky/Raytracer/branch/master/graph/badge.svg)](https://codecov.io/gh/Tykky/Raytracer)
 
 ## Dependencies
