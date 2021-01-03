@@ -8,7 +8,8 @@
 
 Raytracer::Raytracer(Hittable *world, Camera *camera, int width, int height) :
         world_(world), camera_(camera), width_(width), height_(height), bouncelimit_(50), is_rendering_(false),
-        framebuffer_(std::vector<unsigned char>(3 * width * height)), colorbuffer_(std::vector<float>(3 * width * height)) 
+        framebuffer_(std::vector<unsigned char>(3 * width * height)), colorbuffer_(std::vector<float>(3 * width * height)), 
+        sample_counter_(0) 
 {}
 
 void Raytracer::render(unsigned int samples) 
@@ -26,8 +27,8 @@ void Raytracer::render(unsigned int samples)
 
         for(unsigned int s = 1; s <= samples; s++) 
         {
-            #pragma omp for collapse(2) schedule(dynamic, 10)
-            for (int y = height_ - 1; y >= 0; --y) 
+            #pragma omp for collapse(2) schedule(static, 10)
+            for (int y = height_ - 1; y >= 0; --y)
             {
                 for (int x = 0; x < width_; ++x) 
                 {
@@ -46,6 +47,7 @@ void Raytracer::render(unsigned int samples)
                         framebuffer_[i + 0] = static_cast<int>(std::sqrt(colorbuffer_[i]     / s) * 255.99);
                         framebuffer_[i + 1] = static_cast<int>(std::sqrt(colorbuffer_[i + 1] / s) * 255.99);
                         framebuffer_[i + 2] = static_cast<int>(std::sqrt(colorbuffer_[i + 2] / s) * 255.99);
+                        sample_counter_++;
                     }
                 }
             }
@@ -89,8 +91,8 @@ void Raytracer::resize(int width, int height)
     is_rendering_ = false;
     width_ = width;
     height_ = height;
-    framebuffer_.resize(3 * width_ * height_);
-    colorbuffer_.resize(3 * width_ * height_);
+    framebuffer_.resize(3 * static_cast<size_t>(width_) * static_cast<size_t>(height_));
+    colorbuffer_.resize(3 * static_cast<size_t>(width_) * static_cast<size_t>(height_));
     framebuffer_.clear();
 }
 
@@ -113,13 +115,22 @@ void Raytracer::setWorld(Hittable *world)
     world_ = world;
 }
 
-void Raytracer::haltRendering() 
+bool Raytracer::isRendering() 
 {
-    is_rendering_ = false;
-    clearColorbuffer();
+    return is_rendering_;
 }
 
-Vector3D Raytracer::rayTrace(Ray& r, std::function<float()> &randomFloat) const 
+const std::atomic<uint64_t>& Raytracer::getSampleCounter()
+{
+    return sample_counter_;
+}
+
+void Raytracer::resetSampleCounter() 
+{
+    sample_counter_ = 0;
+}
+
+Vector3D Raytracer::rayTrace(Ray& r, std::function<float()> &randomFloat) const
 {
     int depth = 0;
     Hitrecord record;

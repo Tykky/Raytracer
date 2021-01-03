@@ -5,6 +5,7 @@
 #include <memory>
 #include <functional>
 #include <atomic>
+#include <stdint.h>
 #include "hittables/Hittable.h"
 #include "Vector3D.h"
 #include "Camera.h"
@@ -30,7 +31,9 @@ public:
     void setBounceLimit(int bouncelimit);
     void setCamera(Camera *camera);
     void setWorld(Hittable *world);
-    void haltRendering();
+    bool isRendering();
+    const std::atomic<uint64_t>& getSampleCounter();
+    void resetSampleCounter();
 
 private:
     Hittable *world_;
@@ -41,7 +44,7 @@ private:
     int height_;
     int bouncelimit_;
     std::atomic<bool> is_rendering_;
-
+    std::atomic<uint64_t> sample_counter_;
     /**
      *  @brief Computers color for Ray r
      */

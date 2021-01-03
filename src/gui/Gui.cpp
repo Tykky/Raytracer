@@ -6,12 +6,15 @@
 #include <random>
 #include <hittables/Sphere.h>
 #include <string>
+#include <chrono>
+#include <algorithm>
 #include "hittables/Bvhnode.h"
 #include "hittables/Sphere.h"
 #include "materials/Mix.h"
 #include "materials/Lambertian.h"
 #include "materials/Dielectric.h"
 #include "materials/Metal.h"
+#include "style.h"
 
 Gui::Gui(GLFWwindow *window) :
     window_(window),
@@ -32,7 +35,11 @@ Gui::Gui(GLFWwindow *window) :
     right_side_bar_width_(300),
     right_side_bar_min_width_(10),
     right_side_bar_max_width_(300),
-    right_side_bar_hover_margin_(10),   
+    right_side_bar_hover_margin_(10),
+    perf_monitor_height_(120),
+    perf_monitor_graph_data_(),
+    perf_monitor_resolution_(1000),
+    samples_per_second_(0),
     is_right_side_bar_resizing_(false), 
     static_window_flags_(ImGuiWindowFlags_NoMove |
                          ImGuiWindowFlags_NoTitleBar |
@@ -83,13 +90,13 @@ Gui::Gui(GLFWwindow *window) :
     window_submenu_({}),
     mainmenu_({
         {"File",   &display_menu_file_,   &file_submenu_},
-        {"Window", &display_menu_window_, &window_submenu_},
-        {"Debug",  &display_menu_debug_,  &debug_submenu_}
+        //{"Debug",  &display_menu_debug_,  &debug_submenu_}
     })
 
 {
     texture_width_ = static_cast<float>(render_width_);
     texture_height_ = static_cast<float>(render_height_);
+    perf_monitor_graph_data_ = std::vector<float>(perf_monitor_resolution_);
 }
 
 Gui::~Gui()
@@ -104,7 +111,7 @@ void Gui::init()
     ImGui_ImplOpenGL3_Init("#version 130");
     framebuffer_texture_id_ = setupTexture();
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width_, render_height_, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer_.getFramebuffer().data());
-    ImGui::StyleColorsDark();
+    execImGuiStyle();
     ImGui::GetStyle().WindowRounding = 0.0f;
     ImGui::GetStyle().ChildRounding = 0.0f;
     ImGui::GetStyle().FrameRounding = 0.0f;
@@ -115,6 +122,9 @@ void Gui::init()
 
 void Gui::renderGui()
 {
+    const auto time_start = std::chrono::high_resolution_clock::now();
+    const uint64_t samples_start = raytracer_.getSampleCounter();
+
     glfwGetWindowSize(window_, &window_width_, &window_height_);
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -126,6 +136,7 @@ void Gui::renderGui()
     displayMainMenu();
     displayRenderedImage();
     displayRightSideBar();
+    displayPerfMonitor();
 
     if (display_imgui_metrics_) ImGui::ShowMetricsWindow();
     if (display_imgui_demo_) ImGui::ShowDemoWindow();
@@ -134,6 +145,13 @@ void Gui::renderGui()
     if (display_save_as_) displaySaveAs();
 
     ImGui::Render();
+
+    const uint64_t samples_end = raytracer_.getSampleCounter();
+    const auto time_end = std::chrono::high_resolution_clock::now();
+
+    const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(time_end - time_start).count();
+    double samples_delta = static_cast<double>(samples_end - samples_start);
+    samples_per_second_ = static_cast<float>((samples_delta / duration) * 1000000);
 }
 
 void Gui::renderDrawData() const 
@@ -193,7 +211,7 @@ void Gui::displaySaveAs()
 void Gui::displayRenderedImage() 
 {
     ImGui::SetNextWindowPos(ImVec2(0, main_menubar_height_));
-    ImGui::SetNextWindowSize(ImVec2(static_cast<float>(window_width_) - right_side_bar_width_, static_cast<float>(window_height_)));
+    ImGui::SetNextWindowSize(ImVec2(static_cast<float>(window_width_) - right_side_bar_width_, static_cast<float>(window_height_) - perf_monitor_height_));
     ImGui::Begin("Rendered image", nullptr, static_window_flags_ | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     ImVec2 window_size = ImGui::GetWindowSize();
 
@@ -242,7 +260,7 @@ void Gui::displayRenderSettingsChild(const ImVec2 &size)
         raytracer_.clearFramebuffer();
     }
     ImGui::InputInt("Samples", &render_samples_);
-    if (ImGui::Button("Render") && !world_.empty()) 
+    if (ImGui::Button("Render") && !world_.empty() && !raytracer_.isRendering())
     {
         bvh = std::make_shared<Bvhnode>(world_,0, world_.size(), 0, 1, randomFloat);
         raytracer_.setWorld(bvh.get());
@@ -253,11 +271,11 @@ void Gui::displayRenderSettingsChild(const ImVec2 &size)
     {
         raytracer_.clearFramebuffer();
     }
-    if (ImGui::Button("Render randomized")) 
+    if (ImGui::Button("Render randomized") && !raytracer_.isRendering())
     {
         world_.clear();
         world_materials_.clear();
-        randomizeWorld(randomizer_sphere_count_, 25);
+        randomizeWorld(randomizer_sphere_count_, randomizer_scatter_multiplier_);
         bvh = std::make_shared<Bvhnode>(world_,0, world_.size(), 0, 1, randomFloat);
         raytracer_.setWorld(bvh.get());
         startRaytracer();
@@ -333,8 +351,34 @@ void Gui::displayRandomizerChild(const ImVec2 &size)
     ImGui::BeginChild("randomizer", size, true);
     ImGui::Text("Randomizer settings");
     ImGui::InputInt("Spheres", &randomizer_sphere_count_);
-    ImGui::InputInt("Scatter multiplier", &randomizer_scatter_multiplier_);
+    ImGui::InputInt("Scatter", &randomizer_scatter_multiplier_);
     ImGui::EndChild();
+}
+
+void Gui::displayPerfMonitor()
+{
+    perf_monitor_graph_data_.push_back(samples_per_second_);
+    perf_monitor_graph_data_.erase(perf_monitor_graph_data_.begin());
+    const size_t display_size = 1000;
+
+    ImGui::Begin("perfmonitor", nullptr, static_window_flags_);
+    ImGui::Text(("Samples (M) per second " + std::to_string(samples_per_second_ / 1000000)).data());
+    ImGui::SameLine(250);
+    ImGui::Text("Status:");
+    ImGui::SameLine(300);
+    if (raytracer_.isRendering())
+    {
+        ImGui::TextColored(ImVec4(0,1,0,1), "Rendering");
+    } else 
+    {
+        ImGui::TextColored(ImVec4(1,0,0,1), "Stopped");
+    }
+    const float width = window_width_ - right_side_bar_width_;
+    ImGui::SetWindowPos(ImVec2(0, window_height_ - perf_monitor_height_ + main_menubar_height_));
+    ImGui::SetWindowSize(ImVec2(width ,perf_monitor_height_));
+    const float *graph_data_ptr = perf_monitor_graph_data_.data() + perf_monitor_graph_data_.size() - display_size;
+    ImGui::PlotLines("lines", graph_data_ptr, display_size, 0, "", FLT_MAX, FLT_MAX, ImVec2(width, perf_monitor_height_ - 50));
+    ImGui::End();
 }
 
 void Gui::startRaytracer()

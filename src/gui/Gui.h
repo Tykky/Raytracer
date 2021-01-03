@@ -9,6 +9,7 @@
 #include <thread>
 #include <vector>
 #include <random>
+#include <deque>
 
 class Gui {
 
@@ -68,6 +69,11 @@ private:
     const float right_side_bar_max_width_;
     const float right_side_bar_hover_margin_;
     bool is_right_side_bar_resizing_;
+    float samples_per_second_;
+
+    float perf_monitor_height_;
+    std::vector<float> perf_monitor_graph_data_;
+    int perf_monitor_resolution_;
 
     float texture_width_;
     float texture_height_;
@@ -134,6 +140,7 @@ private:
     void displayCameraSettingsChild(const ImVec2 &size);
     void displayObjectsChild(const ImVec2 &size);
     void displayRandomizerChild(const ImVec2 &size);
+    void displayPerfMonitor();
 
     void startRaytracer();
     void rightSideBarResize();
