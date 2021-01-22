@@ -7,8 +7,7 @@
  * @brief Dielectric material allows rays to pass through objects.
  * Useful for water, glass etc..
  */
-class Dielectric : public Material 
-{
+class Dielectric : public Material {
     public:
         /** @param ior = index of refraction */
         Dielectric(float ior);

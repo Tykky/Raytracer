@@ -4,8 +4,7 @@
 #include "Material.h"
 
 /** @brief Metal is highly reflective material which mirrors all rays. */
-class Metal : public Material 
-{
+class Metal : public Material {
 public:
     /**
      * @param albedo is same as color

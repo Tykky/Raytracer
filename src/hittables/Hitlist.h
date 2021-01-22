@@ -5,8 +5,7 @@
 #include "Hittable.h"
 
 /** @brief Hitlist is a data structure for keeping track of all hittables. */
-class Hitlist : public Hittable 
-{
+class Hitlist : public Hittable {
 public:
     /** @param list contains all hittables i.e geometry such as Spheres */
     Hitlist(std::vector<std::shared_ptr<Hittable>> list);

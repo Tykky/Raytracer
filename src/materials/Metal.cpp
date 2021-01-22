@@ -7,15 +7,12 @@ Metal::Metal(const Vector3D &albedo, float blur) :
 }
 
 bool Metal::scatter(const Ray &r, const Hitrecord &record, Vector3D &attenuation, Ray &scatter,
-                    std::function<float()> &randomFloat) const 
-{
+                    std::function<float()> &randomFloat) const {
     Vector3D reflection = reflect(r.getDirection(), record.normal);
 
-    if (blur_ > 0) 
-    {
+    if (blur_ > 0) {
         scatter = Ray(record.p, reflection + blur_ * randomInUnitSphere(randomFloat));
-    } else 
-    {
+    } else {
         scatter = Ray(record.p, reflection);
     }
 

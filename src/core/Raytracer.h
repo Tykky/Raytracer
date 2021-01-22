@@ -10,8 +10,7 @@
 #include "Vector3D.h"
 #include "Camera.h"
 
-class Raytracer 
-{
+class Raytracer {
 public:
     /**
      * @param world is data structure that returns closest

@@ -3,8 +3,7 @@
 
 #include "Vector3D.h"
 
-class Ray 
-{
+class Ray {
 public:
     Ray();
     Ray(const Vector3D &position, const Vector3D &direction);

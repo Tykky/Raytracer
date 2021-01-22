@@ -16,8 +16,7 @@ struct Hitrecord;
  * @brief Hittable is abstract class which provides interface for all hittables
  * (such as spheres and triangles)
  */
-class Hittable 
-{
+class Hittable {
 public:
     /**
      * @brief Solves hit equation.
@@ -38,8 +37,7 @@ public:
     virtual bool boundingBox(float c0, float c1, Aabb &box) const = 0;
 };
 
-struct Hitrecord 
-{
+struct Hitrecord {
     /** @brief Solution to hit equation. */
     float distance;
 

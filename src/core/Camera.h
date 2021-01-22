@@ -5,8 +5,7 @@
 #include "Vector3D.h"
 
 /** @brief Camera class translates screen coordinates to rays. */
-class Camera 
-{
+class Camera {
 public:
     Camera();
     /**

@@ -5,8 +5,7 @@
 #include "functional"
 
 /** @brief Lambertian material is "matte" or diffusely reflecting Material. */
-class Lambertian : public Material 
-{
+class Lambertian : public Material {
 public:
     Lambertian(const Vector3D &albedo);
 

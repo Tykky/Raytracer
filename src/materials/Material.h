@@ -7,8 +7,7 @@
 #include <memory>
 
 /** @brief Abstract class which provides interface for all materials. */
-class Material 
-{
+class Material {
 public:
     /**
      * @param r is being scattered
