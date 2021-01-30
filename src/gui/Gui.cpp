@@ -9,7 +9,9 @@
 #include <chrono>
 #include <algorithm>
 #include "hittables/Bvhnode.h"
+
 #include "hittables/Sphere.h"
+#include "hittables/Triangle.h"
 #include "materials/Mix.h"
 #include "materials/Lambertian.h"
 #include "materials/Dielectric.h"
