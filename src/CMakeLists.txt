@@ -9,6 +9,7 @@ set(RAYTRACER_SRC core/Ray.cpp
         hittables/Hitlist.cpp
         hittables/Aabb.cpp
         hittables/Bvhnode.cpp
+        hittables/Triangle.cpp
         materials/Lambertian.cpp
         materials/Metal.cpp
         materials/Dielectric.cpp

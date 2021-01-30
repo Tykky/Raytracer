@@ -9,7 +9,6 @@
 #include <chrono>
 #include <algorithm>
 #include "hittables/Bvhnode.h"
-
 #include "hittables/Sphere.h"
 #include "hittables/Triangle.h"
 #include "materials/Mix.h"
@@ -93,12 +92,17 @@ Gui::Gui(GLFWwindow *window) :
     mainmenu_({
         {"File",   &display_menu_file_,   &file_submenu_},
         //{"Debug",  &display_menu_debug_,  &debug_submenu_}
-    })
-
-{
+    }) {
+        
     texture_width_ = static_cast<float>(render_width_);
     texture_height_ = static_cast<float>(render_height_);
     perf_monitor_graph_data_ = std::vector<float>(perf_monitor_resolution_);
+
+    // Stuff used for debugging (WIP)
+    std::unique_ptr<Material> mat = std::make_unique<Lambertian>(Vector3D(0.5, 0.5, 0.5));
+    std::unique_ptr<Hittable> tri = std::make_unique<Triangle>(Vector3D(1,0,-1), Vector3D(1,0,1), Vector3D(1,1,0), mat.get());
+    world_materials_.push_back(std::move(mat));
+    world_.push_back(std::move(tri));
 }
 
 Gui::~Gui() {
