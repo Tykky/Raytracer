@@ -12,8 +12,12 @@ class Triangle : public Hittable {
         virtual bool hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const override;
         virtual bool boundingBox(float c0, float c1, Aabb &box) const override;
     private:
-        Vector3D v1_, v2_, v3_;
+        Vector3D vertex1_, vertex2_, vertex3_;
         Material *material_;
+
+        Vector3D triangleMin() const;
+        Vector3D triangleMax() const;
+
 };
 
 #endif //RAYTRACER_TRIANGLE_H

@@ -100,7 +100,7 @@ Gui::Gui(GLFWwindow *window) :
 
     // Stuff used for debugging (WIP)
     std::unique_ptr<Material> mat = std::make_unique<Lambertian>(Vector3D(0.5, 0.5, 0.5));
-    std::unique_ptr<Hittable> tri = std::make_unique<Triangle>(Vector3D(1,0,-1), Vector3D(1,0,1), Vector3D(1,1,0), mat.get());
+    std::unique_ptr<Hittable> tri = std::make_unique<Triangle>(Vector3D(1,-1,-2), Vector3D(1,-1,2), Vector3D(3,0.5,0), mat.get());
     world_materials_.push_back(std::move(mat));
     world_.push_back(std::move(tri));
 }

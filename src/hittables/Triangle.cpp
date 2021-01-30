@@ -1,24 +1,24 @@
 # include "Triangle.h"
 
-Triangle::Triangle() : v1_({}), v2_({}), v3_({}), material_(nullptr) {
+Triangle::Triangle() : vertex1_({}), vertex2_({}), vertex3_({}), material_(nullptr) {
 }
 
 Triangle::Triangle(const Vector3D &v1, const Vector3D &v2, const Vector3D &v3, Material *material) :
-    v1_(v1), v2_(v2), v3_(v3), material_(material) {
+    vertex1_(v1), vertex2_(v2), vertex3_(v3), material_(material) {
 }
 
 bool Triangle::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const {
     // Möller-trumbore
     const float EPSILON = 0.0000001;
-    Vector3D edge1 = v2_ - v1_;
-    Vector3D edge2 = v3_ - v1_;
+    Vector3D edge1 = vertex2_ - vertex1_;
+    Vector3D edge2 = vertex3_ - vertex1_;
     Vector3D h = r.getDirection().cross(edge2);
     float a = edge1.dot(h);
     if (a > -EPSILON && a < EPSILON) {
         return false; // parallel to triangle
     }
     float f = 1.0f / a;
-    Vector3D s = r.getPosition() - v1_;
+    Vector3D s = r.getPosition() - vertex1_;
     float u = f * s.dot(h);
     if (u < 0.0f || u > 1.0f) {
         return false;
@@ -43,6 +43,31 @@ bool Triangle::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) cons
 }
 
 bool Triangle::boundingBox(float c0, float c_1, Aabb &box) const {
-    box = Aabb(Vector3D(-10,-10,-10), Vector3D(10,10,10));
+    auto vecmin = triangleMin();
+    auto vecmax = triangleMax();
+    std::cout << "MIN: " << vecmin.getX() << " " << vecmin.getY() << " " << vecmin.getZ() << std::endl;
+    std::cout << "MAX: " << vecmax.getX() << " " << vecmax.getY() << " " << vecmax.getZ() << std::endl;
+
+    box = Aabb(triangleMin(), triangleMax());
     return true;
+}
+
+Vector3D Triangle::triangleMin() const {
+    auto minf3 = [](float a, float b , float c) {
+        return a < b ? (a < c ? a : c) : (b < c ? b : c);
+    };
+
+    return Vector3D(minf3(vertex1_.getX(), vertex2_.getX(), vertex3_.getX()),
+                    minf3(vertex1_.getY(), vertex2_.getY(), vertex3_.getY()),
+                    minf3(vertex1_.getZ(), vertex2_.getZ(), vertex3_.getZ()));
+}
+
+Vector3D Triangle::triangleMax() const {
+    auto maxf3 = [](float a, float b, float c) {
+        return a > b ? (a > c ? a : c) : (b > c ? b : c);
+    };
+
+    return Vector3D(maxf3(vertex1_.getX(), vertex2_.getX(), vertex3_.getX()),
+                    maxf3(vertex1_.getY(), vertex2_.getY(), vertex3_.getY()),
+                    maxf3(vertex1_.getZ(), vertex2_.getZ(), vertex3_.getZ()));
 }
