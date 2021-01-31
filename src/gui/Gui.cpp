@@ -100,9 +100,46 @@ Gui::Gui(GLFWwindow *window) :
 
     // Stuff used for debugging (WIP)
     std::unique_ptr<Material> mat = std::make_unique<Lambertian>(Vector3D(0.5, 0.5, 0.5));
-    std::unique_ptr<Hittable> tri = std::make_unique<Triangle>(Vector3D(1,-1,-2), Vector3D(1,-1,2), Vector3D(3,0.5,0), mat.get());
+    std::unique_ptr<Mix> mix = std::make_unique<Mix>(Vector3D(0.1,1,0.1), Vector3D(0.1,1,0.1), 0.5, 0.1, 0.5, 1.33);
+    std::unique_ptr<Lambertian> red = std::make_unique<Lambertian>(Vector3D(1,0,0));
+    std::unique_ptr<Lambertian> green = std::make_unique<Lambertian>(Vector3D(0,1,0));
+
+    std::unique_ptr<Hittable> floor_left = std::make_unique<Triangle>(Vector3D(1,-0.5,-1), Vector3D(1,-0.5,1), Vector3D(2,-0.5,-1), Vector3D(0,1,0), mat.get());
+    std::unique_ptr<Hittable> floor_right = std::make_unique<Triangle>(Vector3D(2,-0.5,1), Vector3D(2,-0.5,-1), Vector3D(1,-0.5,1), Vector3D(0,1,0), mat.get());
+    std::unique_ptr<Hittable> floor_left1 = std::make_unique<Triangle>(Vector3D(1,-0.5,-1), Vector3D(1,-0.5,1), Vector3D(2,-0.5,-1), Vector3D(0,1,0), mat.get());
+    std::unique_ptr<Hittable> floor_right2 = std::make_unique<Triangle>(Vector3D(2,-0.5,1), Vector3D(2,-0.5,-1), Vector3D(1,-0.5,1), Vector3D(0,1,0), mat.get());
+    std::unique_ptr<Hittable> wall_back1 = std::make_unique<Triangle>(Vector3D(2,-0.5,-1), Vector3D(2,-0.5,1), Vector3D(2,0.5,1), Vector3D(-1,0,0), mat.get());
+    std::unique_ptr<Hittable> wall_back2 = std::make_unique<Triangle>(Vector3D(2,0.5,-1), Vector3D(2,0.5,1), Vector3D(2,-0.5,-1), Vector3D(-1,0,0), mat.get());
+    std::unique_ptr<Hittable> wall_back3 = std::make_unique<Triangle>(Vector3D(2,-0.5,-1), Vector3D(2,-0.5,1), Vector3D(2,0.5,1), Vector3D(-1,0,0), mat.get());
+    std::unique_ptr<Hittable> wall_back4 = std::make_unique<Triangle>(Vector3D(2,0.5,-1), Vector3D(2,0.5,1), Vector3D(2,-0.5,-1), Vector3D(-1,0,0), mat.get());
+    std::unique_ptr<Hittable> roof_left = std::make_unique<Triangle>(Vector3D(1,0.5,1), Vector3D(2,0.5,-1), Vector3D(1,0.5,-1), Vector3D(0,-1,0), mat.get());
+    std::unique_ptr<Hittable> roof_right = std::make_unique<Triangle>(Vector3D(2,0.5,-1), Vector3D(1,0.5,1), Vector3D(2,0.5,1), Vector3D(0,-1,0), mat.get());
+    std::unique_ptr<Hittable> wall_left1 = std::make_unique<Triangle>(Vector3D(1,-0.5,-1), Vector3D(2,-0.5,-1), Vector3D(1,0.5,-1), Vector3D(0,0,1), red.get());
+    std::unique_ptr<Hittable> wall_left2 = std::make_unique<Triangle>(Vector3D(2, 0.5, -1), Vector3D(1, 0.5, -1), Vector3D(2, -0.5, -1), Vector3D(0,0,1), red.get());
+    std::unique_ptr<Hittable> wall_right1 = std::make_unique<Triangle>(Vector3D(1,-0.5, 1), Vector3D(2,-0.5,1), Vector3D(1,0.5,1), Vector3D(0,0,-1), green.get());
+    std::unique_ptr<Hittable> wall_right2 = std::make_unique<Triangle>(Vector3D(2, 0.5, 1), Vector3D(1, 0.5, 1), Vector3D(2, -0.5, 1), Vector3D(0,0,-1), green.get());
+    std::unique_ptr<Hittable> ball = std::make_unique<Sphere>(Vector3D(1.5,0,0), 0.5, mix.get());
+    std::unique_ptr<Hittable> ball2 = std::make_unique<Sphere>(Vector3D(-10,0,0), 10, mat.get());
     world_materials_.push_back(std::move(mat));
-    world_.push_back(std::move(tri));
+    world_materials_.push_back(std::move(mix));
+    world_materials_.push_back(std::move(red));
+    world_materials_.push_back(std::move(green));
+    world_.push_back(std::move(floor_left));
+    world_.push_back(std::move(floor_right));
+    world_.push_back(std::move(wall_back1));
+    world_.push_back(std::move(wall_back2));
+    world_.push_back(std::move(roof_left));
+    world_.push_back(std::move(roof_right));
+    world_.push_back(std::move(wall_left1));
+    world_.push_back(std::move(wall_left2));
+    world_.push_back(std::move(wall_right1));
+    world_.push_back(std::move(wall_right2));
+    world_.push_back(std::move(wall_back3));
+    world_.push_back(std::move(wall_back4));
+    world_.push_back(std::move(floor_left1));
+    world_.push_back(std::move(floor_right2));
+    world_.push_back(std::move(ball));
+    //world_.push_back(std::move(ball2));
 }
 
 Gui::~Gui() {

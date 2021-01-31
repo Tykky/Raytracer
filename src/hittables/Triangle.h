@@ -8,11 +8,11 @@
 class Triangle : public Hittable {
     public:
         Triangle();
-        Triangle(const Vector3D &v1, const Vector3D &v2, const Vector3D &v3, Material *material);
+        Triangle(const Vector3D &v1, const Vector3D &v2, const Vector3D &v3, const Vector3D &n, Material *material);
         virtual bool hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const override;
         virtual bool boundingBox(float c0, float c1, Aabb &box) const override;
     private:
-        Vector3D vertex1_, vertex2_, vertex3_;
+        Vector3D vertex1_, vertex2_, vertex3_, normal_;
         Material *material_;
 
         Vector3D triangleMin() const;

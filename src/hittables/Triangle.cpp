@@ -1,10 +1,14 @@
 # include "Triangle.h"
 
+namespace {
+    const float DELTA = 0.01f;
+}
+
 Triangle::Triangle() : vertex1_({}), vertex2_({}), vertex3_({}), material_(nullptr) {
 }
 
-Triangle::Triangle(const Vector3D &v1, const Vector3D &v2, const Vector3D &v3, Material *material) :
-    vertex1_(v1), vertex2_(v2), vertex3_(v3), material_(material) {
+Triangle::Triangle(const Vector3D &v1, const Vector3D &v2, const Vector3D &v3, const Vector3D &n, Material *material) :
+    vertex1_(v1), vertex2_(v2), vertex3_(v3), material_(material), normal_(n) {
 }
 
 bool Triangle::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const {
@@ -34,7 +38,7 @@ bool Triangle::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) cons
         Vector3D outIntersectionPoint = r.getPosition() + r.getDirection() * t;
         record.distance = t;
         record.p = r.pointAtDistance(record.distance);
-        record.normal = edge2.cross(edge1);
+        record.normal = normal_;
         record.matptr = material_;
         return true;
     } else {
@@ -57,9 +61,9 @@ Vector3D Triangle::triangleMin() const {
         return a < b ? (a < c ? a : c) : (b < c ? b : c);
     };
 
-    return Vector3D(minf3(vertex1_.getX(), vertex2_.getX(), vertex3_.getX()),
-                    minf3(vertex1_.getY(), vertex2_.getY(), vertex3_.getY()),
-                    minf3(vertex1_.getZ(), vertex2_.getZ(), vertex3_.getZ()));
+    return Vector3D(minf3(vertex1_.getX(), vertex2_.getX(), vertex3_.getX()) - DELTA,
+                    minf3(vertex1_.getY(), vertex2_.getY(), vertex3_.getY()) - DELTA,
+                    minf3(vertex1_.getZ(), vertex2_.getZ(), vertex3_.getZ()) - DELTA);
 }
 
 Vector3D Triangle::triangleMax() const {
@@ -67,7 +71,7 @@ Vector3D Triangle::triangleMax() const {
         return a > b ? (a > c ? a : c) : (b > c ? b : c);
     };
 
-    return Vector3D(maxf3(vertex1_.getX(), vertex2_.getX(), vertex3_.getX()),
-                    maxf3(vertex1_.getY(), vertex2_.getY(), vertex3_.getY()),
-                    maxf3(vertex1_.getZ(), vertex2_.getZ(), vertex3_.getZ()));
+    return Vector3D(maxf3(vertex1_.getX(), vertex2_.getX(), vertex3_.getX()) + DELTA,
+                    maxf3(vertex1_.getY(), vertex2_.getY(), vertex3_.getY()) + DELTA,
+                    maxf3(vertex1_.getZ(), vertex2_.getZ(), vertex3_.getZ()) + DELTA);
 }
