@@ -49,9 +49,7 @@ bool Triangle::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) cons
 bool Triangle::boundingBox(float c0, float c_1, Aabb &box) const {
     auto vecmin = triangleMin();
     auto vecmax = triangleMax();
-    std::cout << "MIN: " << vecmin.getX() << " " << vecmin.getY() << " " << vecmin.getZ() << std::endl;
-    std::cout << "MAX: " << vecmax.getX() << " " << vecmax.getY() << " " << vecmax.getZ() << std::endl;
-
+    
     box = Aabb(triangleMin(), triangleMax());
     return true;
 }

@@ -99,8 +99,9 @@ Gui::Gui(GLFWwindow *window) :
     perf_monitor_graph_data_ = std::vector<float>(perf_monitor_resolution_);
 
     // Stuff used for debugging (WIP)
+    std::unique_ptr<Material> glass = std::make_unique<Dielectric>(1.33);
     std::unique_ptr<Material> mat = std::make_unique<Lambertian>(Vector3D(0.5, 0.5, 0.5));
-    std::unique_ptr<Mix> mix = std::make_unique<Mix>(Vector3D(0.1,1,0.1), Vector3D(0.1,1,0.1), 0.5, 0.1, 0.5, 1.33);
+    std::unique_ptr<Mix> mix = std::make_unique<Mix>(Vector3D(0.9,0.9,0.1), Vector3D(0.9,0.9,0.2), 0.2, 0.1, 1, 1.33);
     std::unique_ptr<Lambertian> red = std::make_unique<Lambertian>(Vector3D(1,0,0));
     std::unique_ptr<Lambertian> green = std::make_unique<Lambertian>(Vector3D(0,1,0));
 
@@ -118,12 +119,13 @@ Gui::Gui(GLFWwindow *window) :
     std::unique_ptr<Hittable> wall_left2 = std::make_unique<Triangle>(Vector3D(2, 0.5, -1), Vector3D(1, 0.5, -1), Vector3D(2, -0.5, -1), Vector3D(0,0,1), red.get());
     std::unique_ptr<Hittable> wall_right1 = std::make_unique<Triangle>(Vector3D(1,-0.5, 1), Vector3D(2,-0.5,1), Vector3D(1,0.5,1), Vector3D(0,0,-1), green.get());
     std::unique_ptr<Hittable> wall_right2 = std::make_unique<Triangle>(Vector3D(2, 0.5, 1), Vector3D(1, 0.5, 1), Vector3D(2, -0.5, 1), Vector3D(0,0,-1), green.get());
-    std::unique_ptr<Hittable> ball = std::make_unique<Sphere>(Vector3D(1.5,0,0), 0.5, mix.get());
-    std::unique_ptr<Hittable> ball2 = std::make_unique<Sphere>(Vector3D(-10,0,0), 10, mat.get());
+    std::unique_ptr<Hittable> ball = std::make_unique<Sphere>(Vector3D(1.5,-0.2,0), 0.3, mix.get());
+    std::unique_ptr<Hittable> ball2 = std::make_unique<Sphere>(Vector3D(-20,0,0), 10, mat.get());
     world_materials_.push_back(std::move(mat));
     world_materials_.push_back(std::move(mix));
     world_materials_.push_back(std::move(red));
     world_materials_.push_back(std::move(green));
+    world_materials_.push_back(std::move(glass));
     world_.push_back(std::move(floor_left));
     world_.push_back(std::move(floor_right));
     world_.push_back(std::move(wall_back1));
@@ -139,7 +141,7 @@ Gui::Gui(GLFWwindow *window) :
     world_.push_back(std::move(floor_left1));
     world_.push_back(std::move(floor_right2));
     world_.push_back(std::move(ball));
-    //world_.push_back(std::move(ball2));
+    world_.push_back(std::move(ball2));
 }
 
 Gui::~Gui() {
