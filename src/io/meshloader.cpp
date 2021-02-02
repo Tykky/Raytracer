@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-Mesh loadObj(const std::string &file) {
+std::vector<std::shared_ptr<Hittable>> loadObj(const std::string &file, Material *material) {
     tinyobj::ObjReaderConfig reader_config;
 
     tinyobj::ObjReader reader;
@@ -23,11 +23,12 @@ Mesh loadObj(const std::string &file) {
 
     auto& attrib = reader.GetAttrib();
     auto& shapes = reader.GetShapes();
+    std::vector<std::shared_ptr<Hittable>> meshes(shapes.size());
 
-    for (const auto & shape : shapes) {
-
+    for (size_t s; s < shapes.size(); s++) {
+        auto &shape = shapes[s];
         auto tri_count = static_cast<unsigned int>(shape.mesh.num_face_vertices.size());
-        std::vector<Triangle> triangles(tri_count);
+        std::vector<std::shared_ptr<Hittable>> triangles(tri_count);
 
         // Loop over faces(triangles)
         size_t index_offset = 0;
@@ -57,9 +58,10 @@ Mesh loadObj(const std::string &file) {
             }
             index_offset += fv;
             normal /= static_cast<float>(fv); // average normals
-            triangles[f] = triangle;
+            triangles[f] = std::make_shared<Triangle>(triangle);
         }
+        meshes[s] = std::make_shared<Mesh>(triangles);
     }
 
-    return Mesh();
+    return meshes;
 }

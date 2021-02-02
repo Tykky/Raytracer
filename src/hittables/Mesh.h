@@ -11,15 +11,13 @@
 class Mesh : public Hittable {
 public:
     Mesh() = default;
-    Mesh(std::vector<Triangle> triangles, Material *material) : triangles_(std::move(triangles)), material_(material) {};
+    Mesh(std::vector<std::shared_ptr<Hittable>> &triangles) : triangles_(triangles) {};
     virtual bool hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const;
     virtual bool boundingBox(float c0, float c1, Aabb &box) const;
-    const std::vector<Triangle>& getTriangles() { return triangles_; };
+    const std::vector<std::shared_ptr<Hittable>> &getTriangles() { return triangles_; };
 
 private:
-    Lambertian default_color = Lambertian({0.58f, 0.f, 0.82f});
-    std::vector<Triangle> triangles_ = {};
-    Material *material_ = &default_color;
+    std::vector<std::shared_ptr<Hittable>> triangles_ = {};
 };
 
 
