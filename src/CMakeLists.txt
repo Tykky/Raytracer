@@ -10,10 +10,12 @@ set(RAYTRACER_SRC core/Ray.cpp
         hittables/Aabb.cpp
         hittables/Bvhnode.cpp
         hittables/Triangle.cpp
+        hittables/Mesh.cpp
         materials/Lambertian.cpp
         materials/Metal.cpp
         materials/Dielectric.cpp
-        materials/Mix.cpp)
+        materials/Mix.cpp
+        io/meshloader.cpp)
 set(RAYTRACER_GUI gui/Window.cpp
         gui/Gui.cpp
         ../external/imgui/imgui.cpp

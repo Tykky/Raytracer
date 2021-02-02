@@ -4,25 +4,18 @@ namespace {
     const float DELTA = 0.01f;
 }
 
-Triangle::Triangle() : vertex1_({}), vertex2_({}), vertex3_({}), material_(nullptr) {
-}
-
-Triangle::Triangle(const Vector3D &v1, const Vector3D &v2, const Vector3D &v3, const Vector3D &n, Material *material) :
-    vertex1_(v1), vertex2_(v2), vertex3_(v3), material_(material), normal_(n) {
-}
-
 bool Triangle::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const {
     // Möller-trumbore
     const float EPSILON = 0.0000001;
-    Vector3D edge1 = vertex2_ - vertex1_;
-    Vector3D edge2 = vertex3_ - vertex1_;
+    Vector3D edge1 = vertex1_ - vertex0_;
+    Vector3D edge2 = vertex2_ - vertex0_;
     Vector3D h = r.getDirection().cross(edge2);
     float a = edge1.dot(h);
     if (a > -EPSILON && a < EPSILON) {
         return false; // parallel to triangle
     }
     float f = 1.0f / a;
-    Vector3D s = r.getPosition() - vertex1_;
+    Vector3D s = r.getPosition() - vertex0_;
     float u = f * s.dot(h);
     if (u < 0.0f || u > 1.0f) {
         return false;
@@ -59,9 +52,9 @@ Vector3D Triangle::triangleMin() const {
         return a < b ? (a < c ? a : c) : (b < c ? b : c);
     };
 
-    return Vector3D(minf3(vertex1_.getX(), vertex2_.getX(), vertex3_.getX()) - DELTA,
-                    minf3(vertex1_.getY(), vertex2_.getY(), vertex3_.getY()) - DELTA,
-                    minf3(vertex1_.getZ(), vertex2_.getZ(), vertex3_.getZ()) - DELTA);
+    return Vector3D(minf3(vertex0_.getX(), vertex1_.getX(), vertex2_.getX()) - DELTA,
+                    minf3(vertex0_.getY(), vertex1_.getY(), vertex2_.getY()) - DELTA,
+                    minf3(vertex0_.getZ(), vertex1_.getZ(), vertex2_.getZ()) - DELTA);
 }
 
 Vector3D Triangle::triangleMax() const {
@@ -69,7 +62,29 @@ Vector3D Triangle::triangleMax() const {
         return a > b ? (a > c ? a : c) : (b > c ? b : c);
     };
 
-    return Vector3D(maxf3(vertex1_.getX(), vertex2_.getX(), vertex3_.getX()) + DELTA,
-                    maxf3(vertex1_.getY(), vertex2_.getY(), vertex3_.getY()) + DELTA,
-                    maxf3(vertex1_.getZ(), vertex2_.getZ(), vertex3_.getZ()) + DELTA);
+    return Vector3D(maxf3(vertex0_.getX(), vertex1_.getX(), vertex2_.getX()) + DELTA,
+                    maxf3(vertex0_.getY(), vertex1_.getY(), vertex2_.getY()) + DELTA,
+                    maxf3(vertex0_.getZ(), vertex1_.getZ(), vertex2_.getZ()) + DELTA);
+}
+
+void Triangle::setVertex(const Vector3D &vertex, int index) {
+    switch(index) {
+        case 0: vertex0_ = vertex; break;
+        case 1: vertex1_ = vertex; break;
+        case 2: vertex2_ = vertex; break;
+        default:
+            std::cout << "Invalid index when setting vertex" << index << std::endl;
+            exit(1);
+    }
+}
+
+const Vector3D &Triangle::getVertex(int index) const {
+    switch(index) {
+        case 0: return vertex0_;
+        case 1: return vertex1_;
+        case 2: return vertex2_;
+        default:
+            std::cout << "Invalid index when getting vertex: " << index << std::endl;
+            exit(1);
+    }
 }

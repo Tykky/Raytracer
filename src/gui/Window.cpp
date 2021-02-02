@@ -22,9 +22,6 @@ Window::Window(const char *title) {
         if (glewInit() != GLEW_OK) {
             throw std::runtime_error("glewInit failed");
         }
-        double xpos, ypos;
-        glfwGetCursorPos(window_, &xpos, &ypos);
-        glfwSetWindowPos(window_, xpos, ypos);
         render();
     } else {
         throw std::runtime_error("glfwinit failed");
