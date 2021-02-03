@@ -20,6 +20,7 @@ set(OpenGL_GL_PREFERENCE "GLVND")
 
 find_package(OpenMP REQUIRED)
 link_libraries(OpenMP::OpenMP_CXX)
+include_directories(external/tinyobjloader)
 
 if(BUILD_TEST)
 	add_subdirectory(external/googletest)

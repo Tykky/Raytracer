@@ -10,6 +10,8 @@
 #include <algorithm>
 #include "hittables/Bvhnode.h"
 #include "hittables/Sphere.h"
+#include "hittables/Triangle.h"
+#include "io/meshloader.h"
 #include "materials/Mix.h"
 #include "materials/Lambertian.h"
 #include "materials/Dielectric.h"
@@ -20,7 +22,7 @@ Gui::Gui(GLFWwindow *window) :
     window_(window),
     render_width_(2560),
     render_height_(1440),
-    render_samples_(10),
+    render_samples_(1000),
 
     display_imgui_metrics_(false),
     display_imgui_demo_(false),
@@ -91,12 +93,76 @@ Gui::Gui(GLFWwindow *window) :
     mainmenu_({
         {"File",   &display_menu_file_,   &file_submenu_},
         //{"Debug",  &display_menu_debug_,  &debug_submenu_}
-    })
-
-{
+    }) {
+        
     texture_width_ = static_cast<float>(render_width_);
     texture_height_ = static_cast<float>(render_height_);
     perf_monitor_graph_data_ = std::vector<float>(perf_monitor_resolution_);
+
+    // Stuff used for debugging (WIP)
+    std::unique_ptr<Material> glass = std::make_unique<Dielectric>(1.33);
+    std::unique_ptr<Material> mat = std::make_unique<Lambertian>(Vector3D(0.11, 0.11, 0.11));
+    std::unique_ptr<Mix> mix = std::make_unique<Mix>(Vector3D(0,0.659,0.42), Vector3D(0.3,0.3,0.3), 0.5, 0, 1, 1.33);
+    std::unique_ptr<Lambertian> red = std::make_unique<Lambertian>(Vector3D(1,0,0));
+    std::unique_ptr<Lambertian> green = std::make_unique<Lambertian>(Vector3D(0,1,0));
+    std::unique_ptr<Lambertian> white = std::make_unique<Lambertian>(Vector3D(0.9,0.9,0.9));
+    std::unique_ptr<Mix> black = std::make_unique<Mix>(Vector3D(0.01, 0.01, 0.01), Vector3D(0.2, 0.2, 0.2), 0.7, 0, 1, 1.33);
+
+
+    auto obj = loadObj("dragon.obj", mix.get(), randomFloat);
+    std::shared_ptr<Hittable> mesh = obj[0];
+    std::shared_ptr<Hittable> backdrop = std::make_shared<Sphere>(Vector3D(0,-99.95,0), 100, mat.get());
+    std::unique_ptr<Hittable> floor_left = std::make_unique<Triangle>(Vector3D(1,-0.5,-1), Vector3D(1,-0.5,1), Vector3D(2,-0.5,-1), Vector3D(0,1,0), mat.get());
+    std::unique_ptr<Hittable> floor_right = std::make_unique<Triangle>(Vector3D(2,-0.5,1), Vector3D(2,-0.5,-1), Vector3D(1,-0.5,1), Vector3D(0,1,0), mat.get());
+    std::unique_ptr<Hittable> floor_left1 = std::make_unique<Triangle>(Vector3D(1,-0.5,-1), Vector3D(1,-0.5,1), Vector3D(2,-0.5,-1), Vector3D(0,1,0), mat.get());
+    std::unique_ptr<Hittable> floor_right2 = std::make_unique<Triangle>(Vector3D(2,-0.5,1), Vector3D(2,-0.5,-1), Vector3D(1,-0.5,1), Vector3D(0,1,0), mat.get());
+    std::unique_ptr<Hittable> wall_back1 = std::make_unique<Triangle>(Vector3D(2,-0.5,-1), Vector3D(2,-0.5,1), Vector3D(2,0.5,1), Vector3D(-1,0,0), mat.get());
+    std::unique_ptr<Hittable> wall_back2 = std::make_unique<Triangle>(Vector3D(2,0.5,-1), Vector3D(2,0.5,1), Vector3D(2,-0.5,-1), Vector3D(-1,0,0), mat.get());
+    std::unique_ptr<Hittable> wall_back3 = std::make_unique<Triangle>(Vector3D(2,-0.5,-1), Vector3D(2,-0.5,1), Vector3D(2,0.5,1), Vector3D(-1,0,0), mat.get());
+    std::unique_ptr<Hittable> wall_back4 = std::make_unique<Triangle>(Vector3D(2,0.5,-1), Vector3D(2,0.5,1), Vector3D(2,-0.5,-1), Vector3D(-1,0,0), mat.get());
+    std::unique_ptr<Hittable> roof_left = std::make_unique<Triangle>(Vector3D(1,0.5,1), Vector3D(2,0.5,-1), Vector3D(1,0.5,-1), Vector3D(0,-1,0), mat.get());
+    std::unique_ptr<Hittable> roof_right = std::make_unique<Triangle>(Vector3D(2,0.5,-1), Vector3D(1,0.5,1), Vector3D(2,0.5,1), Vector3D(0,-1,0), mat.get());
+    std::unique_ptr<Hittable> wall_left1 = std::make_unique<Triangle>(Vector3D(1,-0.5,-1), Vector3D(2,-0.5,-1), Vector3D(1,0.5,-1), Vector3D(0,0,1), red.get());
+    std::unique_ptr<Hittable> wall_left2 = std::make_unique<Triangle>(Vector3D(2, 0.5, -1), Vector3D(1, 0.5, -1), Vector3D(2, -0.5, -1), Vector3D(0,0,1), red.get());
+    std::unique_ptr<Hittable> wall_right1 = std::make_unique<Triangle>(Vector3D(1,-0.5, 1), Vector3D(2,-0.5,1), Vector3D(1,0.5,1), Vector3D(0,0,-1), green.get());
+    std::unique_ptr<Hittable> wall_right2 = std::make_unique<Triangle>(Vector3D(2, 0.5, 1), Vector3D(1, 0.5, 1), Vector3D(2, -0.5, 1), Vector3D(0,0,-1), green.get());
+    std::unique_ptr<Hittable> ball = std::make_unique<Sphere>(Vector3D(-0.01,0.08,0.13), 0.03, white.get());
+    std::unique_ptr<Hittable> ball2 = std::make_unique<Sphere>(Vector3D(0.03,0.08,-0.13), 0.03, glass.get());
+    std::unique_ptr<Hittable> ball3 = std::make_unique<Sphere>(Vector3D(-0.05,0.07,-0.05), 0.02, black.get());
+    std::unique_ptr<Hittable> ball4 = std::make_unique<Sphere>(Vector3D(-0.05,20,-0.05), 10, white.get());
+    std::unique_ptr<Hittable> ball5 = std::make_unique<Sphere>(Vector3D(-10,10,10), 10, white.get());
+    std::unique_ptr<Hittable> ball6 = std::make_unique<Sphere>(Vector3D(-12,0.07,-0.05), 10, white.get());
+    world_materials_.push_back(std::move(mat));
+    world_materials_.push_back(std::move(mix));
+    world_materials_.push_back(std::move(red));
+    world_materials_.push_back(std::move(green));
+    world_materials_.push_back(std::move(glass));
+    world_materials_.push_back((std::move(white)));
+    world_materials_.push_back((std::move(black)));
+    /*
+    world_.push_back(std::move(floor_left));
+    world_.push_back(std::move(floor_right));
+    world_.push_back(std::move(wall_back1));
+    world_.push_back(std::move(wall_back2));
+    world_.push_back(std::move(roof_left));
+    world_.push_back(std::move(roof_right));
+    world_.push_back(std::move(wall_left1));
+    world_.push_back(std::move(wall_left2));
+    world_.push_back(std::move(wall_right1));
+    world_.push_back(std::move(wall_right2));
+    world_.push_back(std::move(wall_back3));
+    world_.push_back(std::move(wall_back4));
+    world_.push_back(std::move(floor_left1));
+    world_.push_back(std::move(floor_right2));*/
+    world_.push_back(std::move(ball));
+    world_.push_back((std::move(ball2)));
+    world_.push_back((std::move(ball3)));
+    world_.push_back((std::move(ball4)));
+    world_.push_back((std::move(ball5)));
+    world_.push_back((std::move(ball6)));
+    world_.push_back(mesh);
+    world_.push_back(backdrop);
+
 }
 
 Gui::~Gui() {

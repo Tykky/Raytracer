@@ -53,8 +53,7 @@ Bvhnode::Bvhnode(std::vector<std::shared_ptr<Hittable>> &list,
     Aabb rightbox;
 
     if (!left_->boundingBox(c0, c1, leftbox) ||
-       !right_->boundingBox(c0, c1, rightbox)) 
-    {
+       !right_->boundingBox(c0, c1, rightbox)) {
         std::cerr << "[ERROR] Creation of bounding box failed in Bvhnode" << std::endl;
     }
 
