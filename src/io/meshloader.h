@@ -4,7 +4,7 @@
 #include "hittables/Mesh.h"
 #include <string>
 
-std::vector<std::shared_ptr<Hittable>> loadObj(const std::string &file, Material *material);
+std::vector<std::shared_ptr<Hittable>> loadObj(const std::string &file, Material *material, std::function<float()> randomFloat);
 
 
 #endif // RAYTRACER_OBJLOADER_H

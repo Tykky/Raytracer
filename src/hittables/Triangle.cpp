@@ -28,7 +28,6 @@ bool Triangle::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) cons
     // Compute intersection point
     float t = f * edge2.dot(q);
     if (t > EPSILON) { // Intersect
-        Vector3D outIntersectionPoint = r.getPosition() + r.getDirection() * t;
         record.distance = t;
         record.p = r.pointAtDistance(record.distance);
         record.normal = normal_;
@@ -40,9 +39,6 @@ bool Triangle::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) cons
 }
 
 bool Triangle::boundingBox(float c0, float c_1, Aabb &box) const {
-    auto vecmin = triangleMin();
-    auto vecmax = triangleMax();
-    
     box = Aabb(triangleMin(), triangleMax());
     return true;
 }

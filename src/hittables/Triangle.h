@@ -18,6 +18,7 @@ class Triangle : public Hittable {
         void setVertex(const Vector3D &vertex, int index);
         const Vector3D &getVertex(int index) const;
         void setMaterial(Material *material) { material_ = material; }
+        void setNormal(Vector3D &n) { normal_ = n; }
 
     private:
         Vector3D vertex0_ = {}, vertex1_ = {}, vertex2_ = {}, normal_ = {};

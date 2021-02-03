@@ -2,13 +2,10 @@
 #include "io/meshloader.h"
 #include "materials/Material.h"
 #include "materials/Lambertian.h"
-
+#include <random>
 
 
 int main() {
-    //Window window("Raytracer");
-    Lambertian mat = {{0.5f, 0.5f, 0.5f}};
-    auto meshes = loadObj("cube.obj", &mat);
-
+    Window window("Raytracer");
     return 0;
 }
