@@ -61,7 +61,7 @@ private:
     bool display_menu_window_ = true;
 
     std::vector<Menuitem> file_submenu_ = {
-            {"Save as", &display_imgui_metrics_}
+            {"Save as", &display_save_as_}
     };
     std::vector<Menuitem> debug_submenu_ = {
             {"ImGui metrics",    &display_imgui_metrics_},
@@ -92,9 +92,9 @@ private:
     float texture_height_;
     ImVec2 texture_offset_ = {0,0};
 
-    int render_width_ = 2560;
-    int render_height_ = 1440;
-    int render_samples_ = 1000;
+    int render_width_ = 1280;
+    int render_height_ = 720;
+    int render_samples_ = 10;
     Camera camera_ = {};
 
     float camera_fov_ = 90.f;
@@ -105,18 +105,18 @@ private:
     float camera_up_y_ = 0.f;
     float camera_up_z_ = 0.f;
 
-    int current_hittable = 0;
-    char current_hittable_name[20] = "";
+    int current_hittable_ = 0;
+    char current_hittable_name_[20] = "";
     float current_hittable_pos_x_ = 0.f;
     float current_hittable_pos_y_ = 0.f;
     float current_hittable_pos_z_ = 0.f;
     int current_material_ = 0.f;
     float current_sphere_radius_ = 0.f;
     int current_object_type_ = 2;
-    float current_vertex0[3] = {0.f, 0.f, 0.f};
-    float current_vertex1[3] = {0.f, 0.f, 0.f};
-    float current_vertex2[3] = {0.f, 0.f, 0.f};
-    float current_normal[3] = {0.f, 0.f, 0.f};
+    float current_vertex0_[3] = {0.f, 0.f, 0.f};
+    float current_vertex1_[3] = {0.f, 0.f, 0.f};
+    float current_vertex2_[3] = {0.f, 0.f, 0.f};
+    float current_normal_[3] = {0.f, 0.f, 0.f};
     char current_obj_filename_[100] = "";
 
     int randomizer_sphere_count_ = 10000;

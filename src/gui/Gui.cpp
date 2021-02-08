@@ -2,20 +2,17 @@
 #include "Gui.h"
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <iostream>
 #include <random>
 #include <hittables/Sphere.h>
 #include <string>
 #include <chrono>
 #include <algorithm>
 #include "hittables/Bvhnode.h"
-#include "hittables/Sphere.h"
 #include "hittables/Triangle.h"
 #include "io/meshloader.h"
 #include "materials/Mix.h"
 #include "materials/Lambertian.h"
 #include "materials/Dielectric.h"
-#include "materials/Metal.h"
 #include "style.h"
 
 Gui::Gui(GLFWwindow *window) :
@@ -117,6 +114,7 @@ void Gui::displaySaveAs() {
     ImGui::InputText("filename", filename, size);
     if (ImGui::Button("Save")) {
         std::string fname = filename;
+        std::cout << fname << std::endl;
         raytracer_.frammebufferToNetpbm(fname);
     }
     ImGui::End();
@@ -178,13 +176,6 @@ void Gui::displayRenderSettingsChild(const ImVec2 &size) {
     if (ImGui::Button("Clear")) {
         raytracer_.clearFramebuffer();
     }
-    if (ImGui::Button("Render randomized") && !raytracer_.isRendering()) {
-        clearObjects();
-        randomizeWorld(randomizer_sphere_count_, randomizer_scatter_multiplier_);
-        bvh = std::make_shared<Bvhnode>(world_,0, world_.size(), 0, 1, randomFloat);
-        raytracer_.setWorld(bvh.get());
-        startRaytracer();
-    }
     ImGui::EndChild();
 }
 
@@ -211,9 +202,9 @@ void Gui::displayCameraSettingsChild(const ImVec2 &size) {
 void Gui::displayObjectsChild(const ImVec2 &size) {
     ImGui::BeginChild("add_obj", size, true);
     ImGui::Text("Add objects");
-    ImGui::ListBox("", &current_hittable, hittable_names_.data(), hittable_names_.size(), 5);
+    ImGui::ListBox("", &current_hittable_, hittable_names_.data(), hittable_names_.size(), 5);
     const int buf_size = 20;
-    ImGui::InputText("Name", current_hittable_name, buf_size);
+    ImGui::InputText("Name", current_hittable_name_, buf_size);
     ImGui::Combo("Obj type", &current_object_type_, object_types_.data(), object_types_.size());
     ImGui::Combo("Material", &current_material_, material_names.data(), material_names.size());
     float *pos[] = { &current_hittable_pos_x_, &current_hittable_pos_y_, &current_hittable_pos_z_ };
@@ -221,16 +212,16 @@ void Gui::displayObjectsChild(const ImVec2 &size) {
     if (current_object_type_ == 0) {
         ImGui::InputFloat("Radius", &current_sphere_radius_);
     } else if (current_object_type_ == 1) {
-        ImGui::InputFloat3("Vertex 0 ", current_vertex0);
-        ImGui::InputFloat3("Vertex 1 ", current_vertex1);
-        ImGui::InputFloat3("Vertex 2 ", current_vertex2);
-        ImGui::InputFloat3("normal", current_normal);
+        ImGui::InputFloat3("Vertex 0 ", current_vertex0_);
+        ImGui::InputFloat3("Vertex 1 ", current_vertex1_);
+        ImGui::InputFloat3("Vertex 2 ", current_vertex2_);
+        ImGui::InputFloat3("normal", current_normal_);
     } else {
         ImGui::InputText("Filename", current_obj_filename_, 100);
     }
-    if (ImGui::Button("Add") && strlen(current_hittable_name) > 0) {
+    if (ImGui::Button("Add") && strlen(current_hittable_name_) > 0) {
         char *text = new char[buf_size];
-        strcpy(text, current_hittable_name);
+        strcpy(text, current_hittable_name_);
         hittable_names_.push_back(text);
         Material *mat;
         std::shared_ptr<Hittable> object;
@@ -244,20 +235,22 @@ void Gui::displayObjectsChild(const ImVec2 &size) {
         if (current_object_type_ == 0) {
             object = std::make_shared<Sphere>(Vector3D(current_hittable_pos_x_, current_hittable_pos_y_, current_hittable_pos_z_), current_sphere_radius_, mat);
         } else if (current_object_type_ == 1) {
-            object = std::make_shared<Triangle>(Vector3D(current_vertex0[0], current_vertex0[1], current_vertex0[2]),
-                                                Vector3D(current_vertex1[0], current_vertex1[1], current_vertex1[2]),
-                                                Vector3D(current_vertex2[0], current_vertex1[1], current_vertex2[2]),
-                                                Vector3D(current_normal[0], current_normal[1], current_normal[2]), mat);
+            object = std::make_shared<Triangle>(Vector3D(current_vertex0_[0], current_vertex0_[1], current_vertex0_[2]),
+                                                Vector3D(current_vertex1_[0], current_vertex1_[1], current_vertex1_[2]),
+                                                Vector3D(current_vertex2_[0], current_vertex1_[1], current_vertex2_[2]),
+                                                Vector3D(current_normal_[0], current_normal_[1], current_normal_[2]), mat);
         } else {
-            object = loadObj(current_obj_filename_, mat, randomFloat)[0];
+            object = loadObj(current_obj_filename_, mat, randomFloat)[0]; // Load only the first object for now
+            Mesh *objptr = dynamic_cast<Mesh *>(object.get());
+            objptr->setOffset(Vector3D(current_hittable_pos_x_, current_hittable_pos_y_, current_hittable_pos_z_));
         }
         world_.push_back(object);
     }
     ImGui::SameLine(40);
-    if (ImGui::Button("Delete") && current_hittable < hittable_names_.size()) {
-        delete[] hittable_names_.at(current_hittable);
-        hittable_names_.erase(hittable_names_.begin() + current_hittable);
-        world_.erase(world_.begin() + current_hittable);
+    if (ImGui::Button("Delete") && current_hittable_ < hittable_names_.size()) {
+        delete[] hittable_names_.at(current_hittable_);
+        hittable_names_.erase(hittable_names_.begin() + current_hittable_);
+        world_.erase(world_.begin() + current_hittable_);
     }
     ImGui::EndChild();
 }
@@ -267,6 +260,17 @@ void Gui::displayRandomizerChild(const ImVec2 &size) {
     ImGui::Text("Randomizer settings");
     ImGui::InputInt("Spheres", &randomizer_sphere_count_);
     ImGui::InputInt("Scatter", &randomizer_scatter_multiplier_);
+    if (ImGui::Button("Render randomized") && !raytracer_.isRendering()) {
+        clearObjects();
+        randomizeWorld(randomizer_sphere_count_, randomizer_scatter_multiplier_);
+        bvh = std::make_shared<Bvhnode>(world_,0, world_.size(), 0, 1, randomFloat);
+        raytracer_.setWorld(bvh.get());
+        startRaytracer();
+    }
+    ImGui::SameLine(140);
+    if (ImGui::Button("Clear objects")) {
+        clearObjects();
+    }
     ImGui::EndChild();
 }
 
