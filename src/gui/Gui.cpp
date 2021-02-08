@@ -166,6 +166,7 @@ void Gui::displayRenderSettingsChild(const ImVec2 &size) {
     if (ImGui::InputInt2("Resolution", *res)) {
         raytracer_.resize(render_width_, render_height_);
         raytracer_.clearFramebuffer();
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width_, render_height_, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer_.getFramebuffer().data());
     }
     ImGui::InputInt("Samples", &render_samples_);
     if (ImGui::Button("Render") && !world_.empty() && !raytracer_.isRendering()) {
