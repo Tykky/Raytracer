@@ -74,7 +74,7 @@ void Gui::renderGui() {
     const auto time_end = std::chrono::high_resolution_clock::now();
 
     const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(time_end - time_start).count();
-    double samples_delta = static_cast<double>(samples_end - samples_start);
+    auto samples_delta = static_cast<double>(samples_end - samples_start);
     samples_per_second_ = static_cast<float>((samples_delta / duration) * 1000000);
 }
 
@@ -178,8 +178,7 @@ void Gui::displayRenderSettingsChild(const ImVec2 &size) {
         raytracer_.clearFramebuffer();
     }
     if (ImGui::Button("Render randomized") && !raytracer_.isRendering()) {
-        world_.clear();
-        world_materials_.clear();
+        clearObjects();
         randomizeWorld(randomizer_sphere_count_, randomizer_scatter_multiplier_);
         bvh = std::make_shared<Bvhnode>(world_,0, world_.size(), 0, 1, randomFloat);
         raytracer_.setWorld(bvh.get());
@@ -210,19 +209,30 @@ void Gui::displayCameraSettingsChild(const ImVec2 &size) {
 
 void Gui::displayObjectsChild(const ImVec2 &size) {
     ImGui::BeginChild("add_obj", size, true);
-    ImGui::Text("Add spheres");
+    ImGui::Text("Add objects");
     ImGui::ListBox("", &current_hittable, hittable_names_.data(), hittable_names_.size(), 5);
     const int buf_size = 20;
     ImGui::InputText("Name", current_hittable_name, buf_size);
+    ImGui::Combo("Obj type", &current_object_type_, object_types_.data(), object_types_.size());
     ImGui::Combo("Material", &current_material_, material_names.data(), material_names.size());
     float *pos[] = { &current_hittable_pos_x_, &current_hittable_pos_y_, &current_hittable_pos_z_ };
     ImGui::InputFloat3("Position ", *pos);
-    ImGui::InputFloat("Radius", &current_sphere_radius_);
+    if (current_object_type_ == 0) {
+        ImGui::InputFloat("Radius", &current_sphere_radius_);
+    } else if (current_object_type_ == 1) {
+        ImGui::InputFloat3("Vertex 0 ", current_vertex0);
+        ImGui::InputFloat3("Vertex 1 ", current_vertex1);
+        ImGui::InputFloat3("Vertex 2 ", current_vertex2);
+        ImGui::InputFloat3("normal", current_normal);
+    } else {
+        ImGui::InputText("Filename", current_obj_filename_, 100);
+    }
     if (ImGui::Button("Add") && strlen(current_hittable_name) > 0) {
         char *text = new char[buf_size];
         strcpy(text, current_hittable_name);
         hittable_names_.push_back(text);
         Material *mat;
+        std::shared_ptr<Hittable> object;
         if (current_material_ == 0) {
             mat = lambertian_.get();
         } else if (current_material_ == 1) {
@@ -230,7 +240,17 @@ void Gui::displayObjectsChild(const ImVec2 &size) {
         } else if (current_material_ == 2) {
             mat = dielectric_.get();
         }
-        world_.push_back(std::make_shared<Sphere>(Vector3D(current_hittable_pos_x_, current_hittable_pos_y_, current_hittable_pos_z_), current_sphere_radius_, mat));
+        if (current_object_type_ == 0) {
+            object = std::make_shared<Sphere>(Vector3D(current_hittable_pos_x_, current_hittable_pos_y_, current_hittable_pos_z_), current_sphere_radius_, mat);
+        } else if (current_object_type_ == 1) {
+            object = std::make_shared<Triangle>(Vector3D(current_vertex0[0], current_vertex0[1], current_vertex0[2]),
+                                                Vector3D(current_vertex1[0], current_vertex1[1], current_vertex1[2]),
+                                                Vector3D(current_vertex2[0], current_vertex1[1], current_vertex2[2]),
+                                                Vector3D(current_normal[0], current_normal[1], current_normal[2]), mat);
+        } else {
+            object = loadObj(current_obj_filename_, mat, randomFloat)[0];
+        }
+        world_.push_back(object);
     }
     ImGui::SameLine(40);
     if (ImGui::Button("Delete") && current_hittable < hittable_names_.size()) {
@@ -255,7 +275,7 @@ void Gui::displayPerfMonitor() {
     const size_t display_size = 1000;
 
     ImGui::Begin("perfmonitor", nullptr, static_window_flags_);
-    ImGui::Text(("Samples (M) per second " + std::to_string(samples_per_second_ / 1000000)).data());
+    ImGui::Text(("Mega samples p/s " + std::to_string(samples_per_second_ / 1000000)).data());
     ImGui::SameLine(250);
     ImGui::Text("Status:");
     ImGui::SameLine(300);
@@ -289,8 +309,8 @@ void Gui::rightSideBarResize() {
 
 void Gui::resizeWindow(const ImVec2 &hover_min, const ImVec2 &hover_max, float &resize_pos,
                        const float &resize_pos_min, const float &resize_pos_max, bool &is_resizing,
-                       const orientation &resize_orientation) 
-    {
+                       const orientation &resize_orientation) {
+
     ImGuiMouseCursor cursor_type;
     switch(resize_orientation) {
         case(orientation::HORIZONTAL) :
@@ -373,7 +393,6 @@ void Gui::randomizeWorld(const int &spheres, const int &scatter) {
 
     // Push pre-defined large spheres
     world_.push_back(std::make_shared<Sphere>(Vector3D(0, -1000, 0), 1000, lambptr.get()));
-
     world_.push_back(std::make_shared<Sphere>(Vector3D(0, 0.5, -1), 0.5, closeptr.get()));
     world_.push_back(std::make_shared<Sphere>(Vector3D(-10, 4.7, -20), 5, matptr.get()));
     world_.push_back(std::make_shared<Sphere>(Vector3D(-1.5, 0.5, -3), 0.5, closeptr.get()));
@@ -382,4 +401,10 @@ void Gui::randomizeWorld(const int &spheres, const int &scatter) {
     for (size_t i = 0; i < 5; i++) {
         world_materials_.push_back(std::move((*mats[i])));
     }
+}
+
+void Gui::clearObjects() {
+    world_.clear();
+    hittable_names_.clear();
+    world_materials_.clear();
 }

@@ -106,13 +106,18 @@ private:
     float camera_up_z_ = 0.f;
 
     int current_hittable = 0;
-    char current_hittable_name[20];
+    char current_hittable_name[20] = "";
     float current_hittable_pos_x_ = 0.f;
     float current_hittable_pos_y_ = 0.f;
     float current_hittable_pos_z_ = 0.f;
     int current_material_ = 0.f;
-
     float current_sphere_radius_ = 0.f;
+    int current_object_type_ = 2;
+    float current_vertex0[3] = {0.f, 0.f, 0.f};
+    float current_vertex1[3] = {0.f, 0.f, 0.f};
+    float current_vertex2[3] = {0.f, 0.f, 0.f};
+    float current_normal[3] = {0.f, 0.f, 0.f};
+    char current_obj_filename_[100] = "";
 
     int randomizer_sphere_count_ = 10000;
     int randomizer_scatter_multiplier_ = 25;
@@ -124,6 +129,13 @@ private:
             "Metal",
             "Dielectric"
     }; // used only for GUI
+
+    std::vector<char *> object_types_ = {
+            "Sphere",
+            "Triangle",
+            "3D model"
+    };
+
     std::vector<std::shared_ptr<Hittable>> world_ = {}; // used for rendering
     std::shared_ptr<Hittable> bvh = {};
 
@@ -172,6 +184,10 @@ private:
     void zoomTextureWhenScrolled();
 
     void randomizeWorld(const int &spheres, const int &scatter);
+    void clearObjects();
+
+
+
 };
 
 
