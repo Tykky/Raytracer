@@ -65,8 +65,5 @@ std::vector<std::shared_ptr<Hittable>> loadObj(const std::string &file, Material
         }
         meshes[s] = std::make_shared<Mesh>(triangles, randomFloat);
     }
-
-    Hitrecord record;
-    std::cout << meshes[0]->hit(Ray({0,0,0},{1,0.561863542, -0.436752021}), 0, 1, record) << std::endl;
     return meshes;
 }

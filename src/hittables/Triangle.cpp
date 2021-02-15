@@ -84,3 +84,10 @@ const Vector3D &Triangle::getVertex(int index) const {
             exit(1);
     }
 }
+
+Triangle &Triangle::operator+=(const Vector3D &rhs) {
+    vertex0_ += rhs;
+    vertex1_ += rhs;
+    vertex2_ += rhs;
+    return *this;
+}

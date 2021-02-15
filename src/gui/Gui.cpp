@@ -2,167 +2,25 @@
 #include "Gui.h"
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <iostream>
 #include <random>
 #include <hittables/Sphere.h>
 #include <string>
 #include <chrono>
 #include <algorithm>
 #include "hittables/Bvhnode.h"
-#include "hittables/Sphere.h"
 #include "hittables/Triangle.h"
 #include "io/meshloader.h"
 #include "materials/Mix.h"
 #include "materials/Lambertian.h"
 #include "materials/Dielectric.h"
-#include "materials/Metal.h"
 #include "style.h"
 
 Gui::Gui(GLFWwindow *window) :
-    window_(window),
-    render_width_(2560),
-    render_height_(1440),
-    render_samples_(1000),
+    window_(window) {
 
-    display_imgui_metrics_(false),
-    display_imgui_demo_(false),
-    display_imgui_about_(false),
-    display_imgui_userguide_(false),
-    display_save_as_(false),
-    display_menu_debug_(true),
-    display_menu_file_(true),
-    display_menu_window_(true), 
-    main_menubar_height_(19),   
-    texture_offset_(ImVec2(0, 0)),
-    right_side_bar_width_(300),
-    right_side_bar_min_width_(10),
-    right_side_bar_max_width_(300),
-    right_side_bar_hover_margin_(10),
-    perf_monitor_height_(120),
-    perf_monitor_graph_data_(),
-    perf_monitor_resolution_(1000),
-    samples_per_second_(0),
-    is_right_side_bar_resizing_(false), 
-    static_window_flags_(ImGuiWindowFlags_NoMove |
-                         ImGuiWindowFlags_NoTitleBar |
-                         ImGuiWindowFlags_NoResize |
-                         ImGuiWindowFlags_NoBringToFrontOnFocus),   
-    camera_(),
-    camera_pos_x_(0),
-    camera_pos_y_(0),
-    camera_pos_z_(0),
-    camera_up_x_(0),
-    camera_up_y_(1),
-    camera_up_z_(0),
-    camera_fov_(90),    
-    current_hittable(0),
-    current_hittable_name(),
-    current_hittable_pos_x_(0),
-    current_hittable_pos_y_(0),
-    current_hittable_pos_z_(0),
-    current_sphere_radius_(1),
-    randomizer_sphere_count_(100),
-    randomizer_scatter_multiplier_(25),
-    current_material_(0),    
-    hittable_names_(),
-    material_names({
-        "Lambertian",
-        "Metal",
-        "Dielectric"
-    }),
-    world_(),
-    world_materials_(std::vector<std::unique_ptr<Material>>()),   
-    lambertian_(std::make_unique<Lambertian>(Vector3D(0.5f,0.5f,0.5f))),
-    metal_(std::make_unique<Metal>(Vector3D(0.8,0.6,0.4), 0.3f)),
-    dielectric_(std::make_unique<Dielectric>(1.3f)), 
-    generator(std::mt19937()),
-    dist(std::uniform_real_distribution<float>(0,1)),
-    randomFloat(std::bind(dist, generator)),    
-    raytracer_( nullptr, &camera_, render_width_, render_height_),  
-    framebuffer_texture_id_(0), 
-    file_submenu_({
-        {"Save as", &display_save_as_}
-    }), 
-    debug_submenu_({
-        {"ImGui metrics",    &display_imgui_metrics_},
-        {"ImGui demo",       &display_imgui_demo_},
-        {"ImGui about",      &display_imgui_about_},
-        {"ImGui user guide", &display_imgui_userguide_},
-    }), 
-    window_submenu_({}),
-    mainmenu_({
-        {"File",   &display_menu_file_,   &file_submenu_},
-        //{"Debug",  &display_menu_debug_,  &debug_submenu_}
-    }) {
-        
     texture_width_ = static_cast<float>(render_width_);
     texture_height_ = static_cast<float>(render_height_);
     perf_monitor_graph_data_ = std::vector<float>(perf_monitor_resolution_);
-
-    // Stuff used for debugging (WIP)
-    std::unique_ptr<Material> glass = std::make_unique<Dielectric>(1.33);
-    std::unique_ptr<Material> mat = std::make_unique<Lambertian>(Vector3D(0.11, 0.11, 0.11));
-    std::unique_ptr<Mix> mix = std::make_unique<Mix>(Vector3D(0,0.659,0.42), Vector3D(0.3,0.3,0.3), 0.5, 0, 1, 1.33);
-    std::unique_ptr<Lambertian> red = std::make_unique<Lambertian>(Vector3D(1,0,0));
-    std::unique_ptr<Lambertian> green = std::make_unique<Lambertian>(Vector3D(0,1,0));
-    std::unique_ptr<Lambertian> white = std::make_unique<Lambertian>(Vector3D(0.9,0.9,0.9));
-    std::unique_ptr<Mix> black = std::make_unique<Mix>(Vector3D(0.01, 0.01, 0.01), Vector3D(0.2, 0.2, 0.2), 0.7, 0, 1, 1.33);
-
-
-    auto obj = loadObj("dragon.obj", mix.get(), randomFloat);
-    std::shared_ptr<Hittable> mesh = obj[0];
-    std::shared_ptr<Hittable> backdrop = std::make_shared<Sphere>(Vector3D(0,-99.95,0), 100, mat.get());
-    std::unique_ptr<Hittable> floor_left = std::make_unique<Triangle>(Vector3D(1,-0.5,-1), Vector3D(1,-0.5,1), Vector3D(2,-0.5,-1), Vector3D(0,1,0), mat.get());
-    std::unique_ptr<Hittable> floor_right = std::make_unique<Triangle>(Vector3D(2,-0.5,1), Vector3D(2,-0.5,-1), Vector3D(1,-0.5,1), Vector3D(0,1,0), mat.get());
-    std::unique_ptr<Hittable> floor_left1 = std::make_unique<Triangle>(Vector3D(1,-0.5,-1), Vector3D(1,-0.5,1), Vector3D(2,-0.5,-1), Vector3D(0,1,0), mat.get());
-    std::unique_ptr<Hittable> floor_right2 = std::make_unique<Triangle>(Vector3D(2,-0.5,1), Vector3D(2,-0.5,-1), Vector3D(1,-0.5,1), Vector3D(0,1,0), mat.get());
-    std::unique_ptr<Hittable> wall_back1 = std::make_unique<Triangle>(Vector3D(2,-0.5,-1), Vector3D(2,-0.5,1), Vector3D(2,0.5,1), Vector3D(-1,0,0), mat.get());
-    std::unique_ptr<Hittable> wall_back2 = std::make_unique<Triangle>(Vector3D(2,0.5,-1), Vector3D(2,0.5,1), Vector3D(2,-0.5,-1), Vector3D(-1,0,0), mat.get());
-    std::unique_ptr<Hittable> wall_back3 = std::make_unique<Triangle>(Vector3D(2,-0.5,-1), Vector3D(2,-0.5,1), Vector3D(2,0.5,1), Vector3D(-1,0,0), mat.get());
-    std::unique_ptr<Hittable> wall_back4 = std::make_unique<Triangle>(Vector3D(2,0.5,-1), Vector3D(2,0.5,1), Vector3D(2,-0.5,-1), Vector3D(-1,0,0), mat.get());
-    std::unique_ptr<Hittable> roof_left = std::make_unique<Triangle>(Vector3D(1,0.5,1), Vector3D(2,0.5,-1), Vector3D(1,0.5,-1), Vector3D(0,-1,0), mat.get());
-    std::unique_ptr<Hittable> roof_right = std::make_unique<Triangle>(Vector3D(2,0.5,-1), Vector3D(1,0.5,1), Vector3D(2,0.5,1), Vector3D(0,-1,0), mat.get());
-    std::unique_ptr<Hittable> wall_left1 = std::make_unique<Triangle>(Vector3D(1,-0.5,-1), Vector3D(2,-0.5,-1), Vector3D(1,0.5,-1), Vector3D(0,0,1), red.get());
-    std::unique_ptr<Hittable> wall_left2 = std::make_unique<Triangle>(Vector3D(2, 0.5, -1), Vector3D(1, 0.5, -1), Vector3D(2, -0.5, -1), Vector3D(0,0,1), red.get());
-    std::unique_ptr<Hittable> wall_right1 = std::make_unique<Triangle>(Vector3D(1,-0.5, 1), Vector3D(2,-0.5,1), Vector3D(1,0.5,1), Vector3D(0,0,-1), green.get());
-    std::unique_ptr<Hittable> wall_right2 = std::make_unique<Triangle>(Vector3D(2, 0.5, 1), Vector3D(1, 0.5, 1), Vector3D(2, -0.5, 1), Vector3D(0,0,-1), green.get());
-    std::unique_ptr<Hittable> ball = std::make_unique<Sphere>(Vector3D(-0.01,0.08,0.13), 0.03, white.get());
-    std::unique_ptr<Hittable> ball2 = std::make_unique<Sphere>(Vector3D(0.03,0.08,-0.13), 0.03, glass.get());
-    std::unique_ptr<Hittable> ball3 = std::make_unique<Sphere>(Vector3D(-0.05,0.07,-0.05), 0.02, black.get());
-    std::unique_ptr<Hittable> ball4 = std::make_unique<Sphere>(Vector3D(-0.05,20,-0.05), 10, white.get());
-    std::unique_ptr<Hittable> ball5 = std::make_unique<Sphere>(Vector3D(-10,10,10), 10, white.get());
-    std::unique_ptr<Hittable> ball6 = std::make_unique<Sphere>(Vector3D(-12,0.07,-0.05), 10, white.get());
-    world_materials_.push_back(std::move(mat));
-    world_materials_.push_back(std::move(mix));
-    world_materials_.push_back(std::move(red));
-    world_materials_.push_back(std::move(green));
-    world_materials_.push_back(std::move(glass));
-    world_materials_.push_back((std::move(white)));
-    world_materials_.push_back((std::move(black)));
-    /*
-    world_.push_back(std::move(floor_left));
-    world_.push_back(std::move(floor_right));
-    world_.push_back(std::move(wall_back1));
-    world_.push_back(std::move(wall_back2));
-    world_.push_back(std::move(roof_left));
-    world_.push_back(std::move(roof_right));
-    world_.push_back(std::move(wall_left1));
-    world_.push_back(std::move(wall_left2));
-    world_.push_back(std::move(wall_right1));
-    world_.push_back(std::move(wall_right2));
-    world_.push_back(std::move(wall_back3));
-    world_.push_back(std::move(wall_back4));
-    world_.push_back(std::move(floor_left1));
-    world_.push_back(std::move(floor_right2));*/
-    world_.push_back(std::move(ball));
-    world_.push_back((std::move(ball2)));
-    world_.push_back((std::move(ball3)));
-    world_.push_back((std::move(ball4)));
-    world_.push_back((std::move(ball5)));
-    world_.push_back((std::move(ball6)));
-    world_.push_back(mesh);
-    world_.push_back(backdrop);
-
 }
 
 Gui::~Gui() {
@@ -213,7 +71,7 @@ void Gui::renderGui() {
     const auto time_end = std::chrono::high_resolution_clock::now();
 
     const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(time_end - time_start).count();
-    double samples_delta = static_cast<double>(samples_end - samples_start);
+    auto samples_delta = static_cast<double>(samples_end - samples_start);
     samples_per_second_ = static_cast<float>((samples_delta / duration) * 1000000);
 }
 
@@ -256,6 +114,7 @@ void Gui::displaySaveAs() {
     ImGui::InputText("filename", filename, size);
     if (ImGui::Button("Save")) {
         std::string fname = filename;
+        std::cout << fname << std::endl;
         raytracer_.frammebufferToNetpbm(fname);
     }
     ImGui::End();
@@ -305,6 +164,7 @@ void Gui::displayRenderSettingsChild(const ImVec2 &size) {
     if (ImGui::InputInt2("Resolution", *res)) {
         raytracer_.resize(render_width_, render_height_);
         raytracer_.clearFramebuffer();
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, render_width_, render_height_, 0, GL_RGB, GL_UNSIGNED_BYTE, raytracer_.getFramebuffer().data());
     }
     ImGui::InputInt("Samples", &render_samples_);
     if (ImGui::Button("Render") && !world_.empty() && !raytracer_.isRendering()) {
@@ -315,14 +175,6 @@ void Gui::displayRenderSettingsChild(const ImVec2 &size) {
     ImGui::SameLine(65);
     if (ImGui::Button("Clear")) {
         raytracer_.clearFramebuffer();
-    }
-    if (ImGui::Button("Render randomized") && !raytracer_.isRendering()) {
-        world_.clear();
-        world_materials_.clear();
-        randomizeWorld(randomizer_sphere_count_, randomizer_scatter_multiplier_);
-        bvh = std::make_shared<Bvhnode>(world_,0, world_.size(), 0, 1, randomFloat);
-        raytracer_.setWorld(bvh.get());
-        startRaytracer();
     }
     ImGui::EndChild();
 }
@@ -349,19 +201,30 @@ void Gui::displayCameraSettingsChild(const ImVec2 &size) {
 
 void Gui::displayObjectsChild(const ImVec2 &size) {
     ImGui::BeginChild("add_obj", size, true);
-    ImGui::Text("Add spheres");
-    ImGui::ListBox("", &current_hittable, hittable_names_.data(), hittable_names_.size(), 5);
+    ImGui::Text("Add objects");
+    ImGui::ListBox("", &current_hittable_, hittable_names_.data(), hittable_names_.size(), 5);
     const int buf_size = 20;
-    ImGui::InputText("Name", current_hittable_name, buf_size);
+    ImGui::InputText("Name", current_hittable_name_, buf_size);
+    ImGui::Combo("Obj type", &current_object_type_, object_types_.data(), object_types_.size());
     ImGui::Combo("Material", &current_material_, material_names.data(), material_names.size());
     float *pos[] = { &current_hittable_pos_x_, &current_hittable_pos_y_, &current_hittable_pos_z_ };
     ImGui::InputFloat3("Position ", *pos);
-    ImGui::InputFloat("Radius", &current_sphere_radius_);
-    if (ImGui::Button("Add") && strlen(current_hittable_name) > 0) {
+    if (current_object_type_ == 0) {
+        ImGui::InputFloat("Radius", &current_sphere_radius_);
+    } else if (current_object_type_ == 1) {
+        ImGui::InputFloat3("Vertex 0 ", current_vertex0_);
+        ImGui::InputFloat3("Vertex 1 ", current_vertex1_);
+        ImGui::InputFloat3("Vertex 2 ", current_vertex2_);
+        ImGui::InputFloat3("normal", current_normal_);
+    } else {
+        ImGui::InputText("Filename", current_obj_filename_, 100);
+    }
+    if (ImGui::Button("Add") && strlen(current_hittable_name_) > 0) {
         char *text = new char[buf_size];
-        strcpy(text, current_hittable_name);
+        strcpy(text, current_hittable_name_);
         hittable_names_.push_back(text);
         Material *mat;
+        std::shared_ptr<Hittable> object;
         if (current_material_ == 0) {
             mat = lambertian_.get();
         } else if (current_material_ == 1) {
@@ -369,13 +232,25 @@ void Gui::displayObjectsChild(const ImVec2 &size) {
         } else if (current_material_ == 2) {
             mat = dielectric_.get();
         }
-        world_.push_back(std::make_shared<Sphere>(Vector3D(current_hittable_pos_x_, current_hittable_pos_y_, current_hittable_pos_z_), current_sphere_radius_, mat));
+        if (current_object_type_ == 0) {
+            object = std::make_shared<Sphere>(Vector3D(current_hittable_pos_x_, current_hittable_pos_y_, current_hittable_pos_z_), current_sphere_radius_, mat);
+        } else if (current_object_type_ == 1) {
+            object = std::make_shared<Triangle>(Vector3D(current_vertex0_[0], current_vertex0_[1], current_vertex0_[2]),
+                                                Vector3D(current_vertex1_[0], current_vertex1_[1], current_vertex1_[2]),
+                                                Vector3D(current_vertex2_[0], current_vertex1_[1], current_vertex2_[2]),
+                                                Vector3D(current_normal_[0], current_normal_[1], current_normal_[2]), mat);
+        } else {
+            object = loadObj(current_obj_filename_, mat, randomFloat)[0]; // Load only the first object for now
+            Mesh *objptr = dynamic_cast<Mesh *>(object.get());
+            objptr->setOffset(Vector3D(current_hittable_pos_x_, current_hittable_pos_y_, current_hittable_pos_z_));
+        }
+        world_.push_back(object);
     }
     ImGui::SameLine(40);
-    if (ImGui::Button("Delete") && current_hittable < hittable_names_.size()) {
-        delete[] hittable_names_.at(current_hittable);
-        hittable_names_.erase(hittable_names_.begin() + current_hittable);
-        world_.erase(world_.begin() + current_hittable);
+    if (ImGui::Button("Delete") && current_hittable_ < hittable_names_.size()) {
+        delete[] hittable_names_.at(current_hittable_);
+        hittable_names_.erase(hittable_names_.begin() + current_hittable_);
+        world_.erase(world_.begin() + current_hittable_);
     }
     ImGui::EndChild();
 }
@@ -385,6 +260,17 @@ void Gui::displayRandomizerChild(const ImVec2 &size) {
     ImGui::Text("Randomizer settings");
     ImGui::InputInt("Spheres", &randomizer_sphere_count_);
     ImGui::InputInt("Scatter", &randomizer_scatter_multiplier_);
+    if (ImGui::Button("Render randomized") && !raytracer_.isRendering()) {
+        clearObjects();
+        randomizeWorld(randomizer_sphere_count_, randomizer_scatter_multiplier_);
+        bvh = std::make_shared<Bvhnode>(world_,0, world_.size(), 0, 1, randomFloat);
+        raytracer_.setWorld(bvh.get());
+        startRaytracer();
+    }
+    ImGui::SameLine(140);
+    if (ImGui::Button("Clear objects")) {
+        clearObjects();
+    }
     ImGui::EndChild();
 }
 
@@ -394,7 +280,7 @@ void Gui::displayPerfMonitor() {
     const size_t display_size = 1000;
 
     ImGui::Begin("perfmonitor", nullptr, static_window_flags_);
-    ImGui::Text(("Samples (M) per second " + std::to_string(samples_per_second_ / 1000000)).data());
+    ImGui::Text(("Mega samples p/s " + std::to_string(samples_per_second_ / 1000000)).data());
     ImGui::SameLine(250);
     ImGui::Text("Status:");
     ImGui::SameLine(300);
@@ -428,8 +314,8 @@ void Gui::rightSideBarResize() {
 
 void Gui::resizeWindow(const ImVec2 &hover_min, const ImVec2 &hover_max, float &resize_pos,
                        const float &resize_pos_min, const float &resize_pos_max, bool &is_resizing,
-                       const orientation &resize_orientation) 
-    {
+                       const orientation &resize_orientation) {
+
     ImGuiMouseCursor cursor_type;
     switch(resize_orientation) {
         case(orientation::HORIZONTAL) :
@@ -512,7 +398,6 @@ void Gui::randomizeWorld(const int &spheres, const int &scatter) {
 
     // Push pre-defined large spheres
     world_.push_back(std::make_shared<Sphere>(Vector3D(0, -1000, 0), 1000, lambptr.get()));
-
     world_.push_back(std::make_shared<Sphere>(Vector3D(0, 0.5, -1), 0.5, closeptr.get()));
     world_.push_back(std::make_shared<Sphere>(Vector3D(-10, 4.7, -20), 5, matptr.get()));
     world_.push_back(std::make_shared<Sphere>(Vector3D(-1.5, 0.5, -3), 0.5, closeptr.get()));
@@ -521,4 +406,10 @@ void Gui::randomizeWorld(const int &spheres, const int &scatter) {
     for (size_t i = 0; i < 5; i++) {
         world_materials_.push_back(std::move((*mats[i])));
     }
+}
+
+void Gui::clearObjects() {
+    world_.clear();
+    hittable_names_.clear();
+    world_materials_.clear();
 }
