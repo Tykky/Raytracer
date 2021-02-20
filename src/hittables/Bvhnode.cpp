@@ -4,8 +4,14 @@
 
 namespace {
 
-bool boxCompare(const std::shared_ptr<Hittable> &a, const std::shared_ptr<Hittable> &b,
-                    int axis);
+    bool boxCompare(const std::shared_ptr<Hittable> &a, const std::shared_ptr<Hittable> &b, int axis) {
+        Aabb box_a;
+        Aabb box_b;
+        if (!a->boundingBox(0, 0, box_a) || !b->boundingBox(0, 0, box_b)) {
+            std::cerr << "[ERROR] No bounding box in bvh constructor" << std::endl;
+        }
+        return box_a.getMin()[axis] < box_b.getMin()[axis];
+    }
 
 }
 
@@ -89,17 +95,4 @@ bool Bvhnode::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const
 bool Bvhnode::boundingBox(float c0, float c1, Aabb &box) const {
     box = node_;
     return true;
-}
-
-namespace {
-
-bool boxCompare(const std::shared_ptr<Hittable> &a, const std::shared_ptr<Hittable> &b, int axis) {
-    Aabb box_a;
-    Aabb box_b;
-    if (!a->boundingBox(0, 0, box_a) || !b->boundingBox(0, 0, box_b)) {
-        std::cerr << "[ERROR] No bounding box in bvh constructor" << std::endl;
-    }
-    return box_a.getMin()[axis] < box_b.getMin()[axis];
-}
-
 }

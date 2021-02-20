@@ -6,7 +6,6 @@
 
 class BvhnodeTest : public ::testing::Test {
 protected:
-
     std::vector<std::shared_ptr<Hittable>> list;
     std::shared_ptr<Material> mat;
     std::shared_ptr<Bvhnode> bvh;
@@ -23,8 +22,8 @@ protected:
         list[0] = std::make_unique<Sphere>(Vector3D(0,0,0),0.5,mat.get());
         list[1] = std::make_unique<Sphere>(Vector3D(-1,0,0),0.5,mat.get());
         list[2] = std::make_unique<Sphere>(Vector3D(1,0,0),0.5,mat.get());
-        list[3] = std::make_unique<Sphere>(Vector3D(0,2,0),0.5,mat.get());
-        bvh = std::make_shared<Bvhnode>(list,0,3,-999,999,randomfloat);
+        list[3] = std::make_unique<Sphere>(Vector3D(0,0.5,0), 0.5, mat.get());
+        bvh = std::make_shared<Bvhnode>(list,0,4,-999,999,randomfloat);
     }
 };
 
@@ -67,4 +66,11 @@ TEST_F(BvhnodeTest, missTest) {
     bool hit = bvh->hit(r,-9999,99999,record);
     EXPECT_EQ(false,hit);
     EXPECT_EQ(0,record.p.getZ());
+}
+
+TEST_F(BvhnodeTest, hitUpTest) {
+    Ray r({-2,0.5,0}, {1,0,0});
+    Hitrecord record;
+    bool hit = bvh->hit(r, -9999, 9999, record);
+    EXPECT_EQ(true, hit);
 }
