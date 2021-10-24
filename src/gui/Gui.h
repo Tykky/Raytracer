@@ -124,17 +124,9 @@ private:
 
     // Indexes match between hittable_names and world
     std::vector<char *> hittable_names_ = {}; // used only for GUI
-    std::vector<char *> material_names = {
-            "Lambertian",
-            "Metal",
-            "Dielectric"
-    }; // used only for GUI
+    std::vector<char *> material_names;
 
-    std::vector<char *> object_types_ = {
-            "Sphere",
-            "Triangle",
-            "3D model"
-    };
+    std::vector<char *> object_types_;
 
     std::vector<std::shared_ptr<Hittable>> world_ = {}; // used for rendering
     std::shared_ptr<Hittable> bvh = {};
