@@ -14,150 +14,136 @@
 #include <materials/Metal.h>
 #include <materials/Dielectric.h>
 
-class Gui {
-
+class Gui 
+{
 public:
-    /**
-     * @brief Handles everything gui related.
-     * Initialize GLFW before calling this.
-     * @param window
-     */
     Gui(GLFWwindow *window);
     ~Gui();
 
-    /** @brief Initializes imgui context & OpenGl. Call this
-     * before you call renderGui(). */
     void init();
-
-    /** @Brief Call this in between init() and renderDrawData() */
     void renderGui();
-
-    /** @brief Draws the rendered data to the screen. Call this
-     * after renderGui(). */
     void renderDrawData() const;
 
 private:
-
-    struct Menuitem {
+    struct Menuitem 
+    {
         std::string label;
-        bool *display = nullptr;
-        std::vector<Menuitem> *submenu = nullptr;
+        bool* display = nullptr;
+        std::vector<Menuitem>* submenu = nullptr;
     };
 
     enum class orientation { HORIZONTAL, VERTICAL};
 
-    GLFWwindow *window_;
+    GLFWwindow* m_window;
 
-    int window_width_;
-    int window_height_;
+    int m_windowWidth;
+    int m_windowHeight;
 
-    bool display_imgui_metrics_ = false;
-    bool display_imgui_demo_ = false;
-    bool display_imgui_about_ = false;
-    bool display_imgui_userguide_ = false;
-    bool display_save_as_ = false;
-    bool display_menu_file_ = true;
-    bool display_menu_debug_ = false;
-    bool display_menu_window_ = true;
+    bool m_displayImguiMetrics   = false;
+    bool m_displayImguiDemo      = false;
+    bool m_displayImguiAbout     = false;
+    bool m_displayImguiUserGUide = false;
+    bool m_displaySaveAs         = false;
+    bool m_displayMenuFile       = true;
+    bool m_displayMenuDebug      = false;
+    bool m_displayMenuWindow     = true;
 
-    std::vector<Menuitem> file_submenu_ = {
-            {"Save as", &display_save_as_}
-    };
-    std::vector<Menuitem> debug_submenu_ = {
-            {"ImGui metrics",    &display_imgui_metrics_},
-            {"ImGui demo",       &display_imgui_demo_},
-            {"ImGui about",      &display_imgui_about_},
-            {"ImGui user guide", &display_imgui_userguide_},
-    };
-    std::vector<Menuitem> window_submenu_ = {};
-    std::vector<Menuitem> mainmenu_ = {
-            {"File",   &display_menu_file_,   &file_submenu_},
-            {"Debug",  &display_menu_debug_,  &debug_submenu_}
+    std::vector<Menuitem> m_fileSubmenu = 
+    {
+        {"Save as", &m_displaySaveAs}
     };
 
-    float main_menubar_height_ = 19;
+    std::vector<Menuitem> m_debugSubmenu = 
+    {
+        {"ImGui metrics",    &m_displayImguiMetrics},
+        {"ImGui demo",       &m_displayImguiDemo},
+        {"ImGui about",      &m_displayImguiAbout},
+        {"ImGui user guide", &m_displayImguiUserGUide},
+    };
 
-    float right_side_bar_width_ = 300;
-    const float right_side_bar_min_width_ = 10;
-    const float right_side_bar_max_width_ = 300;
-    const float right_side_bar_hover_margin_ = 10;
-    bool is_right_side_bar_resizing_ = false;
-    float samples_per_second_ = 1000;
+    std::vector<Menuitem> m_windowSubmenu = {};
 
-    float perf_monitor_height_ = 120;
-    int perf_monitor_resolution_ = 1000;
-    std::vector<float> perf_monitor_graph_data_ = std::vector<float>(perf_monitor_resolution_);
+    std::vector<Menuitem> m_mainmenu = 
+    {
+        {"File",   &m_displayMenuFile,   &m_fileSubmenu},
+        {"Debug",  &m_displayMenuDebug,  &m_debugSubmenu}
+    };
 
-    float texture_width_;
-    float texture_height_;
-    ImVec2 texture_offset_ = {0,0};
+    float m_mainMenubarHeight = 19;
 
-    int render_width_ = 1280;
-    int render_height_ = 720;
-    int render_samples_ = 10;
-    Camera camera_ = {};
+    float m_rightSideBarWidth              = 300;
+    const float m_rightSideBarMinWidth     = 10;
+    const float m_RightSideBarMaxWidth     = 300;
+    const float m_rightSideBarHoverMargin  = 10;
+    bool m_isRightSideBarResizing          = false;
+    float m_SamplesPerSecond               = 1000;
 
-    float camera_fov_ = 90.f;
-    float camera_pos_x_ = 0.f;
-    float camera_pos_y_ = 0.f;
-    float camera_pos_z_ = 0.f;
-    float camera_up_x_ = 0.f;
-    float camera_up_y_ = 0.f;
-    float camera_up_z_ = 0.f;
+    float m_perfMonitorHeight = 120;
+    int m_PerfMonitorResolution = 1000;
+    std::vector<float> m_perfMonitorGraphData = std::vector<float>(m_PerfMonitorResolution);
 
-    int current_hittable_ = 0;
-    char current_hittable_name_[20] = "";
-    float current_hittable_pos_x_ = 0.f;
-    float current_hittable_pos_y_ = 0.f;
-    float current_hittable_pos_z_ = 0.f;
-    int current_material_ = 0.f;
-    float current_sphere_radius_ = 0.f;
-    int current_object_type_ = 2;
-    float current_vertex0_[3] = {0.f, 0.f, 0.f};
-    float current_vertex1_[3] = {0.f, 0.f, 0.f};
-    float current_vertex2_[3] = {0.f, 0.f, 0.f};
-    float current_normal_[3] = {0.f, 0.f, 0.f};
-    char current_obj_filename_[100] = "";
+    float m_textureWidth;
+    float m_textureHeight;
+    ImVec2 m_textureOffset = {0,0};
 
-    int randomizer_sphere_count_ = 10000;
-    int randomizer_scatter_multiplier_ = 25;
+    int m_renderWidth = 1280;
+    int m_renderHeight = 720;
+    int m_renderSamples = 10;
+    Camera m_camera = {};
+
+    float m_cameraFov = 90.f;
+    float m_cameraPosX = 0.f;
+    float m_cameraPosY = 0.f;
+    float m_cameraPosZ = 0.f;
+    float m_cameraUpX = 0.f;
+    float m_cameraUpY = 0.f;
+    float m_cameraUpZ = 0.f;
+
+    int m_currentHittable = 0;
+    char m_currentHittableName[20] = "";
+    float m_currentHittablePosX = 0.f;
+    float m_currentHittablePosY = 0.f;
+    float m_currentHittablePosZ = 0.f;
+    int m_currentMaterial = 0;
+    float m_currentSphereRadius = 0.f;
+    int m_currrentObjectType = 2;
+    float m_currentVertex0[3] = {0.f, 0.f, 0.f};
+    float m_currentVertex1[3] = {0.f, 0.f, 0.f};
+    float m_currentVertex2[3] = {0.f, 0.f, 0.f};
+    float m_currentNormal[3] = {0.f, 0.f, 0.f};
+    char m_currentObjFilename[100] = "";
+
+    int m_randomizerSphereCOunt = 10000;
+    int m_randomizerScatterMultiplier = 25;
 
     // Indexes match between hittable_names and world
-    std::vector<char *> hittable_names_ = {}; // used only for GUI
-    std::vector<char *> material_names = {
-            "Lambertian",
-            "Metal",
-            "Dielectric"
-    }; // used only for GUI
+    std::vector<char *> m_hittableNames = {}; // used only for GUI
+    std::vector<char *> m_materialNames;
 
-    std::vector<char *> object_types_ = {
-            "Sphere",
-            "Triangle",
-            "3D model"
-    };
+    std::vector<char *> m_objectTypes;
 
-    std::vector<std::shared_ptr<Hittable>> world_ = {}; // used for rendering
-    std::shared_ptr<Hittable> bvh = {};
+    std::vector<std::shared_ptr<Hittable>> m_world = {}; // used for rendering
+    std::shared_ptr<Hittable> m_bvh = {};
 
     // Randomized materials are inserted here
-    std::vector<std::unique_ptr<Material>> world_materials_ = {};
+    std::vector<std::unique_ptr<Material>> m_world_materials = {};
 
     // Materials used for "Add spheres" section
-    std::unique_ptr<Material> lambertian_ = std::make_unique<Lambertian>(Vector3D(0.5f, 0.5f, 0.5f));
-    std::unique_ptr<Material> metal_ = std::make_unique<Metal>(Vector3D(0.8f,0.6f,0.4f), 0.3f);
-    std::unique_ptr<Material> dielectric_ = std::make_unique<Dielectric>(1.3f);
-    std::unique_ptr<Material> mix_;
+    std::unique_ptr<Material> m_lambertian = std::make_unique<Lambertian>(Vector3D(0.5f, 0.5f, 0.5f));
+    std::unique_ptr<Material> m_metal = std::make_unique<Metal>(Vector3D(0.8f,0.6f,0.4f), 0.3f);
+    std::unique_ptr<Material> m_dielectric = std::make_unique<Dielectric>(1.3f);
+    std::unique_ptr<Material> m_mix;
 
     // random generator
-    std::mt19937 generator = {};
-    std::uniform_real_distribution<float> dist = std::uniform_real_distribution<float>(0,1);
-    std::function<float()> randomFloat = std::bind(dist,generator);
+    std::mt19937 m_generator = {};
+    std::uniform_real_distribution<float> m_dist = std::uniform_real_distribution<float>(0,1);
+    std::function<float()> randomFloat = std::bind(m_dist,m_generator);
 
-    Raytracer raytracer_ = {nullptr, &camera_, render_width_, render_height_};
+    Raytracer m_raytracer = {nullptr, &m_camera, m_renderWidth, m_renderHeight};
 
-    GLuint framebuffer_texture_id_;
+    GLuint m_framebufferTextureId;
 
-    const unsigned int static_window_flags_ = ImGuiWindowFlags_NoMove |
+    const unsigned int m_staticWindowFlags = ImGuiWindowFlags_NoMove |
                                               ImGuiWindowFlags_NoTitleBar |
                                               ImGuiWindowFlags_NoResize |
                                               ImGuiWindowFlags_NoBringToFrontOnFocus;
@@ -185,8 +171,6 @@ private:
 
     void randomizeWorld(const int &spheres, const int &scatter);
     void clearObjects();
-
-
 
 };
 

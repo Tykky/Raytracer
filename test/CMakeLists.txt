@@ -25,5 +25,9 @@ add_executable(gtest_run Vector3DTest.cpp
               PrimitivelistTest.cpp
               BvhnodeTest.cpp
         ../src/core/Vector3D.cpp
-        ../src/core/utility.cpp)
+        ../src/core/utility.cpp
+        ../src/hittables/Triangle.cpp
+        TriangleTest.cpp
+        AabbTest.cpp
+        ../src/hittables/Aabb.cpp SphereTest.cpp)
 target_link_libraries(gtest_run gtest gtest_main)
