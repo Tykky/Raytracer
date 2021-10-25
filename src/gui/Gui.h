@@ -17,7 +17,6 @@
 class Gui 
 {
 public:
-
     Gui(GLFWwindow *window);
     ~Gui();
 

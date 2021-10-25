@@ -3,20 +3,16 @@
 
 #include <iostream>
 
-class Vector3D {
+class Vector3D 
+{
 public:
     Vector3D();
     Vector3D(float x, float y, float z);
 
     float length() const;
     float lengthSquared() const;
-
     void normalize();
-
-    /** @brief dot product between this and v */
     float dot(const Vector3D &v) const;
-
-    /** @brief cross product between this */
     Vector3D cross(const Vector3D &v) const;
 
     float getX() const;
@@ -44,7 +40,7 @@ public:
     std::ostream &operator<<(std::ostream &os);
 
 private:
-    float x_, y_, z_;
+    float m_x, m_y, m_z;
 };
 
 Vector3D operator+(const Vector3D &v1, const Vector3D &v2);

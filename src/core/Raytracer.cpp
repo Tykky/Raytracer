@@ -7,16 +7,18 @@
 #include "materials/Material.h"
 
 Raytracer::Raytracer(Hittable *world, Camera *camera, int width, int height) :
-        world_(world), camera_(camera), width_(width), height_(height), bouncelimit_(50), is_rendering_(false),
-        framebuffer_(std::vector<unsigned char>(3 * width * height)), colorbuffer_(std::vector<float>(3 * width * height)), 
-        sample_counter_(0) {
-}
+        m_world(world), m_camera(camera), m_width(width), m_height(height), m_bouncelimit(50), m_isRendering(false),
+        m_framebuffer(std::vector<unsigned char>(3 * width * height)), m_colorbuffer(std::vector<float>(3 * width * height)), 
+        m_sampleCounter(0) 
+{}
 
-void Raytracer::render(unsigned int samples) {
-    if(is_rendering_) {
+void Raytracer::render(unsigned int samples) 
+{
+    if(m_isRendering) 
+    {
         return;
     }
-    is_rendering_ = true;
+    m_isRendering = true;
 #pragma omp parallel
     {
         // Each thread has its own random generator
@@ -24,105 +26,124 @@ void Raytracer::render(unsigned int samples) {
         std::uniform_real_distribution<float> dist(0.0, 1.0);
         std::function<float()> randomFloat = bind(dist, engine);
 
-        for(unsigned int s = 1; s <= samples; s++) {
+        for(unsigned int s = 1; s <= samples; s++) 
+        {
             #pragma omp for collapse(2) schedule(static, 10)
-            for (int y = height_ - 1; y >= 0; --y) {
-                for (int x = 0; x < width_; ++x) {
-                    if(is_rendering_) {
-                        Ray r = camera_->getRay((static_cast<float>(x) + randomFloat()) / float(width_),
-                                                (float(y) + randomFloat()) / float(height_));
-                        int i = 3 * (width_ * height_ - (width_ * y + x)) - 3;
+            for (int y = m_height - 1; y >= 0; --y) 
+            {
+                for (int x = 0; x < m_width; ++x) 
+                {
+                    if(m_isRendering) 
+                    {
+                        Ray r = m_camera->getRay((static_cast<float>(x) + randomFloat()) / float(m_width),
+                                                (float(y) + randomFloat()) / float(m_height));
+                        int i = 3 * (m_width * m_height - (m_width * y + x)) - 3;
                         Vector3D color = rayTrace(r, randomFloat);
                         // Write gamma corrected pixels to framebuffer & colorbuffer
                         // Data format: [R, G, B, R, G, B, ...]
                         // stride = 3 bytes
-                        colorbuffer_[i] += color.getR();
-                        colorbuffer_[i + 1] += color.getG();
-                        colorbuffer_[i + 2] += color.getB();
-                        framebuffer_[i + 0] = static_cast<int>(std::sqrt(colorbuffer_[i]     / s) * 255.99);
-                        framebuffer_[i + 1] = static_cast<int>(std::sqrt(colorbuffer_[i + 1] / s) * 255.99);
-                        framebuffer_[i + 2] = static_cast<int>(std::sqrt(colorbuffer_[i + 2] / s) * 255.99);
-                        sample_counter_++;
+                        m_colorbuffer[i] += color.getR();
+                        m_colorbuffer[i + 1] += color.getG();
+                        m_colorbuffer[i + 2] += color.getB();
+                        m_framebuffer[i + 0] = static_cast<int>(std::sqrt(m_colorbuffer[i]     / s) * 255.99);
+                        m_framebuffer[i + 1] = static_cast<int>(std::sqrt(m_colorbuffer[i + 1] / s) * 255.99);
+                        m_framebuffer[i + 2] = static_cast<int>(std::sqrt(m_colorbuffer[i + 2] / s) * 255.99);
+                        m_sampleCounter++;
                     }
                 }
             }
         }
     }
-    is_rendering_ = false;
+    m_isRendering = false;
     clearColorbuffer();
 }
 
-void Raytracer::frammebufferToNetpbm(const std::string &filename) {
+void Raytracer::frammebufferToNetpbm(const std::string &filename) 
+{
     std::ofstream of;
     of.open(filename + ".ppm");
-    of << "P3\n" << width_ << " " << height_ << "\n255\n";
-    for (int y = height_ - 1; y >= 0; --y) {
-        for (int x = 0; x < width_; ++x) {
-            int i = 3 * (width_ * height_ - (width_ * y + x)) - 3;
-            of << static_cast<int>(framebuffer_[i + 0]) << " ";
-            of << static_cast<int>(framebuffer_[i + 1]) << " ";
-            of << static_cast<int>(framebuffer_[i + 2]) << "\n";
+    of << "P3\n" << m_width << " " << m_height << "\n255\n";
+    for (int y = m_height - 1; y >= 0; --y) 
+    {
+        for (int x = 0; x < m_width; ++x) 
+        {
+            int i = 3 * (m_width * m_height - (m_width * y + x)) - 3;
+            of << static_cast<int>(m_framebuffer[i + 0]) << " ";
+            of << static_cast<int>(m_framebuffer[i + 1]) << " ";
+            of << static_cast<int>(m_framebuffer[i + 2]) << "\n";
         }
     }
     of.close();
 }
 
-std::vector<unsigned char> &Raytracer::getFramebuffer() {
-    return framebuffer_;
+std::vector<unsigned char> &Raytracer::getFramebuffer() 
+{
+    return m_framebuffer;
 }
 
-void Raytracer::clearFramebuffer() {
-    is_rendering_ = false;
-    std::fill(framebuffer_.begin(), framebuffer_.end(), 0);
+void Raytracer::clearFramebuffer() 
+{
+    m_isRendering = false;
+    std::fill(m_framebuffer.begin(), m_framebuffer.end(), 0);
 }
 
-void Raytracer::resize(int width, int height) {
-    is_rendering_ = false;
-    width_ = width;
-    height_ = height;
-    framebuffer_.resize(3 * static_cast<size_t>(width_) * static_cast<size_t>(height_));
-    colorbuffer_.resize(3 * static_cast<size_t>(width_) * static_cast<size_t>(height_));
-    framebuffer_.clear();
+void Raytracer::resize(int width, int height) 
+{
+    m_isRendering = false;
+    m_width = width;
+    m_height = height;
+    m_framebuffer.resize(3 * static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
+    m_colorbuffer.resize(3 * static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
+    m_framebuffer.clear();
 }
 
 
-void Raytracer::setBounceLimit(int bouncelimit) {
-    is_rendering_ = false;
-    bouncelimit_ = bouncelimit;
+void Raytracer::setBounceLimit(int bouncelimit) 
+{
+    m_isRendering = false;
+    m_bouncelimit = bouncelimit;
 }
 
-void Raytracer::setCamera(Camera *camera) {
-    is_rendering_ = false;
-    camera_ = camera;
+void Raytracer::setCamera(Camera *camera) 
+{
+    m_isRendering = false;
+    m_camera = camera;
 }
 
-void Raytracer::setWorld(Hittable *world) {
-    is_rendering_ = false;
-    world_ = world;
+void Raytracer::setWorld(Hittable *world) 
+{
+    m_isRendering = false;
+    m_world = world;
 }
 
-bool Raytracer::isRendering() {
-    return is_rendering_;
+bool Raytracer::isRendering() 
+{
+    return m_isRendering;
 }
 
-const std::atomic<uint64_t>& Raytracer::getSampleCounter() {
-    return sample_counter_;
+const std::atomic<uint64_t>& Raytracer::getSampleCounter() 
+{
+    return m_sampleCounter;
 }
 
-void Raytracer::resetSampleCounter() {
-    sample_counter_ = 0;
+void Raytracer::resetSampleCounter() 
+{
+    m_sampleCounter = 0;
 }
 
-Vector3D Raytracer::rayTrace(Ray& r, std::function<float()> &randomFloat) const {
+Vector3D Raytracer::rayTrace(Ray& r, std::function<float()> &randomFloat) const 
+{
     int depth = 0;
     Hitrecord record;
     const float epsilon = 0.001f;
     Vector3D color(1, 1, 1);
 
-    while(world_ && world_->hit(r, epsilon, std::numeric_limits<float>::max(), record)) {
+    while(m_world && m_world->hit(r, epsilon, std::numeric_limits<float>::max(), record)) 
+    {
         Ray scatter;
         Vector3D attenuation;
-        if (depth < bouncelimit_ && record.matptr->scatter(r, record, attenuation, scatter, randomFloat)) {
+        if (depth < m_bouncelimit && record.matptr->scatter(r, record, attenuation, scatter, randomFloat)) 
+        {
             depth++;
             r = scatter;
             color *= attenuation;
@@ -130,14 +151,16 @@ Vector3D Raytracer::rayTrace(Ray& r, std::function<float()> &randomFloat) const 
             return {};
         }
     }
-    if (depth == 0) {
+    if (depth == 0) 
+    {
         return skyGradient(r);
     }
     return color;
 }
 
-void Raytracer::clearColorbuffer() {
-    is_rendering_ = false;
-    std::fill(colorbuffer_.begin(), colorbuffer_.end(), 0);
+void Raytracer::clearColorbuffer() 
+{
+    m_isRendering = false;
+    std::fill(m_colorbuffer.begin(), m_colorbuffer.end(), 0);
 }
 

@@ -1,6 +1,7 @@
 #include "gui/Window.h"
 
-int main() {
+int main() 
+{
     Window window("Raytracer");
     return 0;
 }
