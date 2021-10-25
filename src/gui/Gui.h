@@ -17,6 +17,7 @@
 class Gui 
 {
 public:
+
     Gui(GLFWwindow *window);
     ~Gui();
 
@@ -25,6 +26,7 @@ public:
     void renderDrawData() const;
 
 private:
+
     struct Menuitem 
     {
         std::string label;

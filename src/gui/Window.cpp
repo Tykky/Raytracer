@@ -3,11 +3,13 @@
 #include "Window.h"
 #include "Gui.h"
 
-void error_callback(const int error, const char* description) {
+void error_callback(const int error, const char* description) 
+{
   std::cerr << "[ERROR] " << error << " " << description << std::endl;
 }
 
-Window::Window(const char *title) {
+Window::Window(const char *title) 
+{
     
     glfwSetErrorCallback(error_callback);
 	
@@ -23,16 +25,20 @@ Window::Window(const char *title) {
             throw std::runtime_error("glewInit failed");
         }
         render();
-    } else {
+    } 
+    else 
+    {
         throw std::runtime_error("glfwinit failed");
     }
 }
 
-Window::~Window() {
+Window::~Window() 
+{
     glfwDestroyWindow(m_window);
 }
 
-void Window::render() const {
+void Window::render() const 
+{
 
    // disable vsync
    //glfwSwapInterval(0);
@@ -41,12 +47,12 @@ void Window::render() const {
    gui.init(); // Creates OpenGl context etc...
 
    // Main render loop
-   while(!glfwWindowShouldClose(m_window)) {
+   while (!glfwWindowShouldClose(m_window)) 
+   {
         glfwPollEvents();
         gui.renderGui();
         glClear(GL_COLOR_BUFFER_BIT);
         gui.renderDrawData();
         glfwSwapBuffers(m_window);
    }
-
 }

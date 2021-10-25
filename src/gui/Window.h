@@ -5,14 +5,9 @@
 #include <GLFW/glfw3.h>
 #include "core/Raytracer.h"
 
-class Window {
-
+class Window 
+{
 public:
-    /**
-     * @brief Handles window creation and
-     * displaying Gui.
-     * @param title
-     */
     Window(const char *title);
     ~Window();
 
