@@ -5,11 +5,13 @@ namespace
     // Simple min & max functions for floats
     // These should be faster than standard fmax & fmin.
 
-    float ffmin(float a, float b) {
+    float ffmin(float a, float b)
+    {
         return a < b ? a : b;
     }
 
-    float ffmax(float a, float b) {
+    float ffmax(float a, float b)
+    {
         return a > b ? a : b;
     }
 
