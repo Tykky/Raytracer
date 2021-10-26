@@ -3,30 +3,33 @@
 #include "Lambertian.h"
 #include "core/utility.h"
 
-Mix::Mix(const Vector3D &lalbedo, const Vector3D &malbedo, float metalness, float roughness, float fresnelfactor,
+Mix::Mix(const Vector3D& lalbedo, const Vector3D& malbedo, float metalness, float roughness, float fresnelfactor,
            float ior) :
-    lalbedo_(lalbedo), malbedo_(malbedo), metalness_(metalness), fresnelfactor_(fresnelfactor), ior_(ior)  {
-    lambertian_ = std::make_shared<Lambertian>(lalbedo);
-    metal_ = std::make_shared<Metal>(malbedo, roughness);
+        m_lalbedo(lalbedo), m_malbedo(malbedo), m_metalness(metalness), m_fresnelfactor(fresnelfactor), m_ior(ior)
+{
+    m_lambertian = std::make_shared<Lambertian>(lalbedo);
+    m_metal = std::make_shared<Metal>(malbedo, roughness);
 }
 
-bool Mix::scatter(const Ray &r, const Hitrecord &record, Vector3D &attenuation, Ray &scatter,
-                  std::function<float()> &randomFloat) const {
-
+bool Mix::scatter(const Ray& r, const Hitrecord& record, Vector3D& attenuation, Ray& scatter,
+                  std::function<float()>& randomFloat) const
+{
     float cosine = -r.getDirection().dot(record.normal) / r.getDirection().length();
-    float probability = fresnel(cosine, ior_);
+    float probability = fresnel(cosine, m_ior);
 
     // Fresnel
-    if (randomFloat() < fresnelfactor_ * probability) {
+    if (randomFloat() < m_fresnelfactor * probability)
+    {
         attenuation = Vector3D(1,1,1); // no attenuation
         Vector3D reflection = reflect(r.getDirection(), record.normal);
         scatter = Ray(record.p, reflection);
         return true;
     }
 
-    if(randomFloat() < metalness_) {
-        return metal_->scatter(r, record, attenuation, scatter, randomFloat);
+    if(randomFloat() < m_metalness)
+    {
+        return m_metal->scatter(r, record, attenuation, scatter, randomFloat);
     }
-    return lambertian_->scatter(r, record, attenuation, scatter, randomFloat);
+    return m_lambertian->scatter(r, record, attenuation, scatter, randomFloat);
 }
 

@@ -3,7 +3,8 @@
 #include <random>
 #include <functional>
 
-class DielectricTest : public ::testing::Test {
+class DielectricTest : public ::testing::Test
+{
 protected:
 
     Material *mat;
@@ -11,20 +12,22 @@ protected:
     std::uniform_real_distribution<float> dist;
     std::function<float()> randomfloat;
 
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         mat = new Dielectric(1.3);
         engine = std::mt19937(1337);
         dist = std::uniform_real_distribution<float>(0, 1);
         randomfloat = bind(dist, engine);
     }
 
-    virtual void TearDown() {
+    virtual void TearDown()
+    {
         delete mat;
     }
 };
 
-TEST_F(DielectricTest, scattertest) {
-
+TEST_F(DielectricTest, scattertest)
+{
     Hitrecord record;
     record.normal = Vector3D(0, 1, 0);
     record.p = Vector3D(0, 2, 0);

@@ -5,15 +5,16 @@
 #include "functional"
 
 /** @brief Lambertian material is "matte" or diffusely reflecting Material. */
-class Lambertian : public Material {
+class Lambertian : public Material
+{
 public:
     Lambertian(const Vector3D &albedo);
 
-    virtual bool scatter(const Ray &r, const Hitrecord &record, Vector3D &attenuation, Ray &scatter,
-                         std::function<float()> &randomFloat) const;
+    virtual bool scatter(const Ray& r, const Hitrecord& record, Vector3D& attenuation, Ray& scatter,
+                         std::function<float()>& randomFloat) const;
 
 private:
-    const Vector3D albedo_;
+    const Vector3D m_albedo;
 
 };
 

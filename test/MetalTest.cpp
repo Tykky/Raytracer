@@ -4,7 +4,8 @@
 #include "core/Ray.h"
 #include <random>
 
-class MetalTest : public ::testing::Test {
+class MetalTest : public ::testing::Test
+{
 protected:
 
     std::shared_ptr<Material> mat;
@@ -12,7 +13,8 @@ protected:
     std::uniform_real_distribution<float> dist;
     std::function<float()> randomfloat;
 
-    void SetUp() {
+    void SetUp()
+    {
         engine = std::mt19937(1337);
         dist = std::uniform_real_distribution<float>(0, 1);
         randomfloat = bind(dist, engine);
@@ -21,8 +23,8 @@ protected:
 
 };
 
-TEST_F(MetalTest, scattertest) {
-
+TEST_F(MetalTest, scattertest)
+{
     Hitrecord record;
     record.p = Vector3D(0,2,0);
     record.normal = Vector3D(0,-1,0);

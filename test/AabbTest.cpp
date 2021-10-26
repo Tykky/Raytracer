@@ -15,17 +15,20 @@ protected:
     }
 };
 
-TEST_F(AabbTest, hitMiddleTest) {
+TEST_F(AabbTest, hitMiddleTest)
+{
     Ray r(Vector3D(0.5f, 0.5f, -2.f), Vector3D(0,0,1));
     EXPECT_TRUE(aabb_1->hit(r, 0, 99));
 }
 
-TEST_F(AabbTest, nearMissTest) {
+TEST_F(AabbTest, nearMissTest)
+{
     Ray r(Vector3D(-0.1f, 0.f, -12.f), Vector3D(0,0,1));
     EXPECT_FALSE(aabb_1->hit(r, 0, 99));
 }
 
-TEST_F(AabbTest, surroundingBoxTest) {
+TEST_F(AabbTest, surroundingBoxTest)
+{
     Aabb sbox = surroundingBox(*aabb_1, *aabb_2);
     EXPECT_FLOAT_EQ(sbox.getMin().getX(), -1.f);
 }

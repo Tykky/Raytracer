@@ -7,7 +7,8 @@
 #include <memory>
 
 /** @brief Abstract class which provides interface for all materials. */
-class Material {
+class Material
+{
 public:
     /**
      * @param r is being scattered
@@ -19,8 +20,8 @@ public:
      * @param randomFloat contains reference to random generator
      * @return true if ray is scattered successfully
      */
-    virtual bool scatter(const Ray &r, const Hitrecord &record, Vector3D &attenuation, Ray &scatter,
-                         std::function<float()> &randomFloat) const = 0;
+    virtual bool scatter(const Ray& r, const Hitrecord& record, Vector3D& attenuation, Ray& scatter,
+                         std::function<float()>& randomFloat) const = 0;
 };
 
 

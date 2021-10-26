@@ -17,11 +17,27 @@
 class Gui 
 {
 public:
+    /**
+     * @brief Handles everything gui related.
+     * Initialize GLFW before calling this.
+     * @param window
+     */
     Gui(GLFWwindow *window);
     ~Gui();
 
+    /**
+     * @brief Initializes imgui context & OpenGl. Call this
+     * before you call renderGui().
+     */
     void init();
+
+    /** @Brief Call this in between init() and renderDrawData() */
     void renderGui();
+
+    /**
+     * @brief Draws the rendered data to the screen. Call this
+     * after renderGui().
+     */
     void renderDrawData() const;
 
 private:

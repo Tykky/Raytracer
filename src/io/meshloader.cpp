@@ -5,19 +5,22 @@
 #include <string>
 #include <vector>
 
-std::vector<std::shared_ptr<Hittable>> loadObj(const std::string &file, Material *material, std::function<float()> randomFloat) {
+std::vector<std::shared_ptr<Hittable>> loadObj(const std::string& file, Material* material, std::function<float()> randomFloat)
+{
     tinyobj::ObjReaderConfig reader_config;
-
     tinyobj::ObjReader reader;
 
-    if (!reader.ParseFromFile(file, reader_config)) {
-        if (!reader.Error().empty()) {
+    if (!reader.ParseFromFile(file, reader_config))
+    {
+        if (!reader.Error().empty())
+        {
             std::cerr << "TinyObjReader: " << reader.Error();
         }
         exit(1);
     }
 
-    if (!reader.Warning().empty()) {
+    if (!reader.Warning().empty())
+    {
         std::cout << "TinyObjReader: " << reader.Warning();
     }
 
@@ -25,17 +28,20 @@ std::vector<std::shared_ptr<Hittable>> loadObj(const std::string &file, Material
     auto& shapes = reader.GetShapes();
     std::vector<std::shared_ptr<Hittable>> meshes(shapes.size());
 
-    for (size_t s = 0; s < shapes.size(); s++) {
+    for (size_t s = 0; s < shapes.size(); s++)
+    {
         auto &shape = shapes[s];
         auto tri_count = static_cast<unsigned int>(shape.mesh.num_face_vertices.size());
         std::vector<std::shared_ptr<Hittable>> triangles(tri_count);
 
         // Loop over faces(triangles)
         size_t index_offset = 0;
-        for (size_t f = 0; f < tri_count; f++) {
+        for (size_t f = 0; f < tri_count; f++)
+        {
             int fv = shape.mesh.num_face_vertices[f];
 
-            if (fv != 3) {
+            if (fv != 3)
+            {
                 std::cerr << "loadObj: Incorrect number of vertices (not triangle)" << std::endl;
                 exit(1);
             }
@@ -46,7 +52,8 @@ std::vector<std::shared_ptr<Hittable>> loadObj(const std::string &file, Material
             triangle.setMaterial(material);
 
             // Loop over vertices in the face.
-            for (size_t v = 0; v < fv; v++) {
+            for (size_t v = 0; v < fv; v++)
+            {
                 // access to vertex
                 tinyobj::index_t idx = shape.mesh.indices[index_offset + v];
                 tinyobj::real_t vx = attrib.vertices[3*idx.vertex_index+0];

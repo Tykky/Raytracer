@@ -4,20 +4,29 @@
 #include "core/Vector3D.h"
 #include "core/Ray.h"
 
-// Axis aligned bounding box
-class Aabb 
+/**
+ *  @brief Aabb stands for axis-aligned bounding box.
+ *  This defines the bounding box used by the bvh
+ */
+class Aabb
 {
 public:
     Aabb();
+    /**
+     *  @param a defines three planes where each (x,y,z) is constant
+     *  @param b defines three planes where each (x,y,z) is constant
+     */
     Aabb(const Vector3D& a, const Vector3D& b);
     Vector3D getMin();
     Vector3D getMax();
-    bool hit(const Ray &r, float dmin, float dmax) const;
+    bool hit(const Ray& r, float dmin, float dmax) const;
+
 private:
-    Vector3D min_;
-    Vector3D max_;
+    Vector3D m_min;
+    Vector3D m_max;
 };
 
+/** @brief combines two bounding boxes in one box */
 Aabb surroundingBox(Aabb box1, Aabb box2);
 
 #endif //RAYTRACER_AABB_H

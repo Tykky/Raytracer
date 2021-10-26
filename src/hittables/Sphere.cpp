@@ -1,16 +1,16 @@
 #include <cmath>
 #include "Sphere.h"
 
-Sphere::Sphere(const Vector3D &center, float radius, Material *material) :
-        center_(center), radius_(radius), matptr_(material) 
+Sphere::Sphere(const Vector3D &center, float radius, Material* material) :
+        m_center(center), m_radius(radius), m_matptr(material)
 {}
 
-bool Sphere::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const 
+bool Sphere::hit(const Ray& r, float dmin, float dmax, Hitrecord& record) const
 {
-	Vector3D oc = r.getPosition() - center_;
+	Vector3D oc = r.getPosition() - m_center;
     float a = r.getDirection().dot(r.getDirection());
     float b = oc.dot(r.getDirection());
-    float c = oc.dot(oc) - radius_ * radius_;
+    float c = oc.dot(oc) - m_radius * m_radius;
     float discriminant = b * b - a * c;
 
     if (discriminant > 0) 
@@ -21,8 +21,8 @@ bool Sphere::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const
         {
             record.distance = solution;
             record.p = r.pointAtDistance(record.distance);
-            record.normal = (record.p - center_) / radius_;
-            record.matptr = matptr_;
+            record.normal = (record.p - m_center) / m_radius;
+            record.matptr = m_matptr;
             return true;
         }
 
@@ -31,17 +31,17 @@ bool Sphere::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const
         {
             record.distance = solution;
             record.p = r.pointAtDistance(record.distance);
-            record.normal = (record.p - center_) / radius_;
-            record.matptr = matptr_;
+            record.normal = (record.p - m_center) / m_radius;
+            record.matptr = m_matptr;
             return true;
         }
     }
     return false;
 }
 
-bool Sphere::boundingBox(float c0, float c1, Aabb &box) const 
+bool Sphere::boundingBox(float c0, float c1, Aabb& box) const
 {
-    box = Aabb(center_ - Vector3D(radius_, radius_, radius_),
-               center_ + Vector3D(radius_, radius_, radius_));
+    box = Aabb(m_center - Vector3D(m_radius, m_radius, m_radius),
+               m_center + Vector3D(m_radius, m_radius, m_radius));
     return true;
 }

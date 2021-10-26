@@ -6,14 +6,14 @@
 
 class Sphere : public Hittable {
 public:
-    Sphere(const Vector3D &center, float radius, Material *material);
-    virtual bool hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const override;
-    virtual bool boundingBox(float c0, float c1, Aabb &box) const override;
+    Sphere(const Vector3D& center, float radius, Material* material);
+    virtual bool hit(const Ray& r, float dmin, float dmax, Hitrecord& record) const override;
+    virtual bool boundingBox(float c0, float c1, Aabb& box) const override;
 
 private:
-    const Vector3D center_;
-    float radius_;
-    Material *matptr_;
+    const Vector3D m_center;
+    float m_radius;
+    Material* m_matptr;
 };
 
 

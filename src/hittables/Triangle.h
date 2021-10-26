@@ -8,23 +8,23 @@
 class Triangle : public Hittable {
     public:
         Triangle() = default;
-        Triangle(const Vector3D &v0, const Vector3D &v1, const Vector3D &v2, const Vector3D &n, Material *material) :
-            vertex0_(v0), vertex1_(v1), vertex2_(v2), normal_(n), material_(material) {};
+        Triangle(const Vector3D& v0, const Vector3D& v1, const Vector3D& v2, const Vector3D& n, Material* material) :
+                m_vertex0(v0), m_vertex1(v1), m_vertex2(v2), m_normal(n), m_material(material) {};
 
-        virtual bool hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const override;
+        virtual bool hit(const Ray& r, float dmin, float dmax, Hitrecord& record) const override;
         virtual bool boundingBox(float c0, float c1, Aabb &box) const override;
 
-        const Vector3D &getNormal() const { return normal_; }
-        void setVertex(const Vector3D &vertex, int index);
-        const Vector3D &getVertex(int index) const;
-        void setMaterial(Material *material) { material_ = material; }
-        void setNormal(Vector3D &n) { normal_ = n; }
+        const Vector3D& getNormal() const { return m_normal; }
+        void setVertex(const Vector3D& vertex, int index);
+        const Vector3D& getVertex(int index) const;
+        void setMaterial(Material* material) { m_material = material; }
+        void setNormal(Vector3D& n) { m_normal = n; }
 
         Triangle &operator+=(const Vector3D &rhs);
 
     private:
-        Vector3D vertex0_ = {}, vertex1_ = {}, vertex2_ = {}, normal_ = {};
-        Material *material_ = nullptr;
+        Vector3D m_vertex0 = {}, m_vertex1 = {}, m_vertex2 = {}, m_normal = {};
+        Material* m_material = nullptr;
 
         Vector3D triangleMin() const;
         Vector3D triangleMax() const;

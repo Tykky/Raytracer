@@ -7,6 +7,13 @@
 class Camera 
 {
 public:
+    /**
+     * @param fov = field of view (vertical) in degrees
+     * @param aspectratio = screen width/height
+     * @param pointat the direction camera is facing
+     * @param up defines "up" direction for the camera. This
+     * determines the roll angle.
+     */
     Camera();
     Camera(float fov, float aspectratio, const Vector3D& origin,const Vector3D& pointat,
            const Vector3D& up);
@@ -17,7 +24,11 @@ public:
     void setUp(const Vector3D& up);
     void setAspectRatio(const float& ratio);
 
-    // Updates all changes made to fov, pos, up or aspect ratio
+    /**
+     * @brief Updates all vectors used internally. Call this
+     * when you want to apply changes to fov, position, up vector
+     * and aspectratio.
+     */
     void applyChanges();
 
 private:

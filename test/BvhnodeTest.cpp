@@ -4,7 +4,8 @@
 #include "gtest/gtest.h"
 #include <random>
 
-class BvhnodeTest : public ::testing::Test {
+class BvhnodeTest : public ::testing::Test
+{
 protected:
     std::vector<std::shared_ptr<Hittable>> list;
     std::shared_ptr<Material> mat;
@@ -13,7 +14,8 @@ protected:
     std::uniform_real_distribution<float> dist;
     std::function<float()> randomfloat;
 
-    void SetUp() {
+    void SetUp()
+    {
         list = std::vector<std::shared_ptr<Hittable>>(4);
         engine = std::mt19937(1337);
         dist = std::uniform_real_distribution<float>(0, 1);
@@ -27,7 +29,8 @@ protected:
     }
 };
 
-TEST_F(BvhnodeTest, hitMiddleTest) {
+TEST_F(BvhnodeTest, hitMiddleTest)
+{
 
     Ray r(Vector3D(0,0,-2),Vector3D(0,0,-1));
     Hitrecord record;
@@ -39,7 +42,8 @@ TEST_F(BvhnodeTest, hitMiddleTest) {
 
 }
 
-TEST_F(BvhnodeTest, hitLeftTest) {
+TEST_F(BvhnodeTest, hitLeftTest)
+{
     Ray r(Vector3D(-1,0,-2),Vector3D(-1,0,-1));
     Hitrecord record;
 
@@ -49,7 +53,8 @@ TEST_F(BvhnodeTest, hitLeftTest) {
     EXPECT_FLOAT_EQ(0.3535533,record.p.getZ());
 }
 
-TEST_F(BvhnodeTest, hitLeftRight) {
+TEST_F(BvhnodeTest, hitLeftRight)
+{
     Ray r(Vector3D(1,0,-2),Vector3D(1,0,-1));
     Hitrecord record;
 
@@ -59,7 +64,8 @@ TEST_F(BvhnodeTest, hitLeftRight) {
     EXPECT_FLOAT_EQ(0.3535533,record.p.getZ());
 }
 
-TEST_F(BvhnodeTest, missTest) {
+TEST_F(BvhnodeTest, missTest)
+{
     Ray r(Vector3D(5,0,-2),Vector3D(5,0,-1));
     Hitrecord record;
 
@@ -68,7 +74,8 @@ TEST_F(BvhnodeTest, missTest) {
     EXPECT_EQ(0,record.p.getZ());
 }
 
-TEST_F(BvhnodeTest, hitUpTest) {
+TEST_F(BvhnodeTest, hitUpTest)
+{
     Ray r({-2,0.5,0}, {1,0,0});
     Hitrecord record;
     bool hit = bvh->hit(r, -9999, 9999, record);

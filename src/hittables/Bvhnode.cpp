@@ -2,19 +2,15 @@
 #include "Bvhnode.h"
 #include "core/utility.h"
 
-namespace {
+bool boxCompare(const std::shared_ptr<Hittable>& a, const std::shared_ptr<Hittable>& b, int axis)
+{
+    Aabb box_a;
+    Aabb box_b;
 
-    bool boxCompare(const std::shared_ptr<Hittable>& a, const std::shared_ptr<Hittable>& b, int axis) 
-    {
-        Aabb box_a;
-        Aabb box_b;
-        
-        if (!a->boundingBox(0, 0, box_a) || !b->boundingBox(0, 0, box_b)) {
-            std::cerr << "[ERROR] No bounding box in bvh constructor" << std::endl;
-        }
-        return box_a.getMin()[axis] < box_b.getMin()[axis];
+    if (!a->boundingBox(0, 0, box_a) || !b->boundingBox(0, 0, box_b)) {
+        std::cerr << "[ERROR] No bounding box in bvh constructor" << std::endl;
     }
-
+    return box_a.getMin()[axis] < box_b.getMin()[axis];
 }
 
 Bvhnode::Bvhnode() {}

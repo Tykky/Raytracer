@@ -3,14 +3,16 @@
 #include "gtest/gtest.h"
 #include "hittables/Hitlist.h"
 
-class PrimitivelistTest : public ::testing::Test {
+class PrimitivelistTest : public ::testing::Test
+        {
 protected:
 
     std::vector<std::shared_ptr<Hittable>> list;
     std::shared_ptr<Material> mat;
     std::shared_ptr<Hitlist> plist;
 
-    void SetUp() {
+    void SetUp()
+    {
         list = std::vector<std::shared_ptr<Hittable>>(3);
         mat = std::make_shared<Lambertian>(Vector3D(1,1,1));
         list[0] = std::make_unique<Sphere>(Vector3D(0,0,0),0.5,mat.get());
@@ -20,8 +22,8 @@ protected:
     }
 };
 
-TEST_F(PrimitivelistTest, hitMiddleTest) {
-
+TEST_F(PrimitivelistTest, hitMiddleTest)
+{
     Ray r(Vector3D(0,0,-2),Vector3D(0,0,-1));
     Hitrecord record;
 
@@ -32,7 +34,8 @@ TEST_F(PrimitivelistTest, hitMiddleTest) {
 
 }
 
-TEST_F(PrimitivelistTest, hitLeftTest) {
+TEST_F(PrimitivelistTest, hitLeftTest)
+{
     Ray r(Vector3D(-1,0,-2),Vector3D(-1,0,-1));
     Hitrecord record;
 
@@ -42,7 +45,8 @@ TEST_F(PrimitivelistTest, hitLeftTest) {
     EXPECT_FLOAT_EQ(0.3535533,record.p.getZ());
 }
 
-TEST_F(PrimitivelistTest, hitLeftRight) {
+TEST_F(PrimitivelistTest, hitLeftRight)
+{
     Ray r(Vector3D(1,0,-2),Vector3D(1,0,-1));
     Hitrecord record;
 
@@ -52,7 +56,8 @@ TEST_F(PrimitivelistTest, hitLeftRight) {
     EXPECT_FLOAT_EQ(0.3535533,record.p.getZ());
 }
 
-TEST_F(PrimitivelistTest, missTest) {
+TEST_F(PrimitivelistTest, missTest)
+{
     Ray r(Vector3D(5,0,-2),Vector3D(5,0,-1));
     Hitrecord record;
 

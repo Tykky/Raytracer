@@ -5,7 +5,8 @@
 #include "Material.h"
 
 /** @brief Combines lambertian, metal and fresnel effect in one material. */
-class Mix : public Material {
+class Mix : public Material
+{
 
 public:
     /**
@@ -18,19 +19,19 @@ public:
      *  @param fresnelfactor defines how strong the fresnel effect should be. Value between
      *  0 and 1 should be given, 1 being the full effect and 0 no effect.
      */
-    Mix(const Vector3D &lalbedo, const Vector3D &malbedo, float metalness, float roughness, float fresnel,
+    Mix(const Vector3D& lalbedo, const Vector3D& malbedo, float metalness, float roughness, float fresnel,
          float ior);
 
-    virtual bool scatter(const Ray &r, const Hitrecord &record, Vector3D &attenuation, Ray &scatter,
-                         std::function<float()> &randomFloat) const;
+    virtual bool scatter(const Ray& r, const Hitrecord& record, Vector3D& attenuation, Ray& scatter,
+                         std::function<float()>& randomFloat) const;
 private:
-    std::shared_ptr<Material> metal_;
-    std::shared_ptr<Material> lambertian_;
-    const Vector3D malbedo_;
-    const Vector3D lalbedo_;
-    float metalness_;
-    float fresnelfactor_;
-    float ior_;
+    std::shared_ptr<Material> m_metal;
+    std::shared_ptr<Material> m_lambertian;
+    const Vector3D m_malbedo;
+    const Vector3D m_lalbedo;
+    float m_metalness;
+    float m_fresnelfactor;
+    float m_ior;
 };
 
 

@@ -4,6 +4,7 @@
 #include <vector>
 #include "Hittable.h"
 
+/** @brief Hitlist is a data structure for keeping track of all hittables. */
 class Hitlist : public Hittable 
 {
 public:

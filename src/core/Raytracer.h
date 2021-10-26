@@ -13,6 +13,10 @@
 class Raytracer 
 {
 public:
+    /**
+     * @param world is data structure that returns closest
+     * hit when .hit() is called, i.e Hitlist or Bvhnode.
+     */
     Raytracer(Hittable* world, Camera* camera, int width, int height);
 
     void render(unsigned int samples);
@@ -38,6 +42,7 @@ private:
     std::atomic<bool> m_isRendering;
     std::atomic<uint64_t> m_sampleCounter;
 
+    /** @brief Computers color for Ray r */
     Vector3D rayTrace(Ray& r, std::function<float()>& randomFloat) const;
     void clearColorbuffer();
 

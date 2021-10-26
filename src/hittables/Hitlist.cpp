@@ -7,7 +7,7 @@ Hitlist::Hitlist(std::vector<std::shared_ptr<Hittable>> l) :
         m_list(std::move(l)) 
 {}
 
-bool Hitlist::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const 
+bool Hitlist::hit(const Ray& r, float dmin, float dmax, Hitrecord& record) const
 {
     bool hit = false;
     Hitrecord tmprec;
@@ -29,7 +29,8 @@ bool Hitlist::hit(const Ray &r, float dmin, float dmax, Hitrecord &record) const
 
 bool Hitlist::boundingBox(float c0, float c1, Aabb& box) const 
 {
-    if (m_list.empty()) { 
+    if (m_list.empty())
+    {
         return false;
     }
 
