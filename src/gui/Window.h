@@ -12,7 +12,7 @@ public:
     ~Window();
 
 private:
-    GLFWwindow *m_window;
+    GLFWwindow* m_window;
     void render() const;
 };
 

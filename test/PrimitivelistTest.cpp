@@ -4,7 +4,7 @@
 #include "hittables/Hitlist.h"
 
 class PrimitivelistTest : public ::testing::Test
-        {
+{
 protected:
 
     std::vector<std::shared_ptr<Hittable>> list;

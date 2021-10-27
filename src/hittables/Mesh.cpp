@@ -20,7 +20,7 @@ void Mesh::setOffset(const Vector3D &offset)
     const auto delta = offset - m_offset;
     for(const auto &hittable : m_triangles)
     {
-        auto *triangle = dynamic_cast<Triangle *>(hittable.get());
+        auto *triangle = dynamic_cast<Triangle*>(hittable.get());
         (*triangle) += delta;
     }
     m_offset = offset;

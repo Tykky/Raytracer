@@ -7,7 +7,7 @@ class DielectricTest : public ::testing::Test
 {
 protected:
 
-    Material *mat;
+    Material* mat;
     std::mt19937 engine;
     std::uniform_real_distribution<float> dist;
     std::function<float()> randomfloat;

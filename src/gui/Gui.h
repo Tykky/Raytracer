@@ -171,22 +171,22 @@ private:
     void displayRenderedImage();
 
     void displayRightSideBar();
-    void displayRenderSettingsChild(const ImVec2 &size);
-    void displayCameraSettingsChild(const ImVec2 &size);
-    void displayObjectsChild(const ImVec2 &size);
-    void displayRandomizerChild(const ImVec2 &size);
+    void displayRenderSettingsChild(const ImVec2& size);
+    void displayCameraSettingsChild(const ImVec2& size);
+    void displayObjectsChild(const ImVec2& size);
+    void displayRandomizerChild(const ImVec2& size);
     void displayPerfMonitor();
 
     void startRaytracer();
     void rightSideBarResize();
-    void resizeWindow(const ImVec2 &hover_min, const ImVec2 &hover_max, float &resize_pos,
-                      const float &resize_pos_min, const float &resize_pos_max, bool &is_resizing,
-                      const orientation &resize_orientation);
+    void resizeWindow(const ImVec2& hover_min, const ImVec2& hover_max, float& resize_pos,
+                      const float& resize_pos_min, const float& resize_pos_max, bool& is_resizing,
+                      const orientation& resize_orientation);
 
     void moveTextureWhenDragged();
     void zoomTextureWhenScrolled();
 
-    void randomizeWorld(const int &spheres, const int &scatter);
+    void randomizeWorld(const int& spheres, const int& scatter);
     void clearObjects();
 
 };

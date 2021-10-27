@@ -5,7 +5,7 @@ class CameraTest : public ::testing::Test
 {
 protected:
 
-    Camera *cam;
+    Camera* cam;
     float halfw;
     float halfh;
 

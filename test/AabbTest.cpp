@@ -2,13 +2,15 @@
 #include "hittables/Aabb.h"
 #include <memory>
 
-class AabbTest : public ::testing::Test {
+class AabbTest : public ::testing::Test
+{
 protected:
 
     std::unique_ptr<Aabb> aabb_1;
     std::unique_ptr<Aabb> aabb_2;
 
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         // Create unit cubes
         aabb_1 = std::make_unique<Aabb>(Vector3D(0,0,0), Vector3D(1,1,1));
         aabb_2 = std::make_unique<Aabb>(Vector3D(-1,-1,-1), Vector3D(0,0,0));
