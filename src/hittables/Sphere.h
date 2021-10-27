@@ -4,7 +4,8 @@
 #include "core/Vector3D.h"
 #include "Hittable.h"
 
-class Sphere : public Hittable {
+class Sphere : public Hittable
+{
 public:
     Sphere(const Vector3D& center, float radius, Material* material);
     virtual bool hit(const Ray& r, float dmin, float dmax, Hitrecord& record) const override;

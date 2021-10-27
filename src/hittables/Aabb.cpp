@@ -1,10 +1,10 @@
 #include "Aabb.h"
 
-namespace 
-{
-    // Simple min & max functions for floats
-    // These should be faster than standard fmax & fmin.
+// Simple min & max functions for floats
+// These should be faster than standard fmax & fmin.
 
+namespace
+{
     float ffmin(float a, float b)
     {
         return a < b ? a : b;
@@ -14,7 +14,6 @@ namespace
     {
         return a > b ? a : b;
     }
-
 }
 
 Aabb::Aabb(const Vector3D &a, const Vector3D &b) 

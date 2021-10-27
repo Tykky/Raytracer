@@ -61,11 +61,11 @@ void Gui::renderGui()
     displayRightSideBar();
     displayPerfMonitor();
 
-    if (m_displayImguiMetrics) ImGui::ShowMetricsWindow();
-    if (m_displayImguiDemo) ImGui::ShowDemoWindow();
-    if (m_displayImguiAbout) ImGui::ShowAboutWindow();
-    if (m_displayImguiUserGUide) ImGui::ShowUserGuide();
-    if (m_displaySaveAs) displaySaveAs();
+    if (m_displayImguiMetrics)    ImGui::ShowMetricsWindow();
+    if (m_displayImguiDemo)       ImGui::ShowDemoWindow();
+    if (m_displayImguiAbout)      ImGui::ShowAboutWindow();
+    if (m_displayImguiUserGUide)  ImGui::ShowUserGuide();
+    if (m_displaySaveAs)          displaySaveAs();
 
     ImGui::Render();
 

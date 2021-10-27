@@ -16,5 +16,4 @@ private:
     std::vector<std::shared_ptr<Hittable>> m_list;
 };
 
-
 #endif //RAYTRACER_HITLIST_H

@@ -72,7 +72,7 @@ Vector3D Triangle::triangleMax() const
                     maxf3(m_vertex0.getZ(), m_vertex1.getZ(), m_vertex2.getZ()) + DELTA);
 }
 
-void Triangle::setVertex(const Vector3D &vertex, int index)
+void Triangle::setVertex(const Vector3D& vertex, int index)
 {
     switch(index)
     {
@@ -98,7 +98,7 @@ const Vector3D &Triangle::getVertex(int index) const
     }
 }
 
-Triangle &Triangle::operator+=(const Vector3D &rhs)
+Triangle& Triangle::operator+=(const Vector3D& rhs)
 {
     m_vertex0 += rhs;
     m_vertex1 += rhs;

@@ -5,7 +5,8 @@
 #include "core/Vector3D.h"
 #include "materials/Material.h"
 
-class Triangle : public Hittable {
+class Triangle : public Hittable
+{
     public:
         Triangle() = default;
         Triangle(const Vector3D& v0, const Vector3D& v1, const Vector3D& v2, const Vector3D& n, Material* material) :
