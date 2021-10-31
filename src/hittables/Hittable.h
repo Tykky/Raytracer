@@ -14,7 +14,8 @@ struct Hitrecord;
  * @brief Hittable is abstract class which provides interface for all hittables
  * (such as spheres and triangles)
  */
-class Hittable {
+class Hittable
+{
 public:
     /**
      * @brief Solves hit equation.

@@ -1,6 +1,9 @@
 #include "gui/Window.h"
 
-int main() 
+#include "samplers/RandomMonteCarloSampler.h"
+#include "threads/Threadpool.h"
+
+int main()
 {
     Window window("Raytracer");
     return 0;

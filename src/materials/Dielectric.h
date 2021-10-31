@@ -15,7 +15,6 @@ class Dielectric : public Material
 
         virtual bool scatter(const Ray& r, const Hitrecord& record, Vector3D& attenuation, Ray& scatter,
                             std::function<float()>& randomFloat) const;
-
     private:
         const float m_ior;
 

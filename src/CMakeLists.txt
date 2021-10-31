@@ -15,7 +15,9 @@ set(RAYTRACER_SRC core/Ray.cpp
         materials/Metal.cpp
         materials/Dielectric.cpp
         materials/Mix.cpp
-        io/meshloader.cpp)
+        io/meshloader.cpp
+        samplers/RandomMonteCarloSampler.cpp
+        threads/Threadpool.cpp)
 set(RAYTRACER_GUI gui/Window.cpp
         gui/Gui.cpp
         ../external/imgui/imgui.cpp

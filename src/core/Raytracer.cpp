@@ -7,7 +7,7 @@
 #include "materials/Material.h"
 
 Raytracer::Raytracer(Hittable* world, Camera* camera, int width, int height) :
-        m_world(world), m_camera(camera), m_width(width), m_height(height), m_bouncelimit(50), m_isRendering(false),
+        m_world(world), m_camera(camera), m_width(width), m_height(height), m_bouncelimit(1), m_isRendering(false),
         m_framebuffer(std::vector<unsigned char>(3 * width * height)), m_colorbuffer(std::vector<float>(3 * width * height)), 
         m_sampleCounter(0) 
 {}
@@ -92,7 +92,6 @@ void Raytracer::resize(int width, int height)
     m_colorbuffer.resize(3 * static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
     m_framebuffer.clear();
 }
-
 
 void Raytracer::setBounceLimit(int bouncelimit) 
 {
