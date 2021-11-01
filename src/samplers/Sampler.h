@@ -8,6 +8,11 @@
 #include "core/Raytracer.h"
 #include "core/buffers.h"
 
+#include "threads/Threadpool.h"
+
+struct Task;
+typedef std::vector<Task> Taskbuffer;
+
 class Sampler
 {
 public:
@@ -17,21 +22,22 @@ public:
         m_colorbuffer(colorbuf),
         m_framebuffer(framebuf),
         m_width(width),
-        m_height(height),
+        m_height(height)
     {}
 
     virtual void render() = 0;
     virtual void samplePixel(int x, int y) = 0;
 
-    void setWorld(Hittable* world) { m_world = world; }
-    void setCamera(Camera* camera) { m_camera = camera; }
+    inline void setWorld(Hittable* world) { m_world = world; }
+    inline void setCamera(Camera* camera) { m_camera = camera; }
+    inline void setColorbuffer(Colorbuffer* colorbuf) { m_colorbuffer = colorbuf; }
 
 protected:
-    Hittable* m_world;
-    Camera* m_camera;
+    Hittable*    m_world;
+    Camera*      m_camera;
     Colorbuffer* m_colorbuffer;
     Framebuffer* m_framebuffer;
-    Taskbuffer m_taskbuffer;
+    Taskbuffer   m_taskbuffer;
     unsigned int m_width;
     unsigned int m_height;
 };

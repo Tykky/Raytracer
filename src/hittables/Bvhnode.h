@@ -4,8 +4,7 @@
 #include "hittables/Hittable.h"
 #include <functional>
 
-/** @brief Defines a node in bvh tree */
-class Bvhnode : public Hittable 
+class Bvhnode : public Hittable
 {
 public:
     Bvhnode();

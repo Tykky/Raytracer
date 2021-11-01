@@ -4,18 +4,19 @@
 
 void RandomMonteCarloSampler::render(int samples)
 {
+    m_taskbuffer.resize(m_width * m_height);
     // Filling the queue
     for (int y = 0; y < m_height; ++y)
     {
         for (int x = 0; x < m_width; ++x)
         {
-            Task task {x,y, 1, 1, 0, samples};
-            threadpool.push(std::move(task));
+            int idx = xyToIdx(x, y, 1, m_width);
+            m_taskbuffer[idx] = {x, y, 1, 1, 0, samples};
         }
     }
 
     // Do the actual rendering
-    threadpool.spawnThreads();
+    m_threadpool.spawnThreads();
 }
 
 void RandomMonteCarloSampler::samplePixel(int x, int y)

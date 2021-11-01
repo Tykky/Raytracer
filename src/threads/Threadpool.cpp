@@ -1,15 +1,15 @@
 #include "Threadpool.h"
 
-void Threadpool::push(Task task)
+void Threadpool::push(Task* task)
 {
     std::scoped_lock lock(m_mutex);
     m_queue.push(task);
 }
 
-Task Threadpool::pop()
+Task* Threadpool::pop()
 {
     std::scoped_lock lock(m_mutex);
-    Task task = m_queue.front();
+    Task* task = m_queue.front();
     m_queue.pop();
     return task;
 }
@@ -35,28 +35,23 @@ void Threadpool::executeThread()
     {
         if (isEmpty())
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(sleepDurationMillis));
+            std::this_thread::sleep_for(std::chrono::milliseconds(m_sleepDuration));
             continue;
         }
-        Task task = pop();
-        for (int y = task.y0; y < task.y1 ; ++y)
+        Task* task = pop();
+        for (int y = task->y0; y < task->y1; ++y)
         {
-            for (int x = task.x0; x < task.x1; ++x)
+            for (int x = task->x0; x < task->x1; ++x)
             {
                 m_sampler->samplePixel(x, y);
             }
         }
-        task.sampleCount++;
-        if (task.sampleCount < task.sampleTarget)
+        task->sampleCount++;
+        if (task->sampleCount < task->sampleTarget)
         {
             push(task);
         }
     }
-}
-
-unsigned int Threadpool::getNumberOfActiveThreads() const
-{
-    return m_threads.size();
 }
 
 void Threadpool::killThreads()

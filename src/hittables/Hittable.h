@@ -5,20 +5,19 @@
 #include "core/Ray.h"
 #include "Aabb.h"
 
-
 class Material;
 
 struct Hitrecord;
 
 /**
- * @brief Hittable is abstract class which provides interface for all hittables
+ * @brief provides interface for all hittables
  * (such as spheres and triangles)
  */
 class Hittable
 {
 public:
     /**
-     * @brief Solves hit equation.
+     * @brief Solves the ray intersection equation
      * @param dmin is minimum acceptable value for ray intersection equation
      * @param dmax is maximum acceptable value for ray intersection equation
      * @param record stores intersection details
@@ -37,7 +36,7 @@ public:
 
 struct Hitrecord 
 {
-    /** @brief Solution to hit equation. */
+    /** @brief Solution to ray intersection equation */
     float distance;
 
     /** @brief Point where the ray hit. */

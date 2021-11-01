@@ -6,6 +6,8 @@
 
 #include "samplers/Sampler.h"
 
+class Sampler;
+
 struct Task
 {
     int x0, y0; // Starting points
@@ -19,24 +21,24 @@ class Threadpool
 public:
     Threadpool(Sampler* sampler) :
         m_sampler(sampler)
-    {};
-
-    void push(Task task);
-    Task pop();
+    {}
+    void push(Task* task);
+    Task* pop();
 
     bool isEmpty() const;
     void spawnThreads();
     void executeThread();
-    unsigned int getNumberOfActiveThreads() const;
     void killThreads();
 
 private:
-    std::queue<Task> m_queue;
-    std::mutex m_mutex;
-    bool m_stop = false;
+    std::queue<Task*>        m_queue;
+    std::mutex               m_mutex;
     std::vector<std::thread> m_threads;
-    unsigned int sleepDurationMillis = 200;
-    Sampler* m_sampler;
+    Sampler*                 m_sampler;
+    unsigned int             m_sleepDuration = 200;
+    bool                     m_stop = false;
 };
+
+typedef std::vector<Task> Taskbuffer;
 
 #endif //RAYTRACER_THREADPOOL_H
