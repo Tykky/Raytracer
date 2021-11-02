@@ -46,9 +46,9 @@ void Threadpool::executeThread()
                 m_sampler->samplePixel(x, y);
             }
         }
-        task->sampleCount++;
         if (task->sampleCount < task->sampleTarget)
         {
+            printf("%i\n", task->sampleCount);
             push(task);
         }
     }

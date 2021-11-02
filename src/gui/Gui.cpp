@@ -348,7 +348,7 @@ void Gui::displayPerfMonitor()
 
 void Gui::startRaytracer() 
 {
-    auto invokeRaytraceRender = [](Raytracer &raytracer, int samples) 
+    auto invokeRaytraceRender = [](Raytracer& raytracer, int samples)
     {
         raytracer.render(samples);
     };

@@ -4,9 +4,12 @@
 #include <queue>
 #include <mutex>
 
-#include "samplers/Sampler.h"
+#include "core/buffers.h"
 
-class Sampler;
+class Threadpool;
+struct Task;
+
+#include "samplers/Sampler.h"
 
 struct Task
 {
@@ -38,7 +41,5 @@ private:
     unsigned int             m_sleepDuration = 200;
     bool                     m_stop = false;
 };
-
-typedef std::vector<Task> Taskbuffer;
 
 #endif //RAYTRACER_THREADPOOL_H

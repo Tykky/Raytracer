@@ -9,8 +9,10 @@
 #include "hittables/Hittable.h"
 #include "Vector3D.h"
 #include "Camera.h"
+#include "buffers.h"
+#include "samplers/RandomMonteCarloSampler.h"
 
-class Raytracer 
+class Raytracer
 {
 public:
     /**
@@ -21,7 +23,7 @@ public:
 
     void render(unsigned int samples);
     void frammebufferToNetpbm(const std::string& filename);
-    std::vector<unsigned char>& getFramebuffer();
+    Framebuffer& getFramebuffer();
     void clearFramebuffer();
     void resize(int width, int height);
     void setBounceLimit(int bouncelimit);
@@ -33,17 +35,16 @@ public:
 
 private:
     Hittable* m_world;
-    std::vector<unsigned char> m_framebuffer;
-    std::vector<float> m_colorbuffer;
+    Framebuffer m_framebuffer;
+    Colorbuffer m_colorbuffer;
     Camera* m_camera;
     int m_width;
     int m_height;
     int m_bouncelimit;
     std::atomic<bool> m_isRendering;
     std::atomic<uint64_t> m_sampleCounter;
+    RandomMonteCarloSampler m_sampler;
 
-    /** @brief Computers color for Ray r */
-    Vector3D rayTrace(Ray& r, std::function<float()>& randomFloat) const;
     void clearColorbuffer();
 
 };

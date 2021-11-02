@@ -2,16 +2,17 @@
 #define RAYTRACER_SAMPLER_H
 
 #include <random>
+#include <functional>
 
 #include "core/Vector3D.h"
 #include "core/Ray.h"
-#include "core/Raytracer.h"
 #include "core/buffers.h"
+#include "hittables/Hittable.h"
+#include "core/Camera.h"
+
+class Sampler;
 
 #include "threads/Threadpool.h"
-
-struct Task;
-typedef std::vector<Task> Taskbuffer;
 
 class Sampler
 {
@@ -25,7 +26,7 @@ public:
         m_height(height)
     {}
 
-    virtual void render() = 0;
+    virtual void render(int samples) = 0;
     virtual void samplePixel(int x, int y) = 0;
 
     inline void setWorld(Hittable* world) { m_world = world; }

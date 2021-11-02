@@ -1,17 +1,19 @@
 #include "RandomMonteCarloSampler.h"
 #include "core/utility.h"
 #include "materials/Material.h"
+#include <cassert>
 
 void RandomMonteCarloSampler::render(int samples)
 {
+    // Filling the queue and taskbuffer
     m_taskbuffer.resize(m_width * m_height);
-    // Filling the queue
     for (int y = 0; y < m_height; ++y)
     {
         for (int x = 0; x < m_width; ++x)
         {
             int idx = xyToIdx(x, y, 1, m_width);
-            m_taskbuffer[idx] = {x, y, 1, 1, 0, samples};
+            m_taskbuffer[idx] = {x, y, x + 1, y + 1, 0, samples};
+            m_threadpool.push(&m_taskbuffer[idx]);
         }
     }
 
@@ -51,11 +53,18 @@ void RandomMonteCarloSampler::samplePixel(int x, int y)
     {
         color = skyGradient(r);
     }
+    const int taskIdx = xyToIdx(x, y, 1, m_width);
+    Task& task = m_taskbuffer[taskIdx];
 
-    const int dim = 3;
-    const int idx = xyToIdx(x, y, dim, m_width);
-    for (int i = 0; i < dim; ++i)
+    task.sampleCount++;
+
+    const int colorIdx = xyToIdx(x, y, 3, m_width);
+    for (int i = 0; i < 3; ++i)
     {
-        (*m_colorbuffer)[idx + i] += color[i];
+        (*m_colorbuffer)[colorIdx + i] += color[i];
+        const float totalColor = (*m_colorbuffer)[colorIdx + i];
+        const int framebufferColor = static_cast<int>((totalColor / task.sampleCount) * 255.99);
+        assert(adjustedColor <= 256);
+        (*m_framebuffer)[colorIdx + i] = static_cast<unsigned char>(framebufferColor);
     }
 }

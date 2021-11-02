@@ -3,8 +3,11 @@
 
 #include <vector>
 
+struct Task;
+
 typedef std::vector<float> Colorbuffer;
-typedef std::vector<char> Framebuffer;
+typedef std::vector<unsigned char> Framebuffer;
+typedef std::vector<Task> Taskbuffer;
 
 inline unsigned int xyToIdx(int x, int y, unsigned int dim, unsigned int rowWidth)
 {
