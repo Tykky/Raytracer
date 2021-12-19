@@ -3,7 +3,7 @@
 #include <utility>
 #include "core/utility.h"
 
-Hitlist::Hitlist(std::vector<std::shared_ptr<Hittable>> l) :
+Hitlist::Hitlist(std::vector<std::shared_ptr<Primitive>> l) :
         m_list(std::move(l)) 
 {}
 

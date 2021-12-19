@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 
     const int n = 1000;
 
-    std::vector<std::shared_ptr<Hittable>> list(n + 5);
+    std::vector<std::shared_ptr<Primitive>> list(n + 5);
     std::shared_ptr<Material> matptr = std::make_shared<Mix>(Vector3D(0.3, 0.3, 0.8), Vector3D(0.2, 1, 0.1), 0.1, 0.1, 1, 1);
     std::shared_ptr<Material> lambptr = std::make_shared<Mix>(Vector3D(0.3, 0.3, 0.3), Vector3D(0.1, 0.1, 0.1), 0, 0, 0.1, 1);
     std::shared_ptr<Material> redptr = std::make_shared<Lambertian>(Vector3D(1, 0.2, 0.2));
@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
     list[n + 3] = std::make_shared<Sphere>(Vector3D(-1.5, 0.5, -3), 0.5, closeptr.get());
     list[n + 4] = std::make_shared<Sphere>(Vector3D(-1.5, 15, -3), 10, lambptr.get());
 
-    std::shared_ptr<Hittable> bvh = std::make_shared<Bvhnode>(list, 0, n + 4, 0, 1, randomFloat);
+    std::shared_ptr<Primitive> bvh = std::make_shared<Bvhnode>(list, 0, n + 4, 0, 1, randomFloat);
     //std::shared_ptr<Hittable> plist = std::make_shared<Hitlist>(list);
 
     Raytracer raytracer(bvh.get(), &cam, width, height);

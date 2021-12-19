@@ -1,14 +1,14 @@
 #ifndef RAYTRACER_BVHNODE_H
 #define RAYTRACER_BVHNODE_H
 
-#include "hittables/Hittable.h"
+#include "hittables/Primitive.h"
 #include <functional>
 
-class Bvhnode : public Hittable
+class Bvhnode : public Primitive
 {
 public:
     Bvhnode();
-    Bvhnode(std::vector<std::shared_ptr<Hittable>>& list,
+    Bvhnode(std::vector<std::shared_ptr<Primitive>>& list,
             size_t start, size_t end, float c0, float c1,
             std::function<float()>& randomFloat);
 
@@ -16,8 +16,8 @@ public:
     virtual bool boundingBox(float c0, float c1, Aabb& box) const;
 
 private:
-    std::shared_ptr<Hittable> m_right;
-    std::shared_ptr<Hittable> m_left;
+    std::shared_ptr<Primitive> m_right;
+    std::shared_ptr<Primitive> m_left;
     Aabb m_node;
 };
 

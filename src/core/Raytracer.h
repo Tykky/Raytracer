@@ -6,7 +6,7 @@
 #include <functional>
 #include <atomic>
 #include <stdint.h>
-#include "hittables/Hittable.h"
+#include "hittables/Primitive.h"
 #include "Vector3D.h"
 #include "Camera.h"
 #include "buffers.h"
@@ -19,7 +19,7 @@ public:
      * @param world is data structure that returns closest
      * hit when .hit() is called, i.e Hitlist or Bvhnode.
      */
-    Raytracer(Hittable* world, Camera* camera, int width, int height);
+    Raytracer(Primitive* world, Camera* camera, int width, int height);
 
     void render(unsigned int samples);
     void frammebufferToNetpbm(const std::string& filename);
@@ -28,13 +28,13 @@ public:
     void resize(int width, int height);
     void setBounceLimit(int bouncelimit);
     void setCamera(Camera* camera);
-    void setWorld(Hittable* world);
+    void setWorld(Primitive* world);
     bool isRendering();
     const std::atomic<uint64_t>& getSampleCounter();
     void resetSampleCounter();
 
 private:
-    Hittable* m_world;
+    Primitive* m_world;
     Framebuffer m_framebuffer;
     Colorbuffer m_colorbuffer;
     Camera* m_camera;

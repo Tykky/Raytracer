@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-std::vector<std::shared_ptr<Hittable>> loadObj(const std::string& file, Material* material, std::function<float()> randomFloat)
+std::vector<std::shared_ptr<Primitive>> loadObj(const std::string& file, Material* material, std::function<float()> randomFloat)
 {
     tinyobj::ObjReaderConfig reader_config;
     tinyobj::ObjReader reader;
@@ -26,13 +26,13 @@ std::vector<std::shared_ptr<Hittable>> loadObj(const std::string& file, Material
 
     auto& attrib = reader.GetAttrib();
     auto& shapes = reader.GetShapes();
-    std::vector<std::shared_ptr<Hittable>> meshes(shapes.size());
+    std::vector<std::shared_ptr<Primitive>> meshes(shapes.size());
 
     for (size_t s = 0; s < shapes.size(); s++)
     {
         auto &shape = shapes[s];
         auto tri_count = static_cast<unsigned int>(shape.mesh.num_face_vertices.size());
-        std::vector<std::shared_ptr<Hittable>> triangles(tri_count);
+        std::vector<std::shared_ptr<Primitive>> triangles(tri_count);
 
         // Loop over faces(triangles)
         size_t index_offset = 0;

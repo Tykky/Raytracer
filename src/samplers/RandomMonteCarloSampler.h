@@ -8,13 +8,13 @@ class RandomMonteCarloSampler : public Sampler
 public:
     RandomMonteCarloSampler
     (
-        Hittable*    world,
-        Camera*      camera,
-        Colorbuffer* colorbuf,
-        Framebuffer* framebuf,
-        int          width,
-        int          height,
-        int          bounceLimit
+            Primitive*    world,
+            Camera*      camera,
+            Colorbuffer* colorbuf,
+            Framebuffer* framebuf,
+            int          width,
+            int          height,
+            int          bounceLimit
     ) :
         Sampler(world, camera, colorbuf, framebuf, width, height),
         m_bounceLimit(bounceLimit),

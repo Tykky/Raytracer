@@ -2,7 +2,7 @@
 #include "Bvhnode.h"
 #include "core/utility.h"
 
-bool boxCompare(const std::shared_ptr<Hittable>& a, const std::shared_ptr<Hittable>& b, int axis)
+bool boxCompare(const std::shared_ptr<Primitive>& a, const std::shared_ptr<Primitive>& b, int axis)
 {
     Aabb box_a;
     Aabb box_b;
@@ -16,13 +16,13 @@ bool boxCompare(const std::shared_ptr<Hittable>& a, const std::shared_ptr<Hittab
 
 Bvhnode::Bvhnode() {}
 
-Bvhnode::Bvhnode(std::vector<std::shared_ptr<Hittable>>& list,
+Bvhnode::Bvhnode(std::vector<std::shared_ptr<Primitive>>& list,
                  size_t start, size_t end, float c0, float c1,
                  std::function<float()>& randomFloat) {
 
     size_t span = end - start;
 
-    const std::function<bool(std::shared_ptr<Hittable>, std::shared_ptr<Hittable>)> comparators[] = 
+    const std::function<bool(std::shared_ptr<Primitive>, std::shared_ptr<Primitive>)> comparators[] =
     {
         {[](auto a, auto b) { return boxCompare(a, b, 0);}}, // x
         {[](auto a, auto b) { return boxCompare(a, b, 1);}}, // y

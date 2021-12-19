@@ -1,5 +1,5 @@
-#ifndef RAYTRACER_HITTABLE_H
-#define RAYTRACER_HITTABLE_H
+#ifndef RAYTRACER_PRIMITIVE_H
+#define RAYTRACER_PRIMITIVE_H
 
 #include <memory>
 #include "core/Ray.h"
@@ -13,7 +13,7 @@ struct Hitrecord;
  * @brief provides interface for all hittables
  * (such as spheres and triangles)
  */
-class Hittable
+class Primitive
 {
 public:
     /**
@@ -51,4 +51,4 @@ struct Hitrecord
     Material* matptr;
 };
 
-#endif //RAYTRACER_HITTABLE_H
+#endif //RAYTRACER_PRIMITIVE_H

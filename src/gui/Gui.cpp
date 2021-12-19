@@ -255,7 +255,7 @@ void Gui::displayObjectsChild(const ImVec2 &size)
         strcpy(text, m_currentHittableName);
         m_hittableNames.push_back(text);
         Material *mat;
-        std::shared_ptr<Hittable> object;
+        std::shared_ptr<Primitive> object;
         if (m_currentMaterial == 0) 
         {
             mat = m_lambertian.get();

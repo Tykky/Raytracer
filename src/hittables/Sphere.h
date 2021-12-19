@@ -2,9 +2,9 @@
 #define RAYTRACER_SPHERE_H
 
 #include "core/Vector3D.h"
-#include "Hittable.h"
+#include "Primitive.h"
 
-class Sphere : public Hittable
+class Sphere : public Primitive
 {
 public:
     Sphere(const Vector3D& center, float radius, Material* material);

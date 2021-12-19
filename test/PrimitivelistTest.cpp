@@ -7,13 +7,13 @@ class PrimitivelistTest : public ::testing::Test
 {
 protected:
 
-    std::vector<std::shared_ptr<Hittable>> list;
+    std::vector<std::shared_ptr<Primitive>> list;
     std::shared_ptr<Material> mat;
     std::shared_ptr<Hitlist> plist;
 
     void SetUp()
     {
-        list = std::vector<std::shared_ptr<Hittable>>(3);
+        list = std::vector<std::shared_ptr<Primitive>>(3);
         mat = std::make_shared<Lambertian>(Vector3D(1,1,1));
         list[0] = std::make_unique<Sphere>(Vector3D(0,0,0),0.5,mat.get());
         list[1] = std::make_unique<Sphere>(Vector3D(-1,0,0),0.5,mat.get());

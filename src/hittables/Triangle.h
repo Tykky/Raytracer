@@ -1,11 +1,11 @@
 #ifndef RAYTRACER_TRIANGLE_H
 #define RAYTRACER_TRIANGLE_H
 
-#include "Hittable.h"
+#include "Primitive.h"
 #include "core/Vector3D.h"
 #include "materials/Material.h"
 
-class Triangle : public Hittable
+class Triangle : public Primitive
 {
     public:
         Triangle() = default;

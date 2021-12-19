@@ -7,7 +7,7 @@
 class BvhnodeTest : public ::testing::Test
 {
 protected:
-    std::vector<std::shared_ptr<Hittable>> list;
+    std::vector<std::shared_ptr<Primitive>> list;
     std::shared_ptr<Material> mat;
     std::shared_ptr<Bvhnode> bvh;
     std::mt19937 engine;
@@ -16,7 +16,7 @@ protected:
 
     void SetUp()
     {
-        list = std::vector<std::shared_ptr<Hittable>>(4);
+        list = std::vector<std::shared_ptr<Primitive>>(4);
         engine = std::mt19937(1337);
         dist = std::uniform_real_distribution<float>(0, 1);
         randomfloat = bind(dist, engine);

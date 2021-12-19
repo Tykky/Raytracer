@@ -2,7 +2,7 @@
 #define RAYTRACER_MATERIAL_H
 
 #include "core/Ray.h"
-#include "hittables/Hittable.h"
+#include "hittables/Primitive.h"
 #include <functional>
 #include <memory>
 

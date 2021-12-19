@@ -7,7 +7,7 @@ class SphereTest : public ::testing::Test
 {
 protected:
 
-    std::unique_ptr<Hittable> sphr;
+    std::unique_ptr<Primitive> sphr;
     std::unique_ptr<Material> lamb;
 
     virtual void SetUp()

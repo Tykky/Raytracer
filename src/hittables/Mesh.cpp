@@ -1,6 +1,6 @@
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector<std::shared_ptr<Hittable>>& triangles, std::function<float()>& randomFloat) : m_triangles(triangles), m_randomFloat(randomFloat)
+Mesh::Mesh(std::vector<std::shared_ptr<Primitive>>& triangles, std::function<float()>& randomFloat) : m_triangles(triangles), m_randomFloat(randomFloat)
 {
     m_bvh = Bvhnode(m_triangles, 0, m_triangles.size(), 0, 1, randomFloat);
 }

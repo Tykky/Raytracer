@@ -5,7 +5,7 @@
 #include <imgui.h>
 #include <core/Raytracer.h>
 #include <core/Camera.h>
-#include <hittables/Hittable.h>
+#include <hittables/Primitive.h>
 #include <thread>
 #include <vector>
 #include <random>
@@ -139,8 +139,8 @@ private:
 
     std::vector<char *> m_objectTypes;
 
-    std::vector<std::shared_ptr<Hittable>> m_world = {}; // used for rendering
-    std::shared_ptr<Hittable> m_bvh = {};
+    std::vector<std::shared_ptr<Primitive>> m_world = {}; // used for rendering
+    std::shared_ptr<Primitive> m_bvh = {};
 
     // Randomized materials are inserted here
     std::vector<std::unique_ptr<Material>> m_world_materials = {};

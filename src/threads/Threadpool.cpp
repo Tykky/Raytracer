@@ -42,13 +42,17 @@ void Threadpool::executeThread()
             std::this_thread::sleep_for(std::chrono::milliseconds(m_sleepDuration));
             continue;
         }
-        if(Task* task = pop()) {
-            for (int y = task->y0; y < task->y0 + task->y1; ++y) {
-                for (int x = task->x0; x < task->x0 + task->x1; ++x) {
+        if (Task* task = pop())
+        {
+            for (int y = task->y0; y < task->y0 + task->y1; ++y)
+            {
+                for (int x = task->x0; x < task->x0 + task->x1; ++x)
+                {
                     m_sampler->samplePixel(x, y);
                 }
             }
-            if (task->sampleCount < task->sampleTarget) {
+            if (task->sampleCount < task->sampleTarget)
+            {
                 push(task);
             }
         }

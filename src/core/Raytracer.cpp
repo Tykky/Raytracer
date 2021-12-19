@@ -6,7 +6,7 @@
 #include "utility.h"
 #include "materials/Material.h"
 
-Raytracer::Raytracer(Hittable* world, Camera* camera, int width, int height) :
+Raytracer::Raytracer(Primitive* world, Camera* camera, int width, int height) :
     m_world(world),
     m_camera(camera),
     m_width(width),
@@ -84,7 +84,7 @@ void Raytracer::setCamera(Camera *camera)
     m_camera = camera;
 }
 
-void Raytracer::setWorld(Hittable* world)
+void Raytracer::setWorld(Primitive* world)
 {
     m_isRendering = false;
     m_world = world;
