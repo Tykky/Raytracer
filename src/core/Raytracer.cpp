@@ -25,6 +25,7 @@ void Raytracer::render(unsigned int samples)
     {
         return;
     }
+
     m_isRendering = true;
 
     m_sampler.render(samples);

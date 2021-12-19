@@ -18,10 +18,7 @@ void RandomMonteCarloSampler::render(int samples)
     }
 
     // Do the actual rendering
-    if (m_threadpool.isEmpty())
-    {
-        m_threadpool.spawnThreads();
-    }
+    m_threadpool.spawnThreads();
 }
 
 void RandomMonteCarloSampler::samplePixel(int x, int y)
