@@ -326,7 +326,7 @@ void Gui::displayPerfMonitor()
     const size_t display_size = 1000;
 
     ImGui::Begin("perfmonitor", nullptr, m_staticWindowFlags);
-    ImGui::Text(("Mega samples p/s " + std::to_string(m_SamplesPerSecond / 1000000)).data());
+    ImGui::Text(("sp/s: " + std::to_string(m_SamplesPerSecond / 1000000)).data());
     ImGui::SameLine(250);
     ImGui::Text("Status:");
     ImGui::SameLine(300);
