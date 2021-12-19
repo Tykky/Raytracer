@@ -12,7 +12,7 @@ void RandomMonteCarloSampler::render(int samples)
         for (int x = 0; x < m_width; ++x)
         {
             int idx = xyToIdx(x, y, 1, m_width);
-            m_taskbuffer[idx] = {x, y, x + 1, y + 1, 0, samples};
+            m_taskbuffer[idx] = {x, y, 1, 1, 0, samples};
             m_threadpool.push(&m_taskbuffer[idx]);
         }
     }
@@ -46,6 +46,7 @@ void RandomMonteCarloSampler::samplePixel(int x, int y)
         else
         {
             color = {0, 0, 0};
+            break;
         }
     }
 
@@ -53,18 +54,19 @@ void RandomMonteCarloSampler::samplePixel(int x, int y)
     {
         color = skyGradient(r);
     }
+
     const int taskIdx = xyToIdx(x, y, 1, m_width);
     Task& task = m_taskbuffer[taskIdx];
 
     task.sampleCount++;
 
-    const int colorIdx = xyToIdx(x, y, 3, m_width);
+    int colorIdx = 3 * m_width * m_height - xyToIdx(x, y, 3, m_width) - 3;
     for (int i = 0; i < 3; ++i)
     {
         (*m_colorbuffer)[colorIdx + i] += color[i];
         const float totalColor = (*m_colorbuffer)[colorIdx + i];
         const int framebufferColor = static_cast<int>((totalColor / task.sampleCount) * 255.99);
-        assert(adjustedColor <= 256);
+        assert(framebufferColor <= 256);
         (*m_framebuffer)[colorIdx + i] = static_cast<unsigned char>(framebufferColor);
     }
 }

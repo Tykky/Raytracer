@@ -84,10 +84,11 @@ void Raytracer::setCamera(Camera *camera)
     m_camera = camera;
 }
 
-void Raytracer::setWorld(Hittable *world) 
+void Raytracer::setWorld(Hittable* world)
 {
     m_isRendering = false;
     m_world = world;
+    m_sampler.setWorld(world);
 }
 
 bool Raytracer::isRendering() 
@@ -110,4 +111,3 @@ void Raytracer::clearColorbuffer()
     m_isRendering = false;
     std::fill(m_colorbuffer.begin(), m_colorbuffer.end(), 0);
 }
-
