@@ -6,11 +6,12 @@
 #include <functional>
 #include <atomic>
 #include <stdint.h>
-#include "hittables/Primitive.h"
+#include "primitives/Primitive.h"
 #include "Vector3D.h"
 #include "Camera.h"
 #include "buffers.h"
 #include "samplers/RandomMonteCarloSampler.h"
+#include "samplers/FastSampler.h"
 
 class Raytracer
 {
@@ -43,7 +44,7 @@ private:
     int m_bouncelimit;
     std::atomic<bool> m_isRendering;
     std::atomic<uint64_t> m_sampleCounter;
-    RandomMonteCarloSampler m_sampler;
+    FastSampler m_sampler;
 
     void clearColorbuffer();
 

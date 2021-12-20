@@ -3,12 +3,12 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <random>
-#include <hittables/Sphere.h>
+#include <primitives/Sphere.h>
 #include <string>
 #include <chrono>
 #include <algorithm>
-#include "hittables/Bvhnode.h"
-#include "hittables/Triangle.h"
+#include "primitives/Bvhnode.h"
+#include "primitives/Triangle.h"
 #include "io/meshloader.h"
 #include "materials/Mix.h"
 #include "materials/Lambertian.h"

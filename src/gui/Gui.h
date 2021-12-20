@@ -5,7 +5,7 @@
 #include <imgui.h>
 #include <core/Raytracer.h>
 #include <core/Camera.h>
-#include <hittables/Primitive.h>
+#include <primitives/Primitive.h>
 #include <thread>
 #include <vector>
 #include <random>

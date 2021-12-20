@@ -1,7 +1,7 @@
 #ifndef RAYTRACER_BVHNODE_H
 #define RAYTRACER_BVHNODE_H
 
-#include "hittables/Primitive.h"
+#include "primitives/Primitive.h"
 #include <functional>
 
 class Bvhnode : public Primitive

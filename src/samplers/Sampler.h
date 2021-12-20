@@ -7,7 +7,7 @@
 #include "core/Vector3D.h"
 #include "core/Ray.h"
 #include "core/buffers.h"
-#include "hittables/Primitive.h"
+#include "primitives/Primitive.h"
 #include "core/Camera.h"
 
 class Sampler;
@@ -34,7 +34,7 @@ public:
     inline void setColorbuffer(Colorbuffer* colorbuf) { m_colorbuffer = colorbuf; }
 
 protected:
-    Primitive*    m_world;
+    Primitive*   m_world;
     Camera*      m_camera;
     Colorbuffer* m_colorbuffer;
     Framebuffer* m_framebuffer;

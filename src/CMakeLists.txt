@@ -5,18 +5,19 @@ set(RAYTRACER_SRC core/Ray.cpp
         core/Raytracer.cpp
         core/Vector3D.cpp
         core/utility.cpp
-        hittables/Sphere.cpp
-        hittables/Hitlist.cpp
-        hittables/Aabb.cpp
-        hittables/Bvhnode.cpp
-        hittables/Triangle.cpp
-        hittables/Mesh.cpp
+        primitives/Sphere.cpp
+        primitives/Hitlist.cpp
+        primitives/Aabb.cpp
+        primitives/Bvhnode.cpp
+        primitives/Triangle.cpp
+        primitives/Mesh.cpp
         materials/Lambertian.cpp
         materials/Metal.cpp
         materials/Dielectric.cpp
         materials/Mix.cpp
         io/meshloader.cpp
         samplers/RandomMonteCarloSampler.cpp
+        samplers/FastSampler.cpp
         threads/Threadpool.cpp
         )
 set(RAYTRACER_GUI gui/Window.cpp

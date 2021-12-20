@@ -4,10 +4,10 @@
 #include <utility>
 
 #include "Primitive.h"
-#include "hittables/Triangle.h"
+#include "primitives/Triangle.h"
 #include "materials/Material.h"
 #include "materials/Lambertian.h"
-#include "hittables/Bvhnode.h"
+#include "primitives/Bvhnode.h"
 
 class Mesh : public Primitive
 {

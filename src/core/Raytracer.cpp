@@ -16,7 +16,7 @@ Raytracer::Raytracer(Primitive* world, Camera* camera, int width, int height) :
     m_framebuffer(3 * width * height),
     m_colorbuffer(3 * width * height),
     m_sampleCounter(0),
-    m_sampler(world, camera, &m_colorbuffer, &m_framebuffer, width, height, m_bouncelimit)
+    m_sampler(world, camera, &m_colorbuffer, &m_framebuffer, width, height)
 {}
 
 void Raytracer::render(unsigned int samples) 
@@ -34,7 +34,7 @@ void Raytracer::render(unsigned int samples)
     clearColorbuffer();
 }
 
-void Raytracer::frammebufferToNetpbm(const std::string &filename) 
+void Raytracer::frammebufferToNetpbm(const std::string& filename)
 {
     std::ofstream of;
     of.open(filename + ".ppm");
@@ -79,7 +79,7 @@ void Raytracer::setBounceLimit(int bouncelimit)
     m_bouncelimit = bouncelimit;
 }
 
-void Raytracer::setCamera(Camera *camera) 
+void Raytracer::setCamera(Camera* camera)
 {
     m_isRendering = false;
     m_camera = camera;

@@ -1,7 +1,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include "meshloader.h"
-#include "hittables/Triangle.h"
+#include "primitives/Triangle.h"
 #include <string>
 #include <vector>
 

@@ -24,16 +24,16 @@ public:
         m_randomDistribution = std::uniform_real_distribution<float>(0.0, 1.0);
         m_randomFloat = std::bind(m_randomDistribution, m_randomEngine);
     }
-    virtual void render(int samples);
+    void render(int samples) override;
 
 private:
-    virtual void samplePixel(int x, int y);
+    void samplePixel(int x, int y) override;
 
     unsigned int m_bounceLimit;
-    Threadpool m_threadpool;
     std::mt19937 m_randomEngine;
     std::uniform_real_distribution<float> m_randomDistribution;
     std::function<float()> m_randomFloat;
+    Threadpool m_threadpool;
 };
 
 #endif //RAYTRACER_RANDOMMONTECARLOSAMPLER_H
