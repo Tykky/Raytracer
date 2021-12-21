@@ -80,7 +80,8 @@ bool Bvhnode::hit(const Ray& r, float dmin, float dmax, Hitrecord& record) const
         Hitrecord leftrec, rightrec;
         bool hitleft = m_left->hit(r, dmin, dmax, leftrec);
         bool hitright = m_right->hit(r, dmin, dmax, rightrec);
-        if (hitleft && hitright) {
+        if (hitleft && hitright)
+        {
             if (leftrec.distance < rightrec.distance) 
             {
                 record = leftrec;

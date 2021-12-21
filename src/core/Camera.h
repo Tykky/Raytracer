@@ -3,8 +3,9 @@
 
 #include "Ray.h"
 #include "Vector3D.h"
+#include <functional>
 
-class Camera 
+class Camera
 {
 public:
     /**
@@ -18,7 +19,9 @@ public:
     Camera(float fov, float aspectratio, const Vector3D& origin,const Vector3D& pointat,
            const Vector3D& up);
 
-    Ray getRay(const float& x, const float& y) const;
+    Ray getRay(float x, float y) const;
+    Ray getRayScreenCoords(int x, int y, unsigned int width, unsigned int height) const;
+    Ray getRayScreenCoordsWithJitter(int x, int y, unsigned int width, unsigned int height, std::function<float()>& randomFloat) const;
     void setFov(const float& fov);
     void setPos(const Vector3D& pos);
     void setUp(const Vector3D& up);

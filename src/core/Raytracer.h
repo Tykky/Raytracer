@@ -10,8 +10,8 @@
 #include "Vector3D.h"
 #include "Camera.h"
 #include "buffers.h"
-#include "samplers/RandomMonteCarloSampler.h"
-#include "samplers/FastSampler.h"
+#include "samplers/Randommontecarlosampler.h"
+#include "samplers/Fastsampler.h"
 
 class Raytracer
 {
@@ -44,7 +44,7 @@ private:
     int m_bouncelimit;
     std::atomic<bool> m_isRendering;
     std::atomic<uint64_t> m_sampleCounter;
-    FastSampler m_sampler;
+    Fastsampler m_sampler;
 
     void clearColorbuffer();
 

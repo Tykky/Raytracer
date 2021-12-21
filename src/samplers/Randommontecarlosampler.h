@@ -3,19 +3,10 @@
 
 #include "Sampler.h"
 
-class RandomMonteCarloSampler : public Sampler
+class Randommontecarlosampler : public Sampler
 {
 public:
-    RandomMonteCarloSampler
-    (
-            Primitive*    world,
-            Camera*      camera,
-            Colorbuffer* colorbuf,
-            Framebuffer* framebuf,
-            int          width,
-            int          height,
-            int          bounceLimit
-    ) :
+    Randommontecarlosampler(Primitive* world, Camera* camera, Colorbuffer* colorbuf, Framebuffer* framebuf, int width, int height, int bounceLimit) :
         Sampler(world, camera, colorbuf, framebuf, width, height),
         m_bounceLimit(bounceLimit),
         m_threadpool(this)

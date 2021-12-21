@@ -1,6 +1,6 @@
 #include "gui/Window.h"
 
-#include "samplers/RandomMonteCarloSampler.h"
+#include "samplers/Randommontecarlosampler.h"
 
 int main()
 {

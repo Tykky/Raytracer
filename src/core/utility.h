@@ -38,4 +38,7 @@ bool refract(const Vector3D& v, const Vector3D& n, float ior, Vector3D& refracti
  *  @return fresnel coefficient
  */
 float fresnel(float cosine, float ior);
+
+
+
 #endif //RAYTRACER_UTILITY_H

@@ -15,7 +15,7 @@ Camera::Camera(float fov, float aspectratio,const Vector3D& origin, const Vector
     applyChanges();
 }
 
-Ray Camera::getRay(const float& x, const float& y) const 
+Ray Camera::getRay(float x, float y) const
 {
     Vector3D b = m_lowerLeftCorner +
                  x * m_horizontal +
@@ -62,4 +62,16 @@ void Camera::applyChanges()
     m_lowerLeftCorner = m_origin - m_halfWidth * u - m_halfHeight * v - w;
     m_horizontal = 2 * m_halfWidth * u;
     m_vertical = 2 * m_halfHeight * v;
+}
+
+Ray Camera::getRayScreenCoords(int x, int y, unsigned int width, unsigned int height) const
+{
+    return getRay(static_cast<float>(x) / static_cast<float>(width),
+                  static_cast<float>(y) / static_cast<float>(height));
+}
+
+Ray Camera::getRayScreenCoordsWithJitter(int x, int y, unsigned int width, unsigned int height,
+                                         std::function<float()>& randomFloat) const
+{    return getRay((static_cast<float>(x) + randomFloat()) / static_cast<float>(width),
+                   (static_cast<float>(y) + randomFloat()) / static_cast<float>(height));
 }
