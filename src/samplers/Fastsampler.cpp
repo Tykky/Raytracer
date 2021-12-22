@@ -32,7 +32,7 @@ void Fastsampler::samplePixel(int x, int y)
 
     if (m_world && m_world->hit(r, epsilon, std::numeric_limits<float>::max(), record))
     {
-        color *= Vector3D(0, 0.5, 0) * (-record.normal.dot(r.getDirection()));
+        color *= Vector3D(0.5, 0.5, 0.5) * (-record.normal.dot(r.getDirection()));
     }
     else
     {
