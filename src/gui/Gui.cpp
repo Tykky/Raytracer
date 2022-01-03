@@ -59,7 +59,6 @@ void Gui::renderGui()
     displayMainMenu();
     displayRenderedImage();
     displayRightSideBar();
-    displayPerfMonitor();
 
     if (m_displayImguiMetrics)    ImGui::ShowMetricsWindow();
     if (m_displayImguiDemo)       ImGui::ShowDemoWindow();
@@ -169,7 +168,7 @@ void Gui::displayRightSideBar()
     displayRenderSettingsChild(ImVec2(m_RightSideBarMaxWidth, 120));
     displayCameraSettingsChild(ImVec2(m_RightSideBarMaxWidth, 120));
     displayRandomizerChild(ImVec2(m_rightSideBarWidth, 150));
-    displayObjectsChild(ImVec2(m_rightSideBarWidth, 300));
+    //displayObjectsChild(ImVec2(m_rightSideBarWidth, 300));
     ImGui::End();
 }
 

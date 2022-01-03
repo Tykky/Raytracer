@@ -32,6 +32,12 @@ public:
     inline void setWorld(Primitive* world) { m_world = world; }
     inline void setCamera(Camera* camera) { m_camera = camera; }
     inline void setColorbuffer(Colorbuffer* colorbuf) { m_colorbuffer = colorbuf; }
+    inline void locBufferWrites() {  }
+
+   inline void updateBuffers(int x, int y, Vector3D color, int sampleCount)
+   {
+        updateSample(xyToIdx(x, y, 3, m_width), m_colorbuffer, m_framebuffer, color, sampleCount);
+   }
 
 protected:
     Primitive*   m_world;
@@ -41,6 +47,9 @@ protected:
     Taskbuffer   m_taskbuffer;
     unsigned int m_width;
     unsigned int m_height;
+
+private:
+    std::mutex m_writeBufferMutex;
 };
 
 #endif //RAYTRACER_SAMPLER_H

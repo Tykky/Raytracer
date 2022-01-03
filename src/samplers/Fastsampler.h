@@ -11,7 +11,6 @@ public:
         m_threadpool(this)
     {}
     void render(int samples) override;
-private:
     void samplePixel(int x, int y) override;
 
     Threadpool m_threadpool;

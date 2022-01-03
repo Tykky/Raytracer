@@ -16,10 +16,9 @@ public:
         m_randomFloat = std::bind(m_randomDistribution, m_randomEngine);
     }
     void render(int samples) override;
-
-private:
     void samplePixel(int x, int y) override;
 
+protected:
     unsigned int m_bounceLimit;
     std::mt19937 m_randomEngine;
     std::uniform_real_distribution<float> m_randomDistribution;
