@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include <cmath>
 
-static const float pi = 3.14159265359f;
+static const float pi = 3.1416;
 
 Camera::Camera() : m_aspectRatio(16.f/9.f), m_origin({0,0,0}), m_pointat({1,0,0}), m_up({0,1,0}) 
 {

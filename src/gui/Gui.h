@@ -14,182 +14,179 @@
 #include <materials/Metal.h>
 #include <materials/Dielectric.h>
 
-class Gui 
+struct Menuitem
 {
-public:
-    /**
-     * @brief Handles everything gui related.
-     * Initialize GLFW before calling this.
-     * @param window
-     */
-    Gui(GLFWwindow *window);
-    ~Gui();
-
-    /**
-     * @brief Initializes imgui context & OpenGl. Call this
-     * before you call renderGui().
-     */
-    void init();
-
-    /** @Brief Call this in between init() and renderDrawData() */
-    void renderGui();
-
-    /**
-     * @brief Draws the rendered data to the screen. Call this
-     * after renderGui().
-     */
-    void renderDrawData() const;
-
-private:
-
-    struct Menuitem 
-    {
-        std::string label;
-        bool* display = nullptr;
-        std::vector<Menuitem>* submenu = nullptr;
-    };
-
-    enum class orientation { HORIZONTAL, VERTICAL};
-
-    GLFWwindow* m_window;
-
-    int m_windowWidth;
-    int m_windowHeight;
-
-    bool m_displayImguiMetrics   = false;
-    bool m_displayImguiDemo      = false;
-    bool m_displayImguiAbout     = false;
-    bool m_displayImguiUserGUide = false;
-    bool m_displaySaveAs         = false;
-    bool m_displayMenuFile       = true;
-    bool m_displayMenuDebug      = false;
-    bool m_displayMenuWindow     = true;
-
-    std::vector<Menuitem> m_fileSubmenu = 
-    {
-        {"Save as", &m_displaySaveAs}
-    };
-
-    std::vector<Menuitem> m_debugSubmenu = 
-    {
-        {"ImGui metrics",    &m_displayImguiMetrics},
-        {"ImGui demo",       &m_displayImguiDemo},
-        {"ImGui about",      &m_displayImguiAbout},
-        {"ImGui user guide", &m_displayImguiUserGUide},
-    };
-
-    std::vector<Menuitem> m_windowSubmenu = {};
-
-    std::vector<Menuitem> m_mainmenu = 
-    {
-        {"File",   &m_displayMenuFile,   &m_fileSubmenu},
-        {"Debug",  &m_displayMenuDebug,  &m_debugSubmenu}
-    };
-
-    float m_mainMenubarHeight = 19;
-
-    float m_rightSideBarWidth              = 300;
-    const float m_rightSideBarMinWidth     = 10;
-    const float m_RightSideBarMaxWidth     = 300;
-    const float m_rightSideBarHoverMargin  = 10;
-    bool m_isRightSideBarResizing          = false;
-    float m_SamplesPerSecond               = 1000;
-
-    float m_perfMonitorHeight = 120;
-    int m_PerfMonitorResolution = 1000;
-    std::vector<float> m_perfMonitorGraphData = std::vector<float>(m_PerfMonitorResolution);
-
-    float m_textureWidth;
-    float m_textureHeight;
-    ImVec2 m_textureOffset = {0,0};
-
-    int m_renderWidth = 1280;
-    int m_renderHeight = 720;
-    int m_renderSamples = 10;
-    Camera m_camera = {};
-
-    float m_cameraFov = 90.f;
-    float m_cameraPosX = 0.f;
-    float m_cameraPosY = 0.f;
-    float m_cameraPosZ = 0.f;
-    float m_cameraUpX = 0.f;
-    float m_cameraUpY = 0.f;
-    float m_cameraUpZ = 0.f;
-
-    int m_currentHittable = 0;
-    char m_currentHittableName[20] = "";
-    float m_currentHittablePosX = 0.f;
-    float m_currentHittablePosY = 0.f;
-    float m_currentHittablePosZ = 0.f;
-    int m_currentMaterial = 0;
-    float m_currentSphereRadius = 0.f;
-    int m_currrentObjectType = 2;
-    float m_currentVertex0[3] = {0.f, 0.f, 0.f};
-    float m_currentVertex1[3] = {0.f, 0.f, 0.f};
-    float m_currentVertex2[3] = {0.f, 0.f, 0.f};
-    float m_currentNormal[3] = {0.f, 0.f, 0.f};
-    char m_currentObjFilename[100] = "";
-
-    int m_randomizerSphereCOunt = 10000;
-    int m_randomizerScatterMultiplier = 25;
-
-    // Indexes match between hittable_names and world
-    std::vector<char *> m_hittableNames = {}; // used only for GUI
-    std::vector<char *> m_materialNames;
-
-    std::vector<char *> m_objectTypes;
-
-    std::vector<std::shared_ptr<Primitive>> m_world = {}; // used for rendering
-    std::shared_ptr<Primitive> m_bvh = {};
-
-    // Randomized materials are inserted here
-    std::vector<std::unique_ptr<Material>> m_world_materials = {};
-
-    // Materials used for "Add spheres" section
-    std::unique_ptr<Material> m_lambertian = std::make_unique<Lambertian>(Vector3D(0.5f, 0.5f, 0.5f));
-    std::unique_ptr<Material> m_metal = std::make_unique<Metal>(Vector3D(0.8f,0.6f,0.4f), 0.3f);
-    std::unique_ptr<Material> m_dielectric = std::make_unique<Dielectric>(1.3f);
-    std::unique_ptr<Material> m_mix;
-
-    // random generator
-    std::mt19937 m_generator = {};
-    std::uniform_real_distribution<float> m_dist = std::uniform_real_distribution<float>(0,1);
-    std::function<float()> randomFloat = std::bind(m_dist,m_generator);
-
-    Raytracer m_raytracer = {nullptr, &m_camera, m_renderWidth, m_renderHeight};
-
-    GLuint m_framebufferTextureId;
-
-    const unsigned int m_staticWindowFlags = ImGuiWindowFlags_NoMove |
-                                              ImGuiWindowFlags_NoTitleBar |
-                                              ImGuiWindowFlags_NoResize |
-                                              ImGuiWindowFlags_NoBringToFrontOnFocus;
-
-    unsigned int setupTexture() const;
-    void displayMainMenu();
-    void displaySaveAs();
-    void displayRenderedImage();
-
-    void displayRightSideBar();
-    void displayRenderSettingsChild(const ImVec2& size);
-    void displayCameraSettingsChild(const ImVec2& size);
-    void displayObjectsChild(const ImVec2& size);
-    void displayRandomizerChild(const ImVec2& size);
-    void displayPerfMonitor();
-
-    void startRaytracer();
-    void rightSideBarResize();
-    void resizeWindow(const ImVec2& hover_min, const ImVec2& hover_max, float& resize_pos,
-                      const float& resize_pos_min, const float& resize_pos_max, bool& is_resizing,
-                      const orientation& resize_orientation);
-
-    void moveTextureWhenDragged();
-    void zoomTextureWhenScrolled();
-
-    void randomizeWorld(const int& spheres, const int& scatter);
-    void clearObjects();
-
+    std::string label;
+    bool* display = nullptr;
+    std::vector<Menuitem>* submenu = nullptr;
 };
 
+enum class orientation { HORIZONTAL, VERTICAL};
+
+struct GuiState
+{
+    GLFWwindow* window = nullptr;
+
+    int windowWidth  = 800;
+    int windowHeight = 600;
+
+    bool displayImguiMetrics   = false;
+    bool displayImguiDemo      = false;
+    bool displayImguiAbout     = false;
+    bool displayImguiUserGUide = false;
+    bool displaySaveAs         = false;
+    bool displayMenuFile       = true;
+    bool displayMenuDebug      = false;
+    bool displayMenuWindow     = true;
+
+    std::vector<Menuitem> fileSubmenu =
+    {
+        {"Save as", &displaySaveAs}
+    };
+
+    std::vector<Menuitem> debugSubmenu =
+    {
+        {"ImGui metrics",    &displayImguiMetrics},
+        {"ImGui demo",       &displayImguiDemo},
+        {"ImGui about",      &displayImguiAbout},
+        {"ImGui user guide", &displayImguiUserGUide},
+    };
+
+    std::vector<Menuitem> windowSubmenu = {};
+
+    std::vector<Menuitem> mainmenu =
+    {
+        {"File",   &displayMenuFile,   &fileSubmenu},
+        {"Debug",  &displayMenuDebug,  &debugSubmenu}
+    };
+
+    float mainMenubarHeight = 19;
+
+    float rightSideBarWidth              = 300;
+    const float rightSideBarMinWidth     = 10;
+    const float rightSideBarMaxWidth     = 300;
+    const float rightSideBarHoverMargin  = 10;
+    bool isRightSideBarResizing          = false;
+    float samplesPerSecond               = 1000;
+
+    float perfMonitorHeight = 120;
+    int perfMonitorResolution = 1000;
+    std::vector<float> perfMonitorGraphData = std::vector<float>(perfMonitorResolution);
+
+    float textureWidth;
+    float textureHeight;
+    ImVec2 textureOffset = {0,0};
+
+    int renderWidth = 1280;
+    int renderHeight = 720;
+    int renderSamples = 10;
+    Camera camera = {};
+
+    float cameraFov = 90.f;
+    float cameraPosX = 0.f;
+    float cameraPosY = 0.f;
+    float cameraPosZ = 0.f;
+    float cameraUpX = 0.f;
+    float cameraUpY = 0.f;
+    float cameraUpZ = 0.f;
+
+    int currentHittable = 0;
+    char currentHittableName[20] = "";
+    float currentHittablePosX = 0.f;
+    float currentHittablePosY = 0.f;
+    float currentHittablePosZ = 0.f;
+    int currentMaterial = 0;
+    float currentSphereRadius = 0.f;
+    int currrentObjectType = 2;
+    float currentVertex0[3] = {0.f, 0.f, 0.f};
+    float currentVertex1[3] = {0.f, 0.f, 0.f};
+    float currentVertex2[3] = {0.f, 0.f, 0.f};
+    float currentNormal[3] = {0.f, 0.f, 0.f};
+    char currentObjFilename[100] = "";
+
+    int randomizerSphereCOunt = 10000;
+    int randomizerScatterMultiplier = 25;
+
+    // Indexes match between hittable_names and world
+    std::vector<char *> hittableNames = {}; // used only for GUI
+    std::vector<char *> materialNames;
+
+    std::vector<char *> objectTypes;
+
+    std::vector<std::shared_ptr<Primitive>> world = {}; // used for rendering
+    std::shared_ptr<Primitive> bvh = {};
+
+    // Randomized materials are inserted here
+    std::vector<std::unique_ptr<Material>> world_materials = {};
+
+    // Materials used for "Add spheres" section
+    std::unique_ptr<Material> lambertian = std::make_unique<Lambertian>(Vector3D(0.5f, 0.5f, 0.5f));
+    std::unique_ptr<Material> metal = std::make_unique<Metal>(Vector3D(0.8f,0.6f,0.4f), 0.3f);
+    std::unique_ptr<Material> dielectric = std::make_unique<Dielectric>(1.3f);
+    std::unique_ptr<Material> mix;
+
+    // random generator
+    std::mt19937 generator = {};
+    std::uniform_real_distribution<float> dist = std::uniform_real_distribution<float>(0,1);
+    std::function<float()> randomFloat = std::bind(dist, generator);
+
+    Raytracer raytracer = {nullptr, &camera, renderWidth, renderHeight};
+
+    GLuint framebufferTextureId;
+
+    const unsigned int staticWindowFlags = ImGuiWindowFlags_NoMove       |
+                                             ImGuiWindowFlags_NoTitleBar |
+                                             ImGuiWindowFlags_NoResize   |
+                                             ImGuiWindowFlags_NoBringToFrontOnFocus;
+};
+
+// Public api
+
+/**
+ * @brief Initializes imgui context & OpenGl. Call this
+ * before you call renderGui().
+ */
+void init(GLFWwindow* window, int& framebufferTextureId, int width, int height, char* framebuffer);
+
+/** @Brief Call this in between init() and renderDrawData() */
+void renderGui(GuiState& state);
+
+/**
+ * @brief Draws the rendered data to the screen. Call this
+ * after renderGui().
+ */
+void renderDrawData();
+
+// Implementation details
+namespace
+{
+    unsigned int setupTexture();
+    void displayMainMenu(const std::vector<Menuitem> &mainMenu);
+    void displaySaveAs();
+    void displayRenderedImage(GuiState &state);
+    void displayRightSideBar(const GuiState &state);
+    void displayRenderSettingsChild(const ImVec2 &size, GuiState &state);
+    void displayCameraSettingsChild(const ImVec2 &size, GuiState &state);
+    void displayObjectsChild(const ImVec2 &size, GuiState &state);
+    void displayRandomizerChild(const ImVec2 &size, GuiState &state);
+    void displayPerfMonitor();
+    void startRaytracer(const GuiState &state);
+    void rightSideBarResize(GuiState &state);
+    void resizeWindow(const ImVec2 &hover_min, const ImVec2 &hover_max, float &resize_pos,
+                      const float &resize_pos_min, const float &resize_pos_max, bool &is_resizing,
+                      const orientation &resize_orientation);
+    void moveTextureWhenDragged(GuiState &state);
+    void zoomTextureWhenScrolled(GuiState &state);
+    void randomizeWorld(const int &spheres, const int &scatter, GuiState &state);
+    void clearObjects(GuiState &state);
+
+    // Windowing stuff
+    GLFWwindow* createWindow();
+    void loadGl();
+    void destroyWindow(GLFWwindow* window);
+    void windowErrorCallback(const int error, const char *description);
+
+    void renderLoop();
+}
 
 #endif //RAYTRACER_GUI_H

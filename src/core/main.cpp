@@ -4,6 +4,4 @@
 
 int main()
 {
-    Window window("Raytracer");
-    return 0;
 }

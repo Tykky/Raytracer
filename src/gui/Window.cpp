@@ -8,13 +8,12 @@ void error_callback(const int error, const char* description)
   std::cerr << "[ERROR] " << error << " " << description << std::endl;
 }
 
-Window::Window(const char *title) 
+Window::Window(const char *title, GuiState& state)
 {
-    
     glfwSetErrorCallback(error_callback);
 	
     if(glfwInit()) {
-        //glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
+        glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
         m_window = glfwCreateWindow(800, 600, title, NULL, NULL);
     	if(!m_window) {
             glfwTerminate();
@@ -24,7 +23,7 @@ Window::Window(const char *title)
         if (glewInit() != GLEW_OK) {
             throw std::runtime_error("glewInit failed");
         }
-        render();
+        render(state);
     } 
     else 
     {
@@ -37,22 +36,18 @@ Window::~Window()
     glfwDestroyWindow(m_window);
 }
 
-void Window::render() const 
+void Window::render(GuiState& state) const
 {
-
    // disable vsync
-   //glfwSwapInterval(0);
-
-   Gui gui(m_window);
-   gui.init(); // Creates OpenGl context etc...
+   glfwSwapInterval(0);
 
    // Main render loop
    while (!glfwWindowShouldClose(m_window)) 
    {
         glfwPollEvents();
-        gui.renderGui();
+        renderGui(state);
         glClear(GL_COLOR_BUFFER_BIT);
-        gui.renderDrawData();
+        renderDrawData();
         glfwSwapBuffers(m_window);
    }
 }
