@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <mutex>
+#include <thread>
 
 #include "core/buffers.h"
 
