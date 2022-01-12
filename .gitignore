@@ -15,3 +15,4 @@ Makefile
 _build/
 make.bat
 imgui.ini
+build.sh

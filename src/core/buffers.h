@@ -4,6 +4,7 @@
 #include <vector>
 #include <cassert>
 #include "Vector3D.h"
+#include <cmath>
 
 struct Task;
 
