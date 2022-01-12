@@ -34,10 +34,10 @@ public:
     inline void setColorbuffer(Colorbuffer* colorbuf) { m_colorbuffer = colorbuf; }
     inline void locBufferWrites() {  }
 
-   inline void updateBuffers(int x, int y, Vector3D color, int sampleCount)
-   {
+    inline void updateBuffers(int x, int y, Vector3D color, int sampleCount)
+    {
         updateSample(xyToIdx(x, y, 3, m_width), m_colorbuffer, m_framebuffer, color, sampleCount);
-   }
+    }
 
 protected:
     Primitive*   m_world;

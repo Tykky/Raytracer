@@ -14,6 +14,7 @@
 #include "materials/Lambertian.h"
 #include "materials/Dielectric.h"
 #include "style.h"
+#include "logging/logging.h"
 
 void init(GLFWwindow *window, int &framebufferTextureId, int width, int height, char *framebuffer)
 {
@@ -64,9 +65,9 @@ namespace
         {
             for (const Menuitem &item: mainMenu)
             {
-                if (item.display && ImGui::BeginMenu(item.label.c_str()))
+              if (item.display && ImGui::BeginMenu(item.label.c_str()))
                 {
-                    for (const Menuitem &subitem: *item.submenu)
+                   for (const Menuitem &subitem: *item.submenu)
                     {
                         if (ImGui::MenuItem(subitem.label.c_str(), nullptr, *subitem.display))
                         {
@@ -364,40 +365,5 @@ namespace
         state.world.clear();
         state.hittableNames.clear();
         state.world_materials.clear();
-    }
-
-    GLFWwindow* createWindow(const char* title, int width, int height)
-    {
-        GLFWwindow* window = nullptr;
-        glfwSetErrorCallback(windowErrorCallback);
-        if (glfwInit())
-        {
-            window = glfwCreateWindow(width, height, title, NULL, NULL);
-        }
-        glfwMakeContextCurrent(window);
-        return window;
-    }
-
-    void loadGl()
-    {
-        if (!glewInit())
-        {
-            throw std::runtime_error("Loading GL functions failed");
-        }
-    }
-
-    void destroyWindow(GLFWwindow* window)
-    {
-        glfwDestroyWindow(window);
-        glfwTerminate();
-    }
-
-    void windowErrorCallback(const int error, const char *description)
-    {
-        std::cout << "[GLFW ERROR]: " << error << " " << description << std::endl;
-    }
-
-    void renderLoop()
-    {
     }
 }

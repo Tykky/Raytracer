@@ -19,9 +19,11 @@ set(RAYTRACER_SRC core/Ray.cpp
         samplers/Randommontecarlosampler.cpp
         samplers/Fastsampler.cpp
         threads/Threadpool.cpp
+        logging/logging.cpp
         )
-set(RAYTRACER_GUI gui/Window.cpp
-        gui/Gui.cpp
+set(RAYTRACER_GUI editor/Window.cpp
+        editor/Gui.cpp
+        editor/Editor.cpp
         ../external/imgui/imgui.cpp
         ../external/imgui/imgui_draw.cpp
         ../external/imgui/imgui_widgets.cpp

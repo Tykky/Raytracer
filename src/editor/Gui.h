@@ -157,8 +157,7 @@ void renderGui(GuiState& state);
  */
 void renderDrawData();
 
-// Implementation details
-namespace
+namespace // Implementation details
 {
     unsigned int setupTexture();
     void displayMainMenu(const std::vector<Menuitem> &mainMenu);
@@ -179,14 +178,6 @@ namespace
     void zoomTextureWhenScrolled(GuiState &state);
     void randomizeWorld(const int &spheres, const int &scatter, GuiState &state);
     void clearObjects(GuiState &state);
-
-    // Windowing stuff
-    GLFWwindow* createWindow();
-    void loadGl();
-    void destroyWindow(GLFWwindow* window);
-    void windowErrorCallback(const int error, const char *description);
-
-    void renderLoop();
 }
 
 #endif //RAYTRACER_GUI_H

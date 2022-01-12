@@ -1,4 +1,4 @@
-#include "gui/Window.h"
+#include "editor/Window.h"
 
 #include "samplers/Randommontecarlosampler.h"
 
