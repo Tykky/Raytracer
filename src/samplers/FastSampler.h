@@ -3,10 +3,10 @@
 
 #include "samplers/Sampler.h"
 
-class Fastsampler : public Sampler
+class FastSampler : public Sampler
 {
 public:
-    Fastsampler(Primitive* world, Camera* camera, Colorbuffer* colorbuf, Framebuffer* framebuf, int width, int height) :
+    FastSampler(Primitive* world, Camera* camera, Colorbuffer* colorbuf, Framebuffer* framebuf, int width, int height) :
         Sampler(world, camera, colorbuf, framebuf, width, height),
         m_threadpool(this)
     {}

@@ -3,14 +3,25 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <cstddef>
 
-namespace editor
+namespace Editor
 {
-    void initEditor(GLFWwindow* window);
+    struct Options
+    {
+        bool enableViewports = false;
+        bool enableVsync     = true;
+    };
+
+    void init(GLFWwindow* window, const Options& options);
     GLFWwindow* createWindow(int width, int height, const char* title);
-    void loadGl();
+    void destroyWindow(GLFWwindow* window);
     void windowErrorCallback(int code, const char* description);
-    void renderLoop(GLFWwindow* window, const char* description);
+
+    void renderGui(ImGuiIO& io);
+    void renderLoop(GLFWwindow* window);
+    void renderImguiDrawData();
 }
 
 #endif //RAYTRACER_EDITOR_H

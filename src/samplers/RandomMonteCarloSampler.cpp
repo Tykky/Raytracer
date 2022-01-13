@@ -1,11 +1,11 @@
-#include "core/buffers.h"
-#include "Fastsampler.h"
+#include "RandomMonteCarloSampler.h"
 #include "core/utility.h"
 #include "materials/Material.h"
 #include <cassert>
 
-void Fastsampler::render(int samples)
+void RandomMonteCarloSampler::render(int samples)
 {
+    // Filling the queue and taskbuffer
     m_taskbuffer.resize(m_width * m_height);
     for (int y = 0; y < m_height; ++y)
     {
@@ -21,22 +21,36 @@ void Fastsampler::render(int samples)
     m_threadpool.spawnThreads();
 }
 
-void Fastsampler::samplePixel(int x, int y)
+void RandomMonteCarloSampler::samplePixel(int x, int y)
 {
     int depth = 0;
     Hitrecord record;
     const float epsilon = 0.001f;
     Vector3D color(1, 1, 1);
 
-    Ray r = m_camera->getRayScreenCoords(static_cast<float>(x), static_cast<float>(y), m_width, m_height);
+    Ray r = m_camera->getRayScreenCoordsWithJitter(static_cast<float>(x),static_cast<float>(y),
+                                                   m_width, m_height,m_randomFloat);
 
-    if (m_world && m_world->hit(r, epsilon, std::numeric_limits<float>::max(), record))
+    while(m_world && m_world->hit(r, epsilon, std::numeric_limits<float>::max(), record))
     {
-        color *= Vector3D(0.5, 0.5, 0.5) * (-record.normal.dot(r.getDirection()));
+        Ray scatter;
+        Vector3D attenuation;
+        if (depth < m_bounceLimit && record.matptr->scatter(r, record, attenuation, scatter, m_randomFloat))
+        {
+            depth++;
+            r = scatter;
+            color *= attenuation;
+        }
+        else
+        {
+            color = {0, 0, 0};
+            break;
+        }
     }
-    else
+
+    if (depth == 0)
     {
-        color = {0, 0, 0};
+        color = skyGradient(r);
     }
 
     const int taskIdx = xyToIdx(x, y, 1, m_width);

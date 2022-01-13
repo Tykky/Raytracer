@@ -15,24 +15,25 @@ set(RAYTRACER_SRC core/Ray.cpp
         materials/Metal.cpp
         materials/Dielectric.cpp
         materials/Mix.cpp
-        io/meshloader.cpp
-        samplers/Randommontecarlosampler.cpp
-        samplers/Fastsampler.cpp
+        io/MeshLoader.cpp
+        samplers/RandomMonteCarloSampler.cpp
+        samplers/FastSampler.cpp
         threads/Threadpool.cpp
-        logging/logging.cpp
+        logging/Logging.cpp
         )
-set(RAYTRACER_GUI editor/Window.cpp
-        editor/Gui.cpp
+set(RAYTRACER_GUI
         editor/Editor.cpp
+        editor/widgets/Widget.cpp
         ../external/imgui/imgui.cpp
         ../external/imgui/imgui_draw.cpp
         ../external/imgui/imgui_widgets.cpp
         ../external/imgui/imgui_demo.cpp
-        ../external/imgui/examples/imgui_impl_glfw.cpp
-        ../external/imgui/examples/imgui_impl_opengl3.cpp)
+        ../external/imgui/imgui_tables.cpp
+        ../external/imgui/backends/imgui_impl_glfw.cpp
+        ../external/imgui/backends/imgui_impl_opengl3.cpp)
 
 if(BUILD_GUI)
-    include_directories(../external/imgui ../external/imgui/examples)
+    include_directories(../external/imgui ../external/imgui/backends)
     if(WIN32)
         add_executable(raytracer core/main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
     else()

@@ -18,7 +18,7 @@ typedef std::vector<float> Colorbuffer;
 typedef std::vector<unsigned char> Framebuffer;
 
 // Contains a set of tasks that can be executed
-// In parallel
+// in parallel
 typedef std::vector<Task> Taskbuffer;
 
 // Convert (x,y) coordinate to colorbuffer or framebuffer index
