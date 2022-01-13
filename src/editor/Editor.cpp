@@ -85,8 +85,8 @@ namespace Editor
        ImGui_ImplOpenGL3_NewFrame();
        ImGui_ImplGlfw_NewFrame();
        ImGui::NewFrame();
-       ImGui::ShowMetricsWindow();
-       ImGui::ShowStyleEditor();
+
+       ImGui::ShowDemoWindow();
 
        ImGui::EndFrame();
 
@@ -94,8 +94,10 @@ namespace Editor
 
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
+            GLFWwindow* window = glfwGetCurrentContext();
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(window);
         }
 
        renderImguiDrawData();
