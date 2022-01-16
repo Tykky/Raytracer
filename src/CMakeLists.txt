@@ -20,10 +20,11 @@ set(RAYTRACER_SRC core/Ray.cpp
         samplers/FastSampler.cpp
         threads/Threadpool.cpp
         logging/Logging.cpp
-        )
+)
 set(RAYTRACER_GUI
         editor/Editor.cpp
-        editor/widgets/Widget.cpp
+        editor/Widgets.cpp
+        editor/Graphics.cpp
         ../external/imgui/imgui.cpp
         ../external/imgui/imgui_draw.cpp
         ../external/imgui/imgui_widgets.cpp

@@ -27,8 +27,7 @@ inline unsigned int xyToIdx(int x, int y, unsigned int dim, unsigned int rowWidt
     return dim * (rowWidth * y + x);
 }
 
-// First we write a sample to colorbuffer and then
-// update framebuffer accordingly.
+// First we write a sample to colorbuffer and then update framebuffer accordingly.
 inline void updateSample(int idx, Colorbuffer* colorbuf, Framebuffer* framebuf, Vector3D color, int sampleCount)
 {
     for (int i = 0; i < 3; ++i)

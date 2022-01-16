@@ -19,6 +19,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(OpenGL_GL_PREFERENCE "GLVND")
 
 include_directories(external/tinyobjloader)
+include_directories(external/stb_image)
 
 if(BUILD_TEST)
 	add_subdirectory(external/googletest)

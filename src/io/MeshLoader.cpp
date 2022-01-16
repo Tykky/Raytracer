@@ -63,7 +63,7 @@ std::vector<std::shared_ptr<Primitive>> loadObj(const std::string& file, Materia
                 tinyobj::real_t ny = attrib.normals[3*idx.normal_index+1];
                 tinyobj::real_t nz = attrib.normals[3*idx.normal_index+2];
                 normal += Vector3D(static_cast<float>(nx), static_cast<float>(ny), -static_cast<float>(nz));
-                triangle.setVertex(Vector3D(static_cast<float>(vx), static_cast<float>(vy), -static_cast<float>(vz)), v);
+                triangle.setVertex(Vector3D(static_cast<float>(vx), static_cast<float>(vy), - static_cast<float>(vz)), v);
             }
             index_offset += fv;
             normal /= static_cast<float>(fv); // average normals

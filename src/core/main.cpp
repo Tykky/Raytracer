@@ -2,11 +2,13 @@
 
 int main()
 {
-    GLFWwindow* window = Editor::createWindow(800, 800, "kebab");
     Editor::Options options{};
+
     options.enableViewports = true;
+    GLFWwindow* window = Editor::createWindow("kebab", 800, 800, options);
+
     Editor::init(window, options);
-    Editor::renderLoop(window);
+    Editor::renderLoop(window, nullptr, 0);
 
     Editor::destroyWindow(window);
 }
