@@ -10,71 +10,27 @@ namespace Editor
     Widget::Widget(const char* name) :
         m_name(name) {}
 
-    void Widget::close()
-    {
-        m_open = false;
-    }
+    TextureViewer::TextureViewer(const char* name, unsigned int texture) :
+            Widget(name), m_texture(texture) {}
 
-    void Widget::open()
-    {
-        m_open = true;
-    }
-
-    RenderView::RenderView(const char* name) :
-            Widget(name) {}
-
-    RenderView::RenderView(const char* name, GLtexture texture) :
-            Widget(name), m_gltexture() {}
-
-    void RenderView::draw()
+    void TextureViewer::draw()
     {
         if (m_open && ImGui::Begin(m_name, &m_open))
         {
             // Full screen texture
             const auto size = ImGui::GetWindowSize();
-            ImGui::Image(nullptr, size);
+            ImGui::Image((void*)m_texture, size);
             ImGui::End();
         }
     }
 
     void drawMainMenuBar()
     {
-        struct SubMenuItem
-        {
-            const char* name;
-            void (*menuClicked)() = nullptr;
-        };
-
-        struct MainMenuItem
-        {
-            const char* name;
-            // TODO: Try to get rid of std::vector
-            std::vector<SubMenuItem> subMenu;
-        };
-
-        static MainMenuItem topLevelMainMenu[] =
-        {
-            {"File", {
-                {""},
-                {""}
-            }},
-            {"View",{
-                {"Renderview"}
-            }},
-            {"Debug",{
-
-            }}
-        };
-
         if (ImGui::BeginMainMenuBar())
         {
-            for (auto item : topLevelMainMenu)
+            if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::BeginMenu(item.name))
-                {
-                    // Draw submenu here
-                    ImGui::EndMenu();
-                }
+                ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
         }
@@ -95,7 +51,7 @@ namespace Editor
             ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-            // We don't need any of this either for main dockspace
+            // We don't need any of this either for the main dockspace
             auto windowFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings |
                                ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
                                ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBringToFrontOnFocus;

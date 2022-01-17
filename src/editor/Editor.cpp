@@ -6,7 +6,10 @@
 #include <stdexcept>
 #include <string>
 #include "Style.h"
-#include "Widgets.h"
+#include <unordered_map>
+#include <memory>
+
+static std::vector<std::unique_ptr<Editor::Widget>> WIDGET_STORAGE;
 
 namespace Editor
 {
@@ -25,6 +28,8 @@ namespace Editor
 
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 440");
+
+        createDefaultEditorWidgets();
     }
 
     GLFWwindow* createWindow(const char* title, int width, int height, const Options& options)
@@ -66,14 +71,14 @@ namespace Editor
         glfwTerminate();
     }
 
-    void renderLoop(GLFWwindow* window, Widget* widgets, std::size_t numWidgets)
+    void renderLoop(GLFWwindow* window)
     {
         ImGuiIO &io = ImGui::GetIO();
         while (!glfwWindowShouldClose(window))
         {
             glfwPollEvents();
             glClear(GL_COLOR_BUFFER_BIT);
-            renderGui(io, widgets, numWidgets);
+            renderGui(io);
             glfwSwapBuffers(window);
         }
     }
@@ -89,27 +94,24 @@ namespace Editor
         logError(msg.data());
     }
 
-    void drawEditor(const ImGuiIO& io, Widget* widgets, std::size_t numWidgets)
+    void drawEditor(const ImGuiIO& io)
     {
         drawMainMenuBar();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
         drawDockspace("Main", dockspaceID, io);
-        if (widgets)
+        for (int i = 0; i < WIDGET_STORAGE.size(); ++i)
         {
-            for (int i = 0; i < numWidgets; ++i)
-            {
-                widgets[i].draw();
-            }
+            WIDGET_STORAGE[i]->draw();
         }
     }
 
-    void renderGui(ImGuiIO &io, Widget* widgets, std::size_t numWidgets)
+    void renderGui(ImGuiIO &io)
     {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        drawEditor(io, widgets, numWidgets);
+        drawEditor(io);
 
         ImGui::EndFrame();
         ImGui::Render();
@@ -125,9 +127,10 @@ namespace Editor
         renderImguiDrawData();
     }
 
-    std::vector<Widget> createDefaultEditorWidgets()
+    void createDefaultEditorWidgets()
     {
-        std::vector<Widget> widgets;
-        return widgets;
+        GLtexture gltexture;
+        if(loadGlTexture("scot.png", gltexture))
+            WIDGET_STORAGE.push_back(std::make_unique<TextureViewer>("Renderview", gltexture.textureID));
     }
 }

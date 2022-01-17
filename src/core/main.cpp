@@ -8,7 +8,7 @@ int main()
     GLFWwindow* window = Editor::createWindow("kebab", 800, 800, options);
 
     Editor::init(window, options);
-    Editor::renderLoop(window, nullptr, 0);
+    Editor::renderLoop(window);
 
     Editor::destroyWindow(window);
 }

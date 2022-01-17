@@ -8,20 +8,11 @@
 #include <vector>
 #include "Widgets.h"
 
-// Example usage:
-// First create a window:
-//      Options options{};
-//      auto window = Editor::createWindow("test", 800, 600, {});
-// Then initialize the editor:
-//      Editor::init(window, options);
-// Then begin render/input loop
-//      Editor::renderLoop(window);
-
 namespace Editor
 {
     struct Options
     {
-        bool enableViewports         = false; // Viewports allow moving editor windows outside main window
+        bool enableViewports         = false; // Viewports allow moving editor windows outside the main window
         bool enableVsync             = true;
         bool enableMainWindowBorders = true;  // Enables OS window title bar and borders
     };
@@ -34,14 +25,14 @@ namespace Editor
     void init(GLFWwindow* window, const Options& options);
 
     // Begins executing draw/input loop
-    void renderLoop(GLFWwindow* window, Widget* widgets, std::size_t numWidgets);
+    void renderLoop(GLFWwindow* window);
 
     // Stuff that is used internally
     void renderImguiDrawData();
-    void renderGui(ImGuiIO &io, Widget* widgets, std::size_t numWidgets);
-    void drawEditor(const ImGuiIO& io, Widget* widgets, std::size_t numWidgets);
+    void renderGui(ImGuiIO &io);
+    void drawEditor(const ImGuiIO& io);
     void windowErrorCallback(int code, const char* description);
-    std::vector<Widget> createDefaultEditorWidgets();
+    void createDefaultEditorWidgets();
 }
 
 #endif //RAYTRACER_EDITOR_H
