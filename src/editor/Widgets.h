@@ -23,7 +23,7 @@ namespace Editor
 
     protected:
         bool        m_open = true;
-        const char *m_name;
+        const char* m_name;
     };
 
     class TextureViewer : public Widget
@@ -38,6 +38,15 @@ namespace Editor
         TextureStore * m_TEXTURE_STORE = nullptr;
     };
 
+    // TODO: Sometimes docking the LogViewer causes mismatching begin()/end() calls
+    class LogViewer : public Widget
+    {
+    public:
+        LogViewer();
+        void draw() override;
+    };
+
+    // TODO: Figure out why closing DemoWidget causes mismatching begin()/end() calls
     // Just shows default Dear Imgui demo widget.
     // Mainly for testing things out
     class DemoWidget : public Widget

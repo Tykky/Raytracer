@@ -134,5 +134,6 @@ namespace Editor
     {
         WIDGET_STORAGE.push_back(std::make_unique<TextureViewer>("Texture viewer", &TEXTURE_STORE));
         WIDGET_STORAGE.push_back(std::make_unique<DemoWidget>());
+        WIDGET_STORAGE.push_back(std::make_unique<LogViewer>());
     }
 }

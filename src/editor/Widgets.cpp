@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Graphics.h"
 #include <vector>
+#include "logging/Logging.h"
 
 namespace Editor
 {
@@ -50,8 +51,39 @@ namespace Editor
 
     void DemoWidget::draw()
     {
-        if(m_open)
-            ImGui::ShowDemoWindow(&m_open);
+        ImGui::ShowDemoWindow(&m_open);
+    }
+
+    LogViewer::LogViewer() :
+            Widget("Logviewer") {}
+
+    void LogViewer::draw()
+    {
+        if(m_open && ImGui::Begin(m_name, &m_open))
+        {
+            ImGui::BeginChild("Logtext###ID");
+            auto logs = getLogMessages();
+            // TODO: Figure out why popping and pushing stylevars doesn't work
+            for (auto& message : (*logs))
+            {
+                switch (message.type)
+                {
+                    case MessageType::ERROR:
+                        ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 0, 0 ,255));
+                        break;
+                    case MessageType::WARNING:
+                        ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 128, 0 ,255));
+                        break;
+                    default:
+                        ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 255, 255 ,255));
+                        break;
+                }
+                ImGui::Text(message.message.data());
+                ImGui::PopStyleVar(1);
+            }
+            ImGui::EndChild();
+            ImGui::End();
+        }
     }
 
     void drawMainMenuBar()
@@ -99,16 +131,17 @@ namespace Editor
                                ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
                                ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBringToFrontOnFocus;
 
-            ImGui::Begin(name, nullptr, windowFlags);
+            if (ImGui::Begin(name, nullptr, windowFlags))
+            {
+                ImGui::PopStyleVar(3);
 
-            ImGui::PopStyleVar(3);
+                const auto dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
 
-            const auto dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
+                // Make this window as a dockspace
+                ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
 
-            // Make this window as a dockspace
-            ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
-
-            ImGui::End();
+                ImGui::End();
+            }
         }
     }
 
