@@ -9,7 +9,10 @@
 #include <unordered_map>
 #include <memory>
 
-static std::vector<std::unique_ptr<Editor::Widget>> WIDGET_STORAGE;
+// We store all widgets in this
+static WidgetStore  WIDGET_STORAGE;
+// We store all textures visible to editor here
+static TextureStore TEXTURE_STORE;
 
 namespace Editor
 {
@@ -77,7 +80,7 @@ namespace Editor
         while (!glfwWindowShouldClose(window))
         {
             glfwPollEvents();
-            glClear(GL_COLOR_BUFFER_BIT);
+            Gfx::clear();
             renderGui(io);
             glfwSwapBuffers(window);
         }
@@ -129,8 +132,7 @@ namespace Editor
 
     void createDefaultEditorWidgets()
     {
-        GLtexture gltexture;
-        if(loadGlTexture("scot.png", gltexture))
-            WIDGET_STORAGE.push_back(std::make_unique<TextureViewer>("Renderview", gltexture.textureID));
+        WIDGET_STORAGE.push_back(std::make_unique<TextureViewer>("Texture viewer", &TEXTURE_STORE));
+        WIDGET_STORAGE.push_back(std::make_unique<DemoWidget>());
     }
 }

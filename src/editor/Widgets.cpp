@@ -10,18 +10,48 @@ namespace Editor
     Widget::Widget(const char* name) :
         m_name(name) {}
 
-    TextureViewer::TextureViewer(const char* name, unsigned int texture) :
-            Widget(name), m_texture(texture) {}
+    TextureViewer::TextureViewer(const char* name, TextureStore* textureStore) :
+            Widget(name), m_TEXTURE_STORE(textureStore) {}
+
+    TextureViewer::TextureViewer(const char* name) :
+            Widget(name) {}
 
     void TextureViewer::draw()
     {
+        static Gfx::GLtexture* currentItem = nullptr;
+
         if (m_open && ImGui::Begin(m_name, &m_open))
         {
-            // Full screen texture
-            const auto size = ImGui::GetWindowSize();
-            ImGui::Image((void*)m_texture, size);
+            const char* preview = currentItem ? currentItem->name : "";
+            void* texId = currentItem ? (void*)currentItem->textureID : nullptr;
+            auto size = ImGui::GetWindowSize();
+
+            // Make room for drop down menu at bottom of the window
+            size = ImVec2(size.y, size.y - 100);
+            ImGui::Image(texId, size);
+
+            if (ImGui::BeginCombo("Textures", preview))
+            {
+                for (int i = 0; i < m_TEXTURE_STORE->size(); ++i)
+                {
+                    auto* tex = &m_TEXTURE_STORE->at(i);
+                    bool isSelected = (tex && currentItem && currentItem->textureID == tex->textureID);
+                    if (ImGui::Selectable(tex->name, isSelected))
+                        currentItem = tex;
+                }
+                ImGui::EndCombo();
+            }
             ImGui::End();
         }
+    }
+
+    DemoWidget::DemoWidget() :
+            Widget("") {}
+
+    void DemoWidget::draw()
+    {
+        if(m_open)
+            ImGui::ShowDemoWindow(&m_open);
     }
 
     void drawMainMenuBar()
@@ -29,6 +59,10 @@ namespace Editor
         if (ImGui::BeginMainMenuBar())
         {
             if (ImGui::BeginMenu("File"))
+            {
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Widgets"))
             {
                 ImGui::EndMenu();
             }
@@ -42,8 +76,17 @@ namespace Editor
         {
             const auto viewport = ImGui::GetMainViewport();
 
-            ImGui::SetNextWindowPos(viewport->Pos);
-            ImGui::SetNextWindowSize(ImVec2(viewport->Size));
+            // We need to leave some room at top to fit the main menu bar
+            static const int mainMenuGap = 18;
+
+            ImVec2 pos = viewport->Pos;
+            pos = {pos.x, pos.y + mainMenuGap};
+            ImGui::SetNextWindowPos(pos);
+
+            ImVec2 size = viewport->Size;
+            size = { size.x, size.y - mainMenuGap };
+            ImGui::SetNextWindowSize(ImVec2(size));
+
             ImGui::SetNextWindowViewport(viewport->ID);
 
             // We don't need rounding for the main dockspace

@@ -1,15 +1,23 @@
 #include "Graphics.h"
 #include "io/stbi.h"
+#include "logging/Logging.h"
 #include <GL/glew.h>
+#include <stdexcept>
+#include <string>
 
-namespace Editor
+namespace Editor::Gfx
 {
-    bool loadGlTexture(const char* filename, GLtexture& gltexture)
+    std::optional<GLtexture> loadTexture(const char* filename)
     {
+        GLtexture gltexture;
         unsigned char* data = stbi_load(filename, &gltexture.width, &gltexture.height, nullptr, 4);
 
         if (!data)
-            return false;
+        {
+            std::string msg = "Failed to load texture " + std::string(filename);
+            logWarning(msg.data());
+            return std::nullopt;
+        }
 
         glGenTextures(1, &gltexture.textureID);
         glBindTexture(GL_TEXTURE_2D, gltexture.textureID);
@@ -23,6 +31,13 @@ namespace Editor
 
         stbi_image_free(data);
 
-        return true;
+        gltexture.name = filename;
+
+        return { gltexture };
+    }
+
+    void clear()
+    {
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 }

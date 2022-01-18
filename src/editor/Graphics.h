@@ -2,14 +2,15 @@
 #define RAYTRACER_GRAPHICS_H
 
 #include <vector>
+#include <unordered_map>
+#include <optional>
 
-namespace Editor
+namespace Editor::Gfx
 {
     // Wrapper for OpenGL texture.
-    // The texture should be already in the
-    // GPU memory when this gets passed around
     struct GLtexture
     {
+        const char* name;
         int width;
         int height;
         unsigned int textureID;
@@ -18,8 +19,13 @@ namespace Editor
     // Simply uploads texture from disk
     // to GPU memory. Uses stb_image under the hood,
     // does have some restriction to what file formats
-    // are supported etc...
-    bool loadGlTexture(const char *filename, GLtexture &gltexture);
+    // are supported.
+    std::optional<GLtexture> loadTexture(const char* filename);
+
+    // Fills current render target with black pixels
+   void clear();
 }
+
+typedef std::vector<Editor::Gfx::GLtexture> TextureStore;
 
 #endif //RAYTRACER_GRAPHICS_H
