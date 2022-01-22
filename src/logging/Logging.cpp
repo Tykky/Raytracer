@@ -1,22 +1,34 @@
 #include "Logging.h"
 #include <iostream>
 
-// TODO: consider using move semantics
+void logMsg(std::string&& msg, MessageStore& messageStore)
+{
+    logMsg(msg);
+    messageStore.push_back({ std::move(msg), MessageType::INFO});
+}
 
-void logMsg(const std::string& msg, MessageStore& messageStore)
+void logMsg(std::string& msg)
 {
     std::cout << "[INFO] " << msg << std::endl;
-    messageStore.push_back({ msg, MessageType::INFO});
 }
 
-void logWarning(const std::string& msg, MessageStore& messageStore)
+void logWarning(std::string&& msg, MessageStore& messageStore)
+{
+    logWarning(msg);
+    messageStore.push_back({ std::move(msg), MessageType::WARNING});
+}
+
+void logWarning(std::string& msg)
 {
     std::cout << "[WARNING] " << msg << std::endl;
-    messageStore.push_back({ msg, MessageType::WARNING});
+}
+void logError(std::string&& msg, MessageStore& messageStore)
+{
+    logError(msg);
+    messageStore.push_back({ std::move(msg), MessageType::INFO});
 }
 
-void logError(const std::string& msg, MessageStore& messageStore)
+void logError(std::string& msg)
 {
     std::cout << "[ERROR] " << msg << std::endl;
-    messageStore.push_back({ msg, MessageType::INFO});
 }

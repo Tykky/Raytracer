@@ -19,9 +19,12 @@ struct Message
 
 typedef std::vector<Message> MessageStore;
 
-void logMsg(const std::string& msg, MessageStore& messageStore);
-void logWarning(const std::string& msg, MessageStore& messageStore);
-void logError(const std::string& msg, MessageStore& messageStore);
+void logMsg (std::string&& msg, MessageStore& messageStore);
+void logMsg (std::string&  msg);
+void logWarning (std::string&& msg, MessageStore& messageStore);
+void logWarning (std::string&  msg);
+void logError (std::string&& msg, MessageStore& messageStore);
+void logError (std::string&  msg);
 
 // TODO: log message serialization
 

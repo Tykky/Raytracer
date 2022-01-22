@@ -29,7 +29,7 @@ namespace Editor
         createDefaultEditorWidgets(widgetStore, textureStore);
     }
 
-    GLFWwindow* createWindow(const char* title, int width, int height, const Options& options)
+    GLFWwindow* createWindow(const char* title, int width, int height, const Options& options, MessageStore& messageStore)
     {
         glfwSetErrorCallback(windowErrorCallback);
         GLFWwindow* window;
@@ -49,14 +49,14 @@ namespace Editor
             if (glewInit() != GLEW_OK)
             {
                 std::string msg = "[GLEW] Failed to initialize";
-                //logMsg(msg);
+                logMsg(std::move(msg), messageStore);
                 throw std::runtime_error(msg);
             }
         }
         else
         {
             std::string msg = "[GLFW] Failed to initialize";
-            // logMsg(msg);
+            logMsg(std::move(msg), messageStore);
             throw std::runtime_error(msg);
         }
         return window;
@@ -88,7 +88,7 @@ namespace Editor
     void windowErrorCallback(int code, const char* description)
     {
         std::string msg = "[GLFW] (" + std::to_string(code) + ") " + description;
-        // logError(msg);
+        logError(msg);
     }
 
     void drawEditor(const ImGuiIO& io, const WidgetStore& widgetStore)

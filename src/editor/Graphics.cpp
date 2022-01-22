@@ -7,7 +7,7 @@
 
 namespace Editor::Gfx
 {
-    std::optional<GLtexture> loadTexture(const char* filename)
+    std::optional<GLtexture> loadTexture(const char* filename, MessageStore& messageStore)
     {
         GLtexture gltexture;
         unsigned char* data = stbi_load(filename, &gltexture.width, &gltexture.height, nullptr, 4);
@@ -34,7 +34,7 @@ namespace Editor::Gfx
         gltexture.name = filename;
 
         std::string msg = "Loaded texture " + std::string(filename);
-        // logMsg(msg.data());
+        logMsg(std::move(msg), messageStore);
 
         return { gltexture };
     }

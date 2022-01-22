@@ -24,12 +24,14 @@ namespace Editor::Gfx
     // are supported.
     std::optional<GLtexture> loadTexture(const char* filename);
 
-    // Fills current render target with black pixels
    void clear();
-
    void deleteTexture(unsigned int textureID);
+
 }
 
-typedef std::vector<Editor::Gfx::GLtexture> TextureStore;
+namespace Editor
+{
+    typedef std::vector<Editor::Gfx::GLtexture> TextureStore;
+}
 
 #endif //RAYTRACER_GRAPHICS_H
