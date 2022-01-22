@@ -18,7 +18,7 @@ namespace Editor
     };
 
     // Creates GLFW window and loads OpenGL extensions
-    GLFWwindow* createWindow(const char* title, int width, int height, const Options& options, MessageStore& messageStore);
+    GLFWwindow* createWindow(const char* title, int width, int height, const Options& options);
     void destroyWindow(GLFWwindow* window);
 
     // Creates editor context (Dear Imgui) and initializes it with options

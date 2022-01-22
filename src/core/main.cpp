@@ -4,10 +4,8 @@ int main()
 {
     Editor::Options options{};
 
-    MessageStore messageStore;
-
     options.enableViewports = true;
-    GLFWwindow* window = Editor::createWindow("kebab", 800, 800, options, messageStore);
+    GLFWwindow* window = Editor::createWindow("kebab", 800, 800, options);
     Editor::WidgetStore widgetStore;
     Editor::TextureStore textureStore;
 

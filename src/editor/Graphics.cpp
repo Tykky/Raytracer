@@ -33,8 +33,7 @@ namespace Editor::Gfx
 
         gltexture.name = filename;
 
-        std::string msg = "Loaded texture " + std::string(filename);
-        logMsg(std::move(msg), messageStore);
+        logMsg("Loaded texture " + std::string(filename));
 
         return { gltexture };
     }

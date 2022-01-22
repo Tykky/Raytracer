@@ -66,16 +66,16 @@ namespace Editor
             if (scrollToBottom)
                 ImGui::SetScrollY(ImGui::GetScrollMaxY());
 
-            /*
-            auto logs = getLogMessages();
+            int size;
+            const Message* logMessages = getLogMessages(size);
 
-            for (auto& message : (*logs))
+            for (int i = 0; i < size; i++)
             {
-                pushMessagetypeImGuiStyleVar(message.type);
-                ImGui::Text(message.message.data());
+                pushMessagetypeImGuiStyleVar(logMessages[i].type);
+                ImGui::Text(logMessages[i].message.data());
                 ImGui::PopStyleVar(1);
             }
-             */
+
             ImGui::EndChild();
             ImGui::End();
         }
@@ -154,7 +154,7 @@ namespace Editor
         {
             width += zoom;
             height += zoom;
-            // logMsg("width: " + std::to_string(width) + " height: " + std::to_string(height));
+            logMsg("width: " + std::to_string(width) + " height: " + std::to_string(height));
         }
     }
 

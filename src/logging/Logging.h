@@ -19,13 +19,12 @@ struct Message
 
 typedef std::vector<Message> MessageStore;
 
-void logMsg (std::string&& msg, MessageStore& messageStore);
-void logMsg (std::string&  msg);
-void logWarning (std::string&& msg, MessageStore& messageStore);
-void logWarning (std::string&  msg);
-void logError (std::string&& msg, MessageStore& messageStore);
-void logError (std::string&  msg);
+void logMsg (std::string&& msg);
+void logWarning (std::string&& msg);
+void logError (std::string&& msg);
 
-// TODO: log message serialization
+const Message* getLogMessages(int& size);
+
+// TODO: log message serialization, spdlog
 
 #endif //RAYTRACER_LOGGING_H

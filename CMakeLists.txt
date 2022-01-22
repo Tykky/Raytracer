@@ -20,6 +20,7 @@ set(OpenGL_GL_PREFERENCE "GLVND")
 
 include_directories(external/tinyobjloader)
 include_directories(external/stb_image)
+include_directories(external/spdlog)
 
 if(BUILD_TEST)
 	add_subdirectory(external/googletest)
