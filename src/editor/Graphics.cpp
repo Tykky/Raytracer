@@ -15,7 +15,7 @@ namespace Editor::Gfx
         if (!data)
         {
             std::string msg = "Failed to load texture " + std::string(filename);
-            logWarning(msg.data());
+            // logWarning(msg.data());
             return std::nullopt;
         }
 
@@ -34,7 +34,7 @@ namespace Editor::Gfx
         gltexture.name = filename;
 
         std::string msg = "Loaded texture " + std::string(filename);
-        logMsg(msg.data());
+        // logMsg(msg.data());
 
         return { gltexture };
     }

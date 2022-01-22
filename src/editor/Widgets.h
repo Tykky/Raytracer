@@ -18,34 +18,57 @@ namespace Editor
     class Widget
     {
     public:
-        Widget(const char* name, unsigned int id);
+        Widget(const char* name);
         inline void  open()  { m_open = true; }
         inline void  close() { m_open = false; }
+        inline void setId(int id) { m_id = id; }
         virtual void draw() = 0;
 
     protected:
-        bool         m_open = true;
-        std::string  m_name;
-        unsigned int m_id;
+        bool          m_open = true;
+        std::string   m_name;
+        unsigned int  m_id = 0;
     };
 
     class TextureViewer : public Widget
     {
     public:
-        TextureViewer(const char* name, unsigned int id, TextureStore* textureStore);
+        TextureViewer(TextureStore* textureStore);
         void draw() override;
 
     private:
-        TextureStore * m_TEXTURE_STORE = nullptr;
+        TextureStore* m_textStore = nullptr;
     };
 
-    // TODO: Sometimes docking the LogViewer causes mismatching begin()/end() calls
     class LogViewer : public Widget
     {
     public:
-        LogViewer(unsigned int id);
+        LogViewer();
         void draw() override;
     };
+
+    class WidgetStore
+    {
+    public:
+        inline unsigned int size() const { return m_widgets.size(); }
+
+        inline Widget* operator[](int idx) const
+        {
+            assert(idx < m_widgets.size());
+            return m_widgets[idx].get();
+        }
+
+        inline void push(std::unique_ptr<Widget>&& widget)
+        {
+            widget->setId(currentUniqueIdx++);
+            m_widgets.push_back(std::move(widget));
+        }
+
+    private:
+        std::vector<std::unique_ptr<Widget>> m_widgets;
+        unsigned currentUniqueIdx = 0; // Used to create unique id for new widget
+    };
+
 
     // Shows the main menubar at the top of the main window
     void drawMainMenuBar();
@@ -55,7 +78,5 @@ namespace Editor
     void zoomTextureWhenScrolled(float& width, float& height);
     void pushMessagetypeImGuiStyleVar(MessageType type);
 }
-
-typedef std::vector<std::unique_ptr<Editor::Widget>> WidgetStore;
 
 #endif //RAYTRACER_WIDGETS_H

@@ -1,32 +1,22 @@
 #include "Logging.h"
 #include <iostream>
-#include <cassert>
 
-// We store all log messages here
-static MessageStore MESSAGE_STORE;
+// TODO: consider using move semantics
 
-void logMsg(const char* msg)
+void logMsg(const std::string& msg, MessageStore& messageStore)
 {
-    assert(msg);
     std::cout << "[INFO] " << msg << std::endl;
-    MESSAGE_STORE.push_back({ msg, MessageType::INFO});
+    messageStore.push_back({ msg, MessageType::INFO});
 }
 
-void logWarning(const char* msg)
+void logWarning(const std::string& msg, MessageStore& messageStore)
 {
-    assert(msg);
     std::cout << "[WARNING] " << msg << std::endl;
-    MESSAGE_STORE.push_back({ msg, MessageType::WARNING});
+    messageStore.push_back({ msg, MessageType::WARNING});
 }
 
-void logError(const char* msg)
+void logError(const std::string& msg, MessageStore& messageStore)
 {
-    assert(msg);
     std::cout << "[ERROR] " << msg << std::endl;
-    MESSAGE_STORE.push_back({ msg, MessageType::INFO});
-}
-
-MessageStore* getLogMessages()
-{
-    return &MESSAGE_STORE;
+    messageStore.push_back({ msg, MessageType::INFO});
 }

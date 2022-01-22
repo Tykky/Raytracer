@@ -8,42 +8,38 @@
 
 namespace Editor
 {
-    Widget::Widget(const char* name, unsigned int id) :
-        m_name(name), m_id(id) {}
+    Widget::Widget(const char* name) :
+        m_name(name) {}
 
-    TextureViewer::TextureViewer(const char* name, unsigned int id, TextureStore* textureStore) :
-            Widget(name, id), m_TEXTURE_STORE(textureStore) {}
+    TextureViewer::TextureViewer(TextureStore* textureStore) :
+        Widget("Texture viewer"), m_textStore(textureStore) {}
 
     void TextureViewer::draw()
     {
         static Gfx::GLtexture* currentItem = nullptr;
 
         static ImVec2 offset{0.0f, 0.0f};
-        static ImVec2 scale{1.0f, 1.0f};
-
-        zoomTextureWhenScrolled(scale.x, scale.y);
+        static ImVec2 scale{800.0f, 600.0f};
 
         int  flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
-        if (m_open && ImGui::Begin(m_name.data(), &m_open))
+        if (m_open)
         {
+            ImGui::Begin(m_name.data(), &m_open);
             const char* preview = currentItem ? currentItem->name.data() : "";
             void* texId = currentItem ? (void*)currentItem->textureID : nullptr;
 
-            ImGui::SetNextWindowSize(ImVec2(300, 200));
-            if (ImGui::BeginChild("Texture viewer"))
-            {
-                auto size = ImGui::GetWindowSize();
-                size = ImVec2(size.x * scale.x, size.y * scale.y);
-                ImGui::Image(texId, ImVec2(300, 200));
-                ImGui::EndChild();
-            }
+            zoomTextureWhenScrolled(scale.x, scale.y);
+
+            ImGui::BeginChild("Texture viewer");
+            ImGui::Image(texId, ImVec2(scale.x, scale.y));
+            ImGui::EndChild();
 
             if (ImGui::BeginCombo("Textures", preview))
             {
-                for (int i = 0; i < m_TEXTURE_STORE->size(); ++i)
+                for (int i = 0; i < m_textStore->size(); ++i)
                 {
-                    auto* tex = &m_TEXTURE_STORE->at(i);
+                    auto *tex = &m_textStore->at(i);
                     bool isSelected = (tex && currentItem && currentItem->textureID == tex->textureID);
                     if (ImGui::Selectable(tex->name.data(), isSelected))
                         currentItem = tex;
@@ -54,15 +50,23 @@ namespace Editor
         }
     }
 
-    LogViewer::LogViewer(unsigned int id) :
-            Widget("Logs", id) {}
+    LogViewer::LogViewer() :
+            Widget("Logs") {}
 
     void LogViewer::draw()
     {
-        ImGui::SetNextWindowSize(ImVec2(300, 200));
-        if (m_open && ImGui::Begin(m_name.data(), &m_open))
+        static bool scrollToBottom = true;
+
+        if (m_open)
         {
+            ImGui::Begin(m_name.data(), &m_open);
+            ImGui::Checkbox("Scroll to bottom", &scrollToBottom);
             ImGui::BeginChild("Logtext###ID");
+
+            if (scrollToBottom)
+                ImGui::SetScrollY(ImGui::GetScrollMaxY());
+
+            /*
             auto logs = getLogMessages();
 
             for (auto& message : (*logs))
@@ -71,6 +75,7 @@ namespace Editor
                 ImGui::Text(message.message.data());
                 ImGui::PopStyleVar(1);
             }
+             */
             ImGui::EndChild();
             ImGui::End();
         }
@@ -149,6 +154,7 @@ namespace Editor
         {
             width += zoom;
             height += zoom;
+            // logMsg("width: " + std::to_string(width) + " height: " + std::to_string(height));
         }
     }
 

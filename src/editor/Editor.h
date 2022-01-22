@@ -22,24 +22,17 @@ namespace Editor
     void destroyWindow(GLFWwindow* window);
 
     // Creates editor context (Dear Imgui) and initializes it with options
-    void init(GLFWwindow* window, const Options& options);
+    void init(GLFWwindow* window, const Options& options, WidgetStore& widgetStore, TextureStore& textureStore);
 
     // Begins executing draw/input loop
-    void renderLoop(GLFWwindow* window);
-
-    // Editor.cpp holds a few static data structures that hold data for the editor.
-    // Small helper functions to manage these resources:
-    void freeTexture(unsigned int textureID);
-    // TODO: write texture allocator
-    //int allocateTexture(int width, int height);
+    void renderLoop(GLFWwindow* window, WidgetStore& widgetStore);
 
     // Stuff that is used internally
     void renderImguiDrawData();
-    void renderGui(ImGuiIO &io);
-    void drawEditor(const ImGuiIO& io);
+    void renderGui(ImGuiIO &io, WidgetStore& widgetStore);
+    void drawEditor(const ImGuiIO& io, const WidgetStore& widgetStore);
     void windowErrorCallback(int code, const char* description);
-    void createDefaultEditorWidgets();
-    unsigned int createWidgetId();
+    void createDefaultEditorWidgets(WidgetStore& widgets, TextureStore& textureStore);
 }
 
 #endif //RAYTRACER_EDITOR_H

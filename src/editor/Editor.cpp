@@ -8,16 +8,9 @@
 #include "Style.h"
 #include <memory>
 
-// We store all widgets in this
-static WidgetStore  WIDGET_STORAGE;
-// We store all textures visible to editor here
-static TextureStore TEXTURE_STORE;
-// We create unique ids for widgets by simply incrementing this
-static unsigned int LAST_WIDGET_ID = 0;
-
 namespace Editor
 {
-    void init(GLFWwindow *window, const Options &options)
+    void init(GLFWwindow* window, const Options &options, WidgetStore& widgetStore, TextureStore& textureStore)
     {
         ImGui::CreateContext();
 
@@ -33,13 +26,13 @@ namespace Editor
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 440");
 
-        createDefaultEditorWidgets();
+        createDefaultEditorWidgets(widgetStore, textureStore);
     }
 
     GLFWwindow* createWindow(const char* title, int width, int height, const Options& options)
     {
         glfwSetErrorCallback(windowErrorCallback);
-        GLFWwindow *window;
+        GLFWwindow* window;
         if (glfwInit())
         {
             if (!options.enableMainWindowBorders)
@@ -55,15 +48,15 @@ namespace Editor
 
             if (glewInit() != GLEW_OK)
             {
-                const char *msg = "[GLEW] Failed to initialize";
-                logMsg(msg);
+                std::string msg = "[GLEW] Failed to initialize";
+                //logMsg(msg);
                 throw std::runtime_error(msg);
             }
         }
         else
         {
-            const char *msg = "[GLFW] Failed to initialize";
-            logMsg(msg);
+            std::string msg = "[GLFW] Failed to initialize";
+            // logMsg(msg);
             throw std::runtime_error(msg);
         }
         return window;
@@ -75,27 +68,15 @@ namespace Editor
         glfwTerminate();
     }
 
-    void renderLoop(GLFWwindow* window)
+    void renderLoop(GLFWwindow* window, WidgetStore& widgetStore)
     {
         ImGuiIO &io = ImGui::GetIO();
         while (!glfwWindowShouldClose(window))
         {
             glfwPollEvents();
             Gfx::clear();
-            renderGui(io);
+            renderGui(io, widgetStore);
             glfwSwapBuffers(window);
-        }
-    }
-
-    void freeTexture(unsigned int textureID)
-    {
-        for (int i = 0; i < TEXTURE_STORE.size(); ++i)
-        {
-            if (TEXTURE_STORE[i].textureID == textureID)
-            {
-                TEXTURE_STORE.erase(TEXTURE_STORE.begin() + i);
-                Gfx::deleteTexture(textureID);
-            }
         }
     }
 
@@ -107,30 +88,29 @@ namespace Editor
     void windowErrorCallback(int code, const char* description)
     {
         std::string msg = "[GLFW] (" + std::to_string(code) + ") " + description;
-        logError(msg.data());
+        // logError(msg);
     }
 
-    void drawEditor(const ImGuiIO& io)
+    void drawEditor(const ImGuiIO& io, const WidgetStore& widgetStore)
     {
         drawMainMenuBar();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
         drawDockspace("Main", dockspaceID, io);
-        for (int i = 0; i < WIDGET_STORAGE.size(); ++i)
+        for (int i = 0; i < widgetStore.size(); ++i)
         {
-            WIDGET_STORAGE[i]->draw();
+            widgetStore[i]->draw();
         }
     }
 
-    void renderGui(ImGuiIO& io)
+    void renderGui(ImGuiIO& io, WidgetStore& widgetStore)
     {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        drawEditor(io);
+        drawEditor(io, widgetStore);
 
-        ImGui::EndFrame();
-        ImGui::Render();
+        ImGui::Render(); // calls Imgui::EndFrame()
 
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
@@ -143,11 +123,9 @@ namespace Editor
         renderImguiDrawData();
     }
 
-    void createDefaultEditorWidgets()
+    void createDefaultEditorWidgets(WidgetStore& widgetStore, TextureStore& textureStore)
     {
-        WIDGET_STORAGE.push_back(std::make_unique<TextureViewer>("Texture viewer", createWidgetId(), &TEXTURE_STORE));
-        WIDGET_STORAGE.push_back(std::make_unique<LogViewer>(createWidgetId()));
+        widgetStore.push(std::make_unique<TextureViewer>(&textureStore));
+        widgetStore.push(std::make_unique<LogViewer>());
     }
-
-    unsigned int createWidgetId() { return LAST_WIDGET_ID++; }
 }

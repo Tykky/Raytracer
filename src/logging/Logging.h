@@ -19,9 +19,10 @@ struct Message
 
 typedef std::vector<Message> MessageStore;
 
-void logMsg(const char* msg);
-void logWarning(const char* msg);
-void logError(const char* msg);
-MessageStore* getLogMessages();
+void logMsg(const std::string& msg, MessageStore& messageStore);
+void logWarning(const std::string& msg, MessageStore& messageStore);
+void logError(const std::string& msg, MessageStore& messageStore);
+
+// TODO: log message serialization
 
 #endif //RAYTRACER_LOGGING_H
