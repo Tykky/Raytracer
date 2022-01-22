@@ -4,17 +4,19 @@
 #include <vector>
 #include <unordered_map>
 #include <optional>
+#include <string>
 
 namespace Editor::Gfx
 {
     // Wrapper for OpenGL texture.
     struct GLtexture
     {
-        const char* name;
-        int width;
-        int height;
-        unsigned int textureID;
+        std::string   name;
+        int           width;
+        int           height;
+        unsigned int  textureID;
     };
+
 
     // Simply uploads texture from disk
     // to GPU memory. Uses stb_image under the hood,
@@ -24,6 +26,8 @@ namespace Editor::Gfx
 
     // Fills current render target with black pixels
    void clear();
+
+   void deleteTexture(unsigned int textureID);
 }
 
 typedef std::vector<Editor::Gfx::GLtexture> TextureStore;

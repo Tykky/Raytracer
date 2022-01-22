@@ -33,11 +33,19 @@ namespace Editor::Gfx
 
         gltexture.name = filename;
 
+        std::string msg = "Loaded texture " + std::string(filename);
+        logMsg(msg.data());
+
         return { gltexture };
     }
 
     void clear()
     {
         glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    void deleteTexture(unsigned int textureID)
+    {
+        glDeleteTextures(1, &textureID);
     }
 }

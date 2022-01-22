@@ -6,13 +6,14 @@
 #include <stdexcept>
 #include <string>
 #include "Style.h"
-#include <unordered_map>
 #include <memory>
 
 // We store all widgets in this
 static WidgetStore  WIDGET_STORAGE;
 // We store all textures visible to editor here
 static TextureStore TEXTURE_STORE;
+// We create unique ids for widgets by simply incrementing this
+static unsigned int LAST_WIDGET_ID = 0;
 
 namespace Editor
 {
@@ -86,6 +87,18 @@ namespace Editor
         }
     }
 
+    void freeTexture(unsigned int textureID)
+    {
+        for (int i = 0; i < TEXTURE_STORE.size(); ++i)
+        {
+            if (TEXTURE_STORE[i].textureID == textureID)
+            {
+                TEXTURE_STORE.erase(TEXTURE_STORE.begin() + i);
+                Gfx::deleteTexture(textureID);
+            }
+        }
+    }
+
     void renderImguiDrawData()
     {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -108,7 +121,7 @@ namespace Editor
         }
     }
 
-    void renderGui(ImGuiIO &io)
+    void renderGui(ImGuiIO& io)
     {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -132,8 +145,9 @@ namespace Editor
 
     void createDefaultEditorWidgets()
     {
-        WIDGET_STORAGE.push_back(std::make_unique<TextureViewer>("Texture viewer", &TEXTURE_STORE));
-        WIDGET_STORAGE.push_back(std::make_unique<DemoWidget>());
-        WIDGET_STORAGE.push_back(std::make_unique<LogViewer>());
+        WIDGET_STORAGE.push_back(std::make_unique<TextureViewer>("Texture viewer", createWidgetId(), &TEXTURE_STORE));
+        WIDGET_STORAGE.push_back(std::make_unique<LogViewer>(createWidgetId()));
     }
+
+    unsigned int createWidgetId() { return LAST_WIDGET_ID++; }
 }

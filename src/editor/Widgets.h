@@ -5,7 +5,9 @@
 #include "imgui.h"
 #include <vector>
 #include <memory>
+#include <string>
 #include "Graphics.h"
+#include "logging/Logging.h"
 
 // Contains a set of widgets that can be drawn using Widget::draw().
 // Generally widgets are drawn as separate ImGui windows but exceptions exist such as
@@ -16,23 +18,22 @@ namespace Editor
     class Widget
     {
     public:
-        Widget(const char *name);
+        Widget(const char* name, unsigned int id);
         inline void  open()  { m_open = true; }
         inline void  close() { m_open = false; }
         virtual void draw() = 0;
 
     protected:
-        bool        m_open = true;
-        const char* m_name;
+        bool         m_open = true;
+        std::string  m_name;
+        unsigned int m_id;
     };
 
     class TextureViewer : public Widget
     {
     public:
-        TextureViewer(const char* name);
-        TextureViewer(const char* name, TextureStore* textureStore);
+        TextureViewer(const char* name, unsigned int id, TextureStore* textureStore);
         void draw() override;
-        void setTextureStore(TextureStore* textureStore) { m_TEXTURE_STORE = textureStore; }
 
     private:
         TextureStore * m_TEXTURE_STORE = nullptr;
@@ -42,17 +43,7 @@ namespace Editor
     class LogViewer : public Widget
     {
     public:
-        LogViewer();
-        void draw() override;
-    };
-
-    // TODO: Figure out why closing DemoWidget causes mismatching begin()/end() calls
-    // Just shows default Dear Imgui demo widget.
-    // Mainly for testing things out
-    class DemoWidget : public Widget
-    {
-    public:
-        DemoWidget();
+        LogViewer(unsigned int id);
         void draw() override;
     };
 
@@ -61,7 +52,8 @@ namespace Editor
     // Dockspace simply allows windows to be docked to the main window
     void drawDockspace(const char* name, ImGuiID dockspaceID, const ImGuiIO& io);
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
-    void zoomTextureWhenScrolled();
+    void zoomTextureWhenScrolled(float& width, float& height);
+    void pushMessagetypeImGuiStyleVar(MessageType type);
 }
 
 typedef std::vector<std::unique_ptr<Editor::Widget>> WidgetStore;

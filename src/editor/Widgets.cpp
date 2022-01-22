@@ -8,28 +8,36 @@
 
 namespace Editor
 {
-    Widget::Widget(const char* name) :
-        m_name(name) {}
+    Widget::Widget(const char* name, unsigned int id) :
+        m_name(name), m_id(id) {}
 
-    TextureViewer::TextureViewer(const char* name, TextureStore* textureStore) :
-            Widget(name), m_TEXTURE_STORE(textureStore) {}
-
-    TextureViewer::TextureViewer(const char* name) :
-            Widget(name) {}
+    TextureViewer::TextureViewer(const char* name, unsigned int id, TextureStore* textureStore) :
+            Widget(name, id), m_TEXTURE_STORE(textureStore) {}
 
     void TextureViewer::draw()
     {
         static Gfx::GLtexture* currentItem = nullptr;
 
-        if (m_open && ImGui::Begin(m_name, &m_open))
-        {
-            const char* preview = currentItem ? currentItem->name : "";
-            void* texId = currentItem ? (void*)currentItem->textureID : nullptr;
-            auto size = ImGui::GetWindowSize();
+        static ImVec2 offset{0.0f, 0.0f};
+        static ImVec2 scale{1.0f, 1.0f};
 
-            // Make room for drop down menu at bottom of the window
-            size = ImVec2(size.y, size.y - 100);
-            ImGui::Image(texId, size);
+        zoomTextureWhenScrolled(scale.x, scale.y);
+
+        int  flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+
+        if (m_open && ImGui::Begin(m_name.data(), &m_open))
+        {
+            const char* preview = currentItem ? currentItem->name.data() : "";
+            void* texId = currentItem ? (void*)currentItem->textureID : nullptr;
+
+            ImGui::SetNextWindowSize(ImVec2(300, 200));
+            if (ImGui::BeginChild("Texture viewer"))
+            {
+                auto size = ImGui::GetWindowSize();
+                size = ImVec2(size.x * scale.x, size.y * scale.y);
+                ImGui::Image(texId, ImVec2(300, 200));
+                ImGui::EndChild();
+            }
 
             if (ImGui::BeginCombo("Textures", preview))
             {
@@ -37,7 +45,7 @@ namespace Editor
                 {
                     auto* tex = &m_TEXTURE_STORE->at(i);
                     bool isSelected = (tex && currentItem && currentItem->textureID == tex->textureID);
-                    if (ImGui::Selectable(tex->name, isSelected))
+                    if (ImGui::Selectable(tex->name.data(), isSelected))
                         currentItem = tex;
                 }
                 ImGui::EndCombo();
@@ -46,38 +54,20 @@ namespace Editor
         }
     }
 
-    DemoWidget::DemoWidget() :
-            Widget("") {}
-
-    void DemoWidget::draw()
-    {
-        ImGui::ShowDemoWindow(&m_open);
-    }
-
-    LogViewer::LogViewer() :
-            Widget("Logviewer") {}
+    LogViewer::LogViewer(unsigned int id) :
+            Widget("Logs", id) {}
 
     void LogViewer::draw()
     {
-        if(m_open && ImGui::Begin(m_name, &m_open))
+        ImGui::SetNextWindowSize(ImVec2(300, 200));
+        if (m_open && ImGui::Begin(m_name.data(), &m_open))
         {
             ImGui::BeginChild("Logtext###ID");
             auto logs = getLogMessages();
-            // TODO: Figure out why popping and pushing stylevars doesn't work
+
             for (auto& message : (*logs))
             {
-                switch (message.type)
-                {
-                    case MessageType::ERROR:
-                        ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 0, 0 ,255));
-                        break;
-                    case MessageType::WARNING:
-                        ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 128, 0 ,255));
-                        break;
-                    default:
-                        ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 255, 255 ,255));
-                        break;
-                }
+                pushMessagetypeImGuiStyleVar(message.type);
                 ImGui::Text(message.message.data());
                 ImGui::PopStyleVar(1);
             }
@@ -127,19 +117,16 @@ namespace Editor
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
             // We don't need any of this either for the main dockspace
-            auto windowFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings |
-                               ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-                               ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBringToFrontOnFocus;
+            auto windowFlags = ImGuiWindowFlags_NoMove     | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize   |
+                               ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse      | ImGuiWindowFlags_NoNavFocus |
+                               ImGuiWindowFlags_NoBringToFrontOnFocus;
 
             if (ImGui::Begin(name, nullptr, windowFlags))
             {
                 ImGui::PopStyleVar(3);
-
                 const auto dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
-
                 // Make this window as a dockspace
                 ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
-
                 ImGui::End();
             }
         }
@@ -162,6 +149,22 @@ namespace Editor
         {
             width += zoom;
             height += zoom;
+        }
+    }
+
+    void pushMessagetypeImGuiStyleVar(MessageType type)
+    {
+        switch (type)
+        {
+            case MessageType::ERROR:
+                ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 0, 0 ,255));
+                break;
+            case MessageType::WARNING:
+                ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 128, 0 ,255));
+                break;
+            default:
+                ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 255, 255 ,255));
+                break;
         }
     }
 }
