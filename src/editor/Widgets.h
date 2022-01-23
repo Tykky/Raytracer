@@ -51,6 +51,8 @@ namespace Editor
     public:
         LogViewer();
         void draw() override;
+    private:
+        bool m_srollToBottom = true;
     };
 
     class WidgetStore

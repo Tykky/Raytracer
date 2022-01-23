@@ -62,12 +62,10 @@ namespace Editor
 
     void LogViewer::draw()
     {
-        static bool scrollToBottom = true;
-
         if (m_open)
         {
-            ImGui::Begin(m_name.data(), &m_open);
-            ImGui::Checkbox("Scroll to bottom", &scrollToBottom);
+            ImGui::Begin(m_windowId.data(), &m_open);
+            ImGui::Checkbox("Scroll to bottom", &m_srollToBottom);
 
             ImGui::SameLine(170.0f);
             if (ImGui::Button("clear"))
@@ -75,7 +73,7 @@ namespace Editor
 
             ImGui::BeginChild("Logtext###ID");
 
-            if (scrollToBottom)
+            if (m_srollToBottom)
                 ImGui::SetScrollY(ImGui::GetScrollMaxY());
 
             int size;
@@ -135,7 +133,7 @@ namespace Editor
         if (m_open)
         {
             static int current;
-            ImGui::Begin(m_name.data(), &m_open);
+            ImGui::Begin(m_windowId.data(), &m_open);
             for (auto& widget : *m_widgetStore)
             {
                 std::string label = widget->getName() + " id: " + std::to_string(widget->getId());
