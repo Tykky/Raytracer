@@ -25,7 +25,6 @@ namespace Editor::Gfx
 
    void clear();
    void deleteTexture(unsigned int textureID);
-
 }
 
 namespace Editor

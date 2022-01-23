@@ -10,8 +10,7 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <stb_image.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -27,6 +26,10 @@
 #define GUI_ELEMENT_SIZE std::max(GImGui->FontSize + 10.f, 24.f)
 #define DEFAULT_ICON_SIZE 32
 #define PI 3.141592f
+
+#ifdef max
+#undef max // curse ms macro
+#endif
 
 namespace ifd {
 	static const char* GetDefaultFolderIcon();
