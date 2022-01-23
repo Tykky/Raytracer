@@ -65,14 +65,15 @@ namespace Editor
         glfwTerminate();
     }
 
-    void renderLoop(GLFWwindow* window, WidgetStore& widgetStore)
+    void renderLoop(GLFWwindow* window, WidgetStore& widgetStore, TextureStore& textureStore)
     {
         ImGuiIO &io = ImGui::GetIO();
         while (!glfwWindowShouldClose(window))
         {
             glfwPollEvents();
             Gfx::clear();
-            renderGui(io, widgetStore);
+            cleanInactiveWidgets(widgetStore);
+            renderGui(io, widgetStore, textureStore);
             glfwSwapBuffers(window);
         }
     }
@@ -87,9 +88,9 @@ namespace Editor
         logError("[GLFW] (" + std::to_string(code) + ") " + description);
     }
 
-    void drawEditor(const ImGuiIO& io, const WidgetStore& widgetStore)
+    void drawEditor(const ImGuiIO& io, WidgetStore& widgetStore, TextureStore& textureStore)
     {
-        drawMainMenuBar();
+        drawMainMenuBar(widgetStore, textureStore);
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
         drawDockspace("Main", dockspaceID, io);
         for (int i = 0; i < widgetStore.size(); ++i)
@@ -98,13 +99,13 @@ namespace Editor
         }
     }
 
-    void renderGui(ImGuiIO& io, WidgetStore& widgetStore)
+    void renderGui(ImGuiIO& io, WidgetStore& widgetStore, TextureStore& textureStore)
     {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        drawEditor(io, widgetStore);
+        drawEditor(io, widgetStore, textureStore);
 
         ImGui::Render(); // calls Imgui::EndFrame()
 
@@ -124,5 +125,14 @@ namespace Editor
         widgetStore.push(std::make_unique<TextureViewer>(&textureStore));
         widgetStore.push(std::make_unique<LogViewer>());
         widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
+    }
+
+    void cleanInactiveWidgets(WidgetStore& widgetStore)
+    {
+        for (int i = 0; i < widgetStore.size(); ++i)
+        {
+            if (!widgetStore[i]->isOpen())
+                widgetStore.erase(i);
+        }
     }
 }

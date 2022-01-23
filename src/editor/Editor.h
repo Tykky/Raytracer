@@ -25,14 +25,15 @@ namespace Editor
     void init(GLFWwindow* window, const Options& options, WidgetStore& widgetStore, TextureStore& textureStore);
 
     // Begins executing draw/input loop
-    void renderLoop(GLFWwindow* window, WidgetStore& widgetStore);
+    void renderLoop(GLFWwindow* window, WidgetStore& widgetStore, TextureStore& textureStore);
 
     // Stuff that is used internally
     void renderImguiDrawData();
-    void renderGui(ImGuiIO &io, WidgetStore& widgetStore);
-    void drawEditor(const ImGuiIO& io, const WidgetStore& widgetStore);
+    void renderGui(ImGuiIO &io, WidgetStore& widgetStore, TextureStore& textureStore);
+    void drawEditor(const ImGuiIO& io, const WidgetStore& widgetStore, TextureStore& textureStore);
     void windowErrorCallback(int code, const char* description);
     void createDefaultEditorWidgets(WidgetStore& widgets, TextureStore& textureStore);
+    void cleanInactiveWidgets(WidgetStore& widgetStore);
 }
 
 #endif //RAYTRACER_EDITOR_H

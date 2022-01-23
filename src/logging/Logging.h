@@ -20,8 +20,11 @@ struct Message
 typedef std::vector<Message> MessageStore;
 
 void logMsg (std::string&& msg);
+void logMsg (std::string& msg);
 void logWarning (std::string&& msg);
+void logWarning (std::string& msg);
 void logError (std::string&& msg);
+void logError (std::string& msg);
 
 const Message* getLogMessages(int& size);
 void clearLogs();

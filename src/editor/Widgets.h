@@ -19,16 +19,18 @@ namespace Editor
     {
     public:
         Widget(const char* name);
-        inline void  open()  { m_open = true; }
-        inline void  close() { m_open = false; }
+        inline bool isOpen() { return m_open; }
         inline void setId(unsigned int id) { m_id = id; }
-        virtual void draw() = 0;
+        inline void setWindowId(std::string&& windowId) { m_windowId = std::move(windowId); }
+        inline unsigned int getId() const { return m_id; }
         inline const std::string& getName() const { return m_name; }
+        virtual void draw() = 0;
 
     protected:
-        bool          m_open = true;
-        std::string   m_name;
-        unsigned int  m_id = 0;
+        bool                m_open = true;
+        const std::string   m_name;     // name displayed
+        unsigned int        m_id = 0;   // ID
+        std::string         m_windowId; // name###ID
     };
 
     class TextureViewer : public Widget
@@ -38,7 +40,10 @@ namespace Editor
         void draw() override;
 
     private:
-        TextureStore* m_textStore = nullptr;
+        TextureStore*   m_textStore      = nullptr;
+        ImVec2          m_offset         = {0.0f, 0.0f};
+        ImVec2          m_scale          = {600.0f, 600.0f};
+        Gfx::GLtexture* m_currentTexture = nullptr;
     };
 
     class LogViewer : public Widget
@@ -51,23 +56,16 @@ namespace Editor
     class WidgetStore
     {
     public:
-        inline unsigned int size() const { return m_widgets.size(); }
-
-        inline Widget* operator[](int idx) const
-        {
-            assert(idx < m_widgets.size());
-            return m_widgets[idx].get();
-        }
-
-        inline void push(std::unique_ptr<Widget>&& widget)
-        {
-            widget->setId(m_currentUniqueIdx++);
-            m_widgets.push_back(std::move(widget));
-        }
+        unsigned int size() const;
+        Widget* operator[](int idx) const;
+        void push(std::unique_ptr<Widget>&& widget);
+        void erase(int idx);
+        std::vector<std::unique_ptr<Widget>>::iterator begin();
+        std::vector<std::unique_ptr<Widget>>::iterator end();
 
     private:
         std::vector<std::unique_ptr<Widget>> m_widgets;
-        unsigned int m_currentUniqueIdx = 0; // Used to create unique id for new widget
+        unsigned int m_currentUniqueIdx = 0; // Used to create unique ids for new widgets
     };
 
     class WidgetInspector : public Widget
@@ -80,7 +78,7 @@ namespace Editor
     };
 
     // Shows the main menubar at the top of the main window
-    void drawMainMenuBar();
+    void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore);
     // Dockspace simply allows windows to be docked to the main window
     void drawDockspace(const char* name, ImGuiID dockspaceID, const ImGuiIO& io);
     void moveTextureWhenDragged(float& offsetX, float& offsetY);

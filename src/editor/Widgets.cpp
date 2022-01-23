@@ -9,45 +9,47 @@
 namespace Editor
 {
     Widget::Widget(const char* name) :
-        m_name(name) {}
+        m_name(name)  {}
 
     TextureViewer::TextureViewer(TextureStore* textureStore) :
         Widget("Texture viewer"), m_textStore(textureStore) {}
 
     void TextureViewer::draw()
     {
-        static Gfx::GLtexture* currentItem = nullptr;
-
-        static ImVec2 offset{0.0f, 0.0f};
-        static ImVec2 scale{800.0f, 600.0f};
-
-        int  flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+        static const int flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
         if (m_open)
         {
-            ImGui::Begin(m_name.data(), &m_open, flags);
-            const char* preview = currentItem ? currentItem->name.data() : "";
-            void* texId = currentItem ? (void*)currentItem->textureID : nullptr;
-
-            zoomTextureWhenScrolled(scale.x, scale.y);
-            moveTextureWhenDragged(offset.x, offset.y);
+            ImGui::Begin(m_windowId.data(), &m_open, flags);
+            const char* preview = m_currentTexture ? m_currentTexture->name.data() : "";
+            void* texId = m_currentTexture ? (void*)m_currentTexture->textureID : nullptr;
 
             ImVec2 size = ImGui::GetWindowSize();
 
-            ImGui::BeginChild("Texture viewer", ImVec2(size.x, size.y - 70), false, flags);
-            ImGui::SetCursorPos(offset);
-            ImGui::Image(texId, ImVec2(scale.x, scale.y));
-            ImGui::EndChild();
+            static const int comboBoxGap = 100;
 
+            ImGui::BeginChild("Texture viewer", ImVec2(size.x, size.y - comboBoxGap), false, flags);
+
+            if (ImGui::IsWindowHovered())
+            {
+                zoomTextureWhenScrolled(m_scale.x, m_scale.y);
+                moveTextureWhenDragged(m_offset.x, m_offset.y);
+            }
+
+            ImVec2 center = { (size.x - m_scale.x) * 0.5f + m_offset.x, (size.y - m_scale.y) * 0.5f + m_offset.y };
+
+            ImGui::SetCursorPos(center);
+            ImGui::Image(texId, ImVec2(m_scale.x, m_scale.y));
+            ImGui::EndChild();
 
             if (ImGui::BeginCombo("Textures", preview))
             {
                 for (int i = 0; i < m_textStore->size(); ++i)
                 {
-                    auto *tex = &m_textStore->at(i);
-                    bool isSelected = (tex && currentItem && currentItem->textureID == tex->textureID);
+                    auto* tex = &m_textStore->at(i);
+                    bool isSelected = (tex && m_currentTexture && m_currentTexture->textureID == tex->textureID);
                     if (ImGui::Selectable(tex->name.data(), isSelected))
-                        currentItem = tex;
+                        m_currentTexture = tex;
                 }
                 ImGui::EndCombo();
             }
@@ -91,6 +93,40 @@ namespace Editor
         }
     }
 
+    unsigned int WidgetStore::size() const
+    {
+        return m_widgets.size();
+    }
+
+    Widget* WidgetStore::operator[](int idx) const
+    {
+        assert(idx < m_widgets.size());
+        return m_widgets[idx].get();
+    }
+
+    void WidgetStore::push(std::unique_ptr<Widget>&& widget)
+    {
+        widget->setId(m_currentUniqueIdx++);
+        widget->setWindowId(widget->getName() + "###" + std::to_string(widget->getId()));
+        m_widgets.push_back(std::move(widget));
+    }
+
+    void WidgetStore::erase(int idx)
+    {
+        assert(idx < m_widgets.size());
+        m_widgets.erase(m_widgets.begin() + idx);
+    }
+
+    std::vector<std::unique_ptr<Widget>>::iterator WidgetStore::begin()
+    {
+        return m_widgets.begin();
+    }
+
+    std::vector<std::unique_ptr<Widget>>::iterator WidgetStore::end()
+    {
+        return m_widgets.end();
+    }
+
     WidgetInspector::WidgetInspector(WidgetStore* widgetStore) :
             Widget("Widget Inspector"), m_widgetStore(widgetStore) {}
 
@@ -100,11 +136,16 @@ namespace Editor
         {
             static int current;
             ImGui::Begin(m_name.data(), &m_open);
+            for (auto& widget : *m_widgetStore)
+            {
+                std::string label = widget->getName() + " id: " + std::to_string(widget->getId());
+                ImGui::Text(label.data());
+            }
             ImGui::End();
         }
     }
 
-    void drawMainMenuBar()
+    void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore)
     {
         if (ImGui::BeginMainMenuBar())
         {
@@ -112,10 +153,22 @@ namespace Editor
             {
                 ImGui::EndMenu();
             }
-            if (ImGui::BeginMenu("Widgets"))
+            if (ImGui::BeginMenu("New widget"))
             {
+                if (ImGui::MenuItem("Texture viewer"))
+                    widgetStore.push(std::make_unique<TextureViewer>(&textureStore));
+                if (ImGui::MenuItem("Log viewer"))
+                    widgetStore.push(std::make_unique<LogViewer>());
                 ImGui::EndMenu();
             }
+#ifndef NDEBUG
+            if (ImGui::BeginMenu("Debug"))
+            {
+                if (ImGui::MenuItem("Widget Inspector"))
+                    widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
+                ImGui::EndMenu();
+            }
+#endif
             ImGui::EndMainMenuBar();
         }
     }
@@ -153,6 +206,7 @@ namespace Editor
             {
                 ImGui::PopStyleVar(3);
                 const auto dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
+
                 // Make this window as a dockspace
                 ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
                 ImGui::End();
