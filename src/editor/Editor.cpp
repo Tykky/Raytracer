@@ -125,6 +125,7 @@ namespace Editor
         widgetStore.push(std::make_unique<TextureViewer>(&textureStore));
         widgetStore.push(std::make_unique<LogViewer>());
         widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
+        widgetStore.push(std::make_unique<FileDialog>());
     }
 
     void cleanInactiveWidgets(WidgetStore& widgetStore)

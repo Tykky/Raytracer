@@ -8,6 +8,8 @@
 #include <string>
 #include "Graphics.h"
 #include "logging/Logging.h"
+#include "ImFileDialog.h"
+#include <functional>
 
 // Contains a set of widgets that can be drawn using Widget::draw().
 // Generally widgets are drawn as separate ImGui windows but exceptions exist such as
@@ -30,6 +32,7 @@ namespace Editor
         bool                m_open = true;
         const std::string   m_name;     // name displayed
         unsigned int        m_id = 0;   // ID
+        // Used to ID Dear Imgui windows
         std::string         m_windowId; // name###ID
     };
 
@@ -77,6 +80,17 @@ namespace Editor
         void draw() override;
     private:
         WidgetStore* m_widgetStore;
+    };
+
+    class FileDialog : public Widget
+    {
+    public:
+        FileDialog();
+        void draw() override;
+    private:
+        ifd::FileDialog m_fileDialog;
+        std::function<void*(uint8_t* data, int w, int h, char fmt)> m_createTexture;
+        std::function<void(void* tex)> m_deleteTexture;
     };
 
     // Shows the main menubar at the top of the main window
