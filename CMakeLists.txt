@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12.4)
 project(Raytracer)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 if(WIN32)
 	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -20,7 +20,8 @@ set(OpenGL_GL_PREFERENCE "GLVND")
 
 include_directories(external/tinyobjloader)
 include_directories(external/stb_image)
-include_directories(external/spdlog)
+include_directories(external/ImFileDialog)
+include_directories(external)
 
 if(BUILD_TEST)
 	add_subdirectory(external/googletest)

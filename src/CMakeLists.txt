@@ -31,7 +31,8 @@ set(RAYTRACER_GUI
         ../external/imgui/imgui_demo.cpp
         ../external/imgui/imgui_tables.cpp
         ../external/imgui/backends/imgui_impl_glfw.cpp
-        ../external/imgui/backends/imgui_impl_opengl3.cpp)
+        ../external/imgui/backends/imgui_impl_opengl3.cpp
+        ../external/ImFileDialog/ImFileDialog.cpp)
 
 if(BUILD_GUI)
     include_directories(../external/imgui ../external/imgui/backends)

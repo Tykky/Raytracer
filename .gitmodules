@@ -16,9 +16,3 @@
 [submodule "external/tinyobjloader"]
 	path = external/tinyobjloader
 	url = https://github.com/tinyobjloader/tinyobjloader
-[submodule "external/spdlog"]
-	path = external/spdlog
-	url = https://github.com/gabime/spdlog
-[submodule "external/ImFileDialog"]
-	path = external/ImFileDialog
-	url = https://github.com/dfranx/ImFileDialog
