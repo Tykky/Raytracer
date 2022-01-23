@@ -7,15 +7,14 @@
 
 namespace Editor::Gfx
 {
-    std::optional<GLtexture> loadTexture(const char* filename, MessageStore& messageStore)
+    std::optional<GLtexture> loadTexture(const char* filename)
     {
         GLtexture gltexture;
         unsigned char* data = stbi_load(filename, &gltexture.width, &gltexture.height, nullptr, 4);
 
         if (!data)
         {
-            std::string msg = "Failed to load texture " + std::string(filename);
-            // logWarning(msg.data());
+            logWarning("Failed to load texture " + std::string(filename));
             return std::nullopt;
         }
 

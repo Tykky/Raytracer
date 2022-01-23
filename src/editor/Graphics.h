@@ -17,7 +17,6 @@ namespace Editor::Gfx
         unsigned int  textureID;
     };
 
-
     // Simply uploads texture from disk
     // to GPU memory. Uses stb_image under the hood,
     // does have some restriction to what file formats

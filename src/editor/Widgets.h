@@ -21,8 +21,9 @@ namespace Editor
         Widget(const char* name);
         inline void  open()  { m_open = true; }
         inline void  close() { m_open = false; }
-        inline void setId(int id) { m_id = id; }
+        inline void setId(unsigned int id) { m_id = id; }
         virtual void draw() = 0;
+        inline const std::string& getName() const { return m_name; }
 
     protected:
         bool          m_open = true;
@@ -60,15 +61,23 @@ namespace Editor
 
         inline void push(std::unique_ptr<Widget>&& widget)
         {
-            widget->setId(currentUniqueIdx++);
+            widget->setId(m_currentUniqueIdx++);
             m_widgets.push_back(std::move(widget));
         }
 
     private:
         std::vector<std::unique_ptr<Widget>> m_widgets;
-        unsigned currentUniqueIdx = 0; // Used to create unique id for new widget
+        unsigned int m_currentUniqueIdx = 0; // Used to create unique id for new widget
     };
 
+    class WidgetInspector : public Widget
+    {
+    public:
+        WidgetInspector(WidgetStore* widgetStore);
+        void draw() override;
+    private:
+        WidgetStore* m_widgetStore;
+    };
 
     // Shows the main menubar at the top of the main window
     void drawMainMenuBar();

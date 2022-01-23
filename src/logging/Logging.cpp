@@ -26,3 +26,8 @@ const Message* getLogMessages(int &size)
     size = MESSAGE_STORE.size();
     return MESSAGE_STORE.data();
 }
+
+void clearLogs()
+{
+    MESSAGE_STORE.clear();
+}

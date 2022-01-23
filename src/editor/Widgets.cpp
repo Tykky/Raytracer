@@ -25,15 +25,20 @@ namespace Editor
 
         if (m_open)
         {
-            ImGui::Begin(m_name.data(), &m_open);
+            ImGui::Begin(m_name.data(), &m_open, flags);
             const char* preview = currentItem ? currentItem->name.data() : "";
             void* texId = currentItem ? (void*)currentItem->textureID : nullptr;
 
             zoomTextureWhenScrolled(scale.x, scale.y);
+            moveTextureWhenDragged(offset.x, offset.y);
 
-            ImGui::BeginChild("Texture viewer");
+            ImVec2 size = ImGui::GetWindowSize();
+
+            ImGui::BeginChild("Texture viewer", ImVec2(size.x, size.y - 70), false, flags);
+            ImGui::SetCursorPos(offset);
             ImGui::Image(texId, ImVec2(scale.x, scale.y));
             ImGui::EndChild();
+
 
             if (ImGui::BeginCombo("Textures", preview))
             {
@@ -61,6 +66,11 @@ namespace Editor
         {
             ImGui::Begin(m_name.data(), &m_open);
             ImGui::Checkbox("Scroll to bottom", &scrollToBottom);
+
+            ImGui::SameLine(170.0f);
+            if (ImGui::Button("clear"))
+                clearLogs();
+
             ImGui::BeginChild("Logtext###ID");
 
             if (scrollToBottom)
@@ -77,6 +87,19 @@ namespace Editor
             }
 
             ImGui::EndChild();
+            ImGui::End();
+        }
+    }
+
+    WidgetInspector::WidgetInspector(WidgetStore* widgetStore) :
+            Widget("Widget Inspector"), m_widgetStore(widgetStore) {}
+
+    void WidgetInspector::draw()
+    {
+        if (m_open)
+        {
+            static int current;
+            ImGui::Begin(m_name.data(), &m_open);
             ImGui::End();
         }
     }
@@ -142,6 +165,7 @@ namespace Editor
         if (ImGui::IsMouseDragging(0))
         {
             ImVec2 mouseDelta = ImGui::GetMouseDragDelta();
+            ImGui::ResetMouseDragDelta();
             offsetX += mouseDelta.x;
             offsetY += mouseDelta.y;
         }
@@ -150,11 +174,10 @@ namespace Editor
     void zoomTextureWhenScrolled(float& width, float& height)
     {
         float zoom = 1 + ImGui::GetIO().MouseWheel / 10;
-        if (zoom > 0.0f)
+        if (zoom > 0.0f && width * zoom > 0 && height * zoom > 0)
         {
-            width += zoom;
-            height += zoom;
-            logMsg("width: " + std::to_string(width) + " height: " + std::to_string(height));
+            width *= zoom;
+            height *= zoom;
         }
     }
 

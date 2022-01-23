@@ -24,7 +24,8 @@ void logWarning (std::string&& msg);
 void logError (std::string&& msg);
 
 const Message* getLogMessages(int& size);
+void clearLogs();
 
-// TODO: log message serialization, spdlog
+// TODO: improve logging with spdlog
 
 #endif //RAYTRACER_LOGGING_H
