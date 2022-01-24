@@ -293,6 +293,4 @@ namespace Editor
                 widgetStore.erase(i);
         }
     }
-
-
 }
