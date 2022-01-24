@@ -28,7 +28,7 @@
 #define PI 3.141592f
 
 #ifdef max
-#undef max // curse ms macro
+#undef max // cursed ms macro
 #endif
 
 namespace ifd {

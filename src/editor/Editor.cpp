@@ -7,6 +7,7 @@
 #include <string>
 #include "Style.h"
 #include <memory>
+#include "ImFileDialog.h"
 
 namespace Editor
 {
@@ -25,6 +26,17 @@ namespace Editor
 
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 440");
+
+        // ImFIleDialog needs functions for creating and freeing textures for icons
+        ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void*
+        {
+            return Gfx::createTexture(data, w, h, fmt);
+        };
+
+        ifd::FileDialog::Instance().DeleteTexture = [](void* tex)
+        {
+            Gfx::deleteTexture(tex);
+        };
 
         createDefaultEditorWidgets(widgetStore, textureStore);
     }
@@ -91,6 +103,7 @@ namespace Editor
     void drawEditor(const ImGuiIO& io, WidgetStore& widgetStore, TextureStore& textureStore)
     {
         drawMainMenuBar(widgetStore, textureStore);
+        drawImFileDialogAndProcessInput();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
         drawDockspace("Main", dockspaceID, io);
         for (int i = 0; i < widgetStore.size(); ++i)
@@ -125,7 +138,6 @@ namespace Editor
         widgetStore.push(std::make_unique<TextureViewer>(&textureStore));
         widgetStore.push(std::make_unique<LogViewer>());
         widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
-        widgetStore.push(std::make_unique<FileDialog>());
     }
 
     void cleanInactiveWidgets(WidgetStore& widgetStore)

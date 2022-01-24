@@ -82,21 +82,11 @@ namespace Editor
         WidgetStore* m_widgetStore;
     };
 
-    class FileDialog : public Widget
-    {
-    public:
-        FileDialog();
-        void draw() override;
-    private:
-        ifd::FileDialog m_fileDialog;
-        std::function<void*(uint8_t* data, int w, int h, char fmt)> m_createTexture;
-        std::function<void(void* tex)> m_deleteTexture;
-    };
-
     // Shows the main menubar at the top of the main window
     void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore);
     // Dockspace simply allows windows to be docked to the main window
     void drawDockspace(const char* name, ImGuiID dockspaceID, const ImGuiIO& io);
+    void drawImFileDialogAndProcessInput();
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
     void zoomTextureWhenScrolled(float& width, float& height);
     void pushMessagetypeImGuiStyleVar(MessageType type);

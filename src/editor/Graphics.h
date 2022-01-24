@@ -22,9 +22,15 @@ namespace Editor::Gfx
     // does have some restriction to what file formats
     // are supported.
     std::optional<GLtexture> loadTexture(const char* filename);
+    void* createTexture(unsigned char* data, int w, int h, char fmt);
 
    void clear();
    void deleteTexture(unsigned int textureID);
+
+   // Used by ImFileDialog
+   void* createTexture(unsigned char* data, int w, int h, char fmt);
+   void deleteTexture(void* tex);
+
 }
 
 namespace Editor

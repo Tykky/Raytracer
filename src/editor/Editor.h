@@ -31,6 +31,7 @@ namespace Editor
     void renderImguiDrawData();
     void renderGui(ImGuiIO &io, WidgetStore& widgetStore, TextureStore& textureStore);
     void drawEditor(const ImGuiIO& io, const WidgetStore& widgetStore, TextureStore& textureStore);
+    void drawImFileDialogAndProcessInput();
     void windowErrorCallback(int code, const char* description);
     void createDefaultEditorWidgets(WidgetStore& widgets, TextureStore& textureStore);
     void cleanInactiveWidgets(WidgetStore& widgetStore);
