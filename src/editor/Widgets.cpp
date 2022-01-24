@@ -145,12 +145,30 @@ namespace Editor
         }
     }
 
+    SettingsWidget::SettingsWidget() :
+            Widget("Settings") {}
+
+    void SettingsWidget::draw()
+    {
+        if (m_open)
+        {
+            ImGui::Begin(m_windowId.data(), &m_open);
+            ImGui::End();
+        }
+    }
+
     void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore)
     {
         if (ImGui::BeginMainMenuBar())
         {
             if (ImGui::BeginMenu("File"))
             {
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Edit"))
+            {
+                if (ImGui::MenuItem("Settings"))
+                    widgetStore.push(std::make_unique<SettingsWidget>());
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("New widget"))
@@ -184,7 +202,7 @@ namespace Editor
             const auto viewport = ImGui::GetMainViewport();
 
             // We need to leave some room at top to fit the main menu bar
-            static const int mainMenuGap = 18;
+            static const int mainMenuGap = 22;
 
             ImVec2 pos = viewport->Pos;
             pos = {pos.x, pos.y + mainMenuGap};
@@ -264,6 +282,15 @@ namespace Editor
             default:
                 ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 255, 255 ,255));
                 break;
+        }
+    }
+
+    void cleanInactiveWidgets(WidgetStore& widgetStore)
+    {
+        for (int i = 0; i < widgetStore.size(); ++i)
+        {
+            if (!widgetStore[i]->isOpen())
+                widgetStore.erase(i);
         }
     }
 

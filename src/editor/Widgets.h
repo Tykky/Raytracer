@@ -82,6 +82,13 @@ namespace Editor
         WidgetStore* m_widgetStore;
     };
 
+    class SettingsWidget : public Widget
+    {
+    public:
+        SettingsWidget();
+        void draw() override;
+    };
+
     // Shows the main menubar at the top of the main window
     void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore);
     // Dockspace simply allows windows to be docked to the main window
@@ -90,6 +97,7 @@ namespace Editor
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
     void zoomTextureWhenScrolled(float& width, float& height);
     void pushMessagetypeImGuiStyleVar(MessageType type);
+    void cleanInactiveWidgets(WidgetStore& widgetStore);
 }
 
 #endif //RAYTRACER_WIDGETS_H

@@ -38,6 +38,9 @@ namespace Editor
             Gfx::deleteTexture(tex);
         };
 
+        // Load custom font
+        io.Fonts->AddFontFromFileTTF("segoeui.ttf", 18.0f);
+
         createDefaultEditorWidgets(widgetStore, textureStore);
     }
 
@@ -140,12 +143,5 @@ namespace Editor
         widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
     }
 
-    void cleanInactiveWidgets(WidgetStore& widgetStore)
-    {
-        for (int i = 0; i < widgetStore.size(); ++i)
-        {
-            if (!widgetStore[i]->isOpen())
-                widgetStore.erase(i);
-        }
-    }
+
 }
