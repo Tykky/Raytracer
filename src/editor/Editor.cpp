@@ -39,7 +39,7 @@ namespace Editor
         };
 
         // Load custom font
-        io.Fonts->AddFontFromFileTTF("segoeui.ttf", 18.0f);
+        io.Fonts->AddFontFromFileTTF("segoeui.ttf", 17.0f);
 
         createDefaultEditorWidgets(widgetStore, textureStore);
     }
@@ -50,6 +50,7 @@ namespace Editor
         GLFWwindow* window;
         if (glfwInit())
         {
+            logMsg("GLFW initialized");
             if (!options.enableMainWindowBorders)
             {
                 glfwWindowHint(GLFW_DECORATED, false);
@@ -57,19 +58,32 @@ namespace Editor
 
             window = glfwCreateWindow(width, height, title, NULL, NULL);
             glfwMakeContextCurrent(window);
+            logMsg("GLFW window created");
 
             if (!options.enableVsync)
+            {
+                logMsg("Vsync enabled");
                 glfwSwapInterval(0);
+            }
+            else
+            {
+                logMsg("Vsync disabled");
+            }
 
             if (glewInit() != GLEW_OK)
             {
                 logError("Failed to initialize GLEW");
                 abort();
             }
+            else
+            {
+                logMsg("GLEW initialized");
+            }
         }
         else
         {
-            logMsg("Failed to initialize GLEW");
+            logError("Failed to initialize GLEW");
+            abort();
         }
         return window;
     }
@@ -77,7 +91,9 @@ namespace Editor
     void destroyWindow(GLFWwindow* window)
     {
         glfwDestroyWindow(window);
+        logMsg("GLFW window destroyed");
         glfwTerminate();
+        logMsg("GLFW terminated");
     }
 
     void renderLoop(GLFWwindow* window, WidgetStore& widgetStore, TextureStore& textureStore)
@@ -85,7 +101,8 @@ namespace Editor
         ImGuiIO &io = ImGui::GetIO();
         while (!glfwWindowShouldClose(window))
         {
-            glfwPollEvents();
+            // Limit to 10 fps when no inputs received
+            glfwWaitEventsTimeout(0.1);
             Gfx::clear();
             cleanInactiveWidgets(widgetStore);
             renderGui(io, widgetStore, textureStore);
@@ -100,7 +117,7 @@ namespace Editor
 
     void windowErrorCallback(int code, const char* description)
     {
-        logError("[GLFW] (" + std::to_string(code) + ") " + description);
+        logError("[GLFW CALLBACK] (" + std::to_string(code) + ") " + description);
     }
 
     void drawEditor(const ImGuiIO& io, WidgetStore& widgetStore, TextureStore& textureStore)
@@ -142,6 +159,4 @@ namespace Editor
         widgetStore.push(std::make_unique<LogViewer>());
         widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
     }
-
-
 }

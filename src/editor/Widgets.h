@@ -21,11 +21,11 @@ namespace Editor
     {
     public:
         Widget(const char* name);
-        inline bool isOpen() { return m_open; }
-        inline void setId(unsigned int id) { m_id = id; }
-        inline void setWindowId(std::string&& windowId) { m_windowId = std::move(windowId); }
-        inline unsigned int getId() const { return m_id; }
-        inline const std::string& getName() const { return m_name; }
+        inline  bool isOpen() { return m_open; }
+        inline  void setId(unsigned int id) { m_id = id; }
+        inline  void setWindowId(std::string&& windowId) { m_windowId = std::move(windowId); }
+        inline  unsigned int getId() const { return m_id; }
+        inline  const std::string& getName() const { return m_name; }
         virtual void draw() = 0;
 
     protected:
@@ -99,5 +99,4 @@ namespace Editor
     void pushMessagetypeImGuiStyleVar(MessageType type);
     void cleanInactiveWidgets(WidgetStore& widgetStore);
 }
-
 #endif //RAYTRACER_WIDGETS_H

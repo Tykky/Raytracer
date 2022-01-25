@@ -71,20 +71,18 @@ namespace Editor
 
             ImGui::SameLine(170.0f);
             if (ImGui::Button("clear"))
-                clearLogs();
+                getLogMessages().clear();
 
             ImGui::BeginChild("Logtext###ID");
 
             if (m_srollToBottom)
                 ImGui::SetScrollY(ImGui::GetScrollMaxY());
 
-            int size;
-            const Message* logMessages = getLogMessages(size);
 
-            for (int i = 0; i < size; i++)
+            for (auto& msg : getLogMessages())
             {
-                pushMessagetypeImGuiStyleVar(logMessages[i].type);
-                ImGui::Text(logMessages[i].message.data());
+                pushMessagetypeImGuiStyleVar(msg.type);
+                ImGui::Text(msg.message.data());
                 ImGui::PopStyleVar(1);
             }
 
@@ -163,6 +161,8 @@ namespace Editor
         {
             if (ImGui::BeginMenu("File"))
             {
+                if (ImGui::MenuItem("Open"))
+                    ifd::FileDialog::Instance().Open("Dialog", "Open a file", "");
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Edit"))
@@ -184,9 +184,6 @@ namespace Editor
             {
                 if (ImGui::MenuItem("Widget Inspector"))
                     widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
-
-                if (ImGui::MenuItem("File dialog"))
-                    ifd::FileDialog::Instance().Open("Dialog", "Open a texture", "Image file (*.png;*.jpg;*.jpeg;*.bmp;*.tga){.png,.jpg,.jpeg,.bmp,.tga},.*");
 
                 ImGui::EndMenu();
             }

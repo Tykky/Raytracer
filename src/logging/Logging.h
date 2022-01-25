@@ -26,8 +26,7 @@ void logWarning (std::string& msg);
 void logError (std::string&& msg);
 void logError (std::string& msg);
 
-const Message* getLogMessages(int& size);
-void clearLogs();
+MessageStore& getLogMessages();
 
 // TODO: improve logging with spdlog
 
