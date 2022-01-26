@@ -5,7 +5,7 @@
 #include <imgui_internal.h>
 #include <stdexcept>
 #include <string>
-#include "Style.h"
+#include "editor/Styles/DarkTheme.h"
 #include <memory>
 #include "ImFileDialog.h"
 
@@ -22,7 +22,7 @@ namespace Editor
             io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         }
         io.ConfigWindowsMoveFromTitleBarOnly = true;
-        execImGuiStyle();
+        execDarkTheme(); // use dark theme by defualt
 
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 440");
@@ -39,7 +39,7 @@ namespace Editor
         };
 
         // Load custom font
-        io.Fonts->AddFontFromFileTTF("segoeui.ttf", 17.0f);
+        io.Fonts->AddFontFromFileTTF("Roboto-Regular.ttf", 16.0f);
 
         createDefaultEditorWidgets(widgetStore, textureStore);
     }

@@ -1,9 +1,9 @@
-#ifndef RAYTRACER_STYLE_H
-#define RAYTRACER_STYLE_H
+#ifndef RAYTRACER_DARKTHEME_H
+#define RAYTRACER_DARKTHEME_H
 
 #include <imgui.h>
 
-void execImGuiStyle() 
+inline void execDarkTheme()
 {
 	
 	ImGui::GetStyle().FrameRounding = 4.0f;
@@ -60,4 +60,4 @@ void execImGuiStyle()
   colors[ImGuiCol_ModalWindowDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 }
 
-#endif //RAYTRACER_STYLE_H
+#endif //RAYTRACER_DARKTHEME_H

@@ -13,7 +13,7 @@
 #include "materials/Mix.h"
 #include "materials/Lambertian.h"
 #include "materials/Dielectric.h"
-#include "Style.h"
+#include "editor/Styles/DarkTheme.h"
 #include "logging/Logging.h"
 
 void init(GLFWwindow *window, int &framebufferTextureId, int width, int height, char *framebuffer)

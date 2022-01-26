@@ -7,6 +7,7 @@
 #include <vector>
 #include "logging/Logging.h"
 #include "ImFileDialog.h"
+#include "editor/styles/DarkTheme.h"
 
 namespace Editor
 {
@@ -78,7 +79,6 @@ namespace Editor
             if (m_srollToBottom)
                 ImGui::SetScrollY(ImGui::GetScrollMaxY());
 
-
             for (auto& msg : getLogMessages())
             {
                 pushMessagetypeImGuiStyleVar(msg.type);
@@ -148,9 +148,27 @@ namespace Editor
 
     void SettingsWidget::draw()
     {
+        static const char* preview;
         if (m_open)
         {
             ImGui::Begin(m_windowId.data(), &m_open);
+            if (ImGui::BeginCombo("Theme", preview))
+            {
+                if (ImGui::Selectable("Dark"))
+                    execDarkTheme();
+                if (ImGui::Selectable("Light"))
+                    ImGui::StyleColorsLight();
+                if (ImGui::Selectable("classic"))
+                    ImGui::StyleColorsClassic();
+                ImGui::EndCombo();
+            }
+            static float scale = 1.0f;
+            float tmp = scale;
+            if (ImGui::InputFloat("Font scale", &tmp) && tmp <= 3 && tmp >= 0.5)
+            {
+                scale = tmp;
+                ImGui::GetIO().FontGlobalScale = scale;
+            }
             ImGui::End();
         }
     }
@@ -222,7 +240,7 @@ namespace Editor
                                ImGuiWindowFlags_NoBringToFrontOnFocus;
 
             if (ImGui::Begin(name, nullptr, windowFlags))
-            {
+           {
                 ImGui::PopStyleVar(3);
                 const auto dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
 
