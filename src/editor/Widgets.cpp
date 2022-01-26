@@ -148,18 +148,27 @@ namespace Editor
 
     void SettingsWidget::draw()
     {
-        static const char* preview;
+        static const char* preview = "Dark";
         if (m_open)
         {
             ImGui::Begin(m_windowId.data(), &m_open);
             if (ImGui::BeginCombo("Theme", preview))
             {
                 if (ImGui::Selectable("Dark"))
+                {
                     execDarkTheme();
+                    preview = "Dark";
+                }
                 if (ImGui::Selectable("Light"))
+                {
                     ImGui::StyleColorsLight();
+                    preview = "Light";
+                }
                 if (ImGui::Selectable("classic"))
+                {
                     ImGui::StyleColorsClassic();
+                    preview = "Classic";
+                }
                 ImGui::EndCombo();
             }
             static float scale = 1.0f;
