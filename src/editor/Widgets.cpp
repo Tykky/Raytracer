@@ -33,14 +33,18 @@ namespace Editor
 
             ImGui::BeginChild("Texture viewer", ImVec2(size.x, size.y - comboBoxGap), false, flags);
 
-            if (ImGui::IsWindowHovered())
+            if (ImGui::IsWindowHovered() && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
             {
                 zoomTextureWhenScrolled(m_scale.x, m_scale.y);
                 moveTextureWhenDragged(m_offset.x, m_offset.y);
             }
 
+            // Dear Imgui draws textures upper left corner on current cursor position.
+            // When we zoom the texture we want to keep it centered. We do this by
+            // computing correct upper left corner so that the center of the texture is in the middle of the window.
             ImVec2 center = { (size.x - m_scale.x) * 0.5f + m_offset.x, (size.y - m_scale.y) * 0.5f + m_offset.y };
 
+            // By moving the cursor position we can move the texture.
             ImGui::SetCursorPos(center);
             ImGui::Image(texId, ImVec2(m_scale.x, m_scale.y));
             ImGui::EndChild();
@@ -52,7 +56,9 @@ namespace Editor
                     auto* tex = &m_textStore->at(i);
                     bool isSelected = (tex && m_currentTexture && m_currentTexture->textureID == tex->textureID);
                     if (ImGui::Selectable(tex->name.data(), isSelected))
+                    {
                         m_currentTexture = tex;
+                    }
                 }
                 ImGui::EndCombo();
             }
@@ -171,8 +177,10 @@ namespace Editor
                 }
                 ImGui::EndCombo();
             }
+
             static float scale = 1.0f;
             float tmp = scale;
+
             if (ImGui::InputFloat("Font scale", &tmp) && tmp <= 3 && tmp >= 0.5)
             {
                 scale = tmp;
@@ -212,6 +220,8 @@ namespace Editor
                 if (ImGui::MenuItem("Widget Inspector"))
                     widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
 
+                if (ImGui::MenuItem("ImGui Metrics"))
+                    widgetStore.push(std::make_unique<ImGuiMetrics>());
                 ImGui::EndMenu();
             }
 #endif

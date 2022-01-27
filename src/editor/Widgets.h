@@ -33,7 +33,7 @@ namespace Editor
         const std::string   m_name;     // name displayed
         unsigned int        m_id = 0;   // ID
         // Used to ID Dear Imgui windows
-        std::string         m_windowId; // name###ID
+        std::string         m_windowId; // contains string: name###ID
     };
 
     class TextureViewer : public Widget
@@ -58,6 +58,8 @@ namespace Editor
         bool m_srollToBottom = true;
     };
 
+    // TODO: hide the use of unique_ptr inside the implementation.
+    // Don't make users having to deal with the creation of unique_ptr
     class WidgetStore
     {
     public:
@@ -87,6 +89,13 @@ namespace Editor
     public:
         SettingsWidget();
         void draw() override;
+    };
+
+    // Small wrapper for Dear Imgui metrics command.
+    struct ImGuiMetrics : public Widget
+    {
+        inline ImGuiMetrics() : Widget("Dear Imgui Metrics") {}
+        inline void draw() override { ImGui::ShowMetricsWindow(&m_open); }
     };
 
     // Shows the main menubar at the top of the main window

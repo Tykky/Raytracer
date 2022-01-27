@@ -1,6 +1,9 @@
 #include "Graphics.h"
 #include "logging/Logging.h"
+
+// We need to define this once, so STB_IMAGE implementation gets placed in only one of the translation units
 #define STB_IMAGE_IMPLEMENTATION
+
 #include <stb_image.h>
 #include <GL/glew.h>
 #include <stdexcept>
