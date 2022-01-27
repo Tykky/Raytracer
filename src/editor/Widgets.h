@@ -103,6 +103,8 @@ namespace Editor
     // Dockspace simply allows windows to be docked to the main window
     void drawDockspace(const char* name, ImGuiID dockspaceID, const ImGuiIO& io);
     void drawImFileDialogAndProcessInput();
+    void drawTextureView(void* currentTexId, ImVec2& offset, ImVec2& scale, bool& open);
+    void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Gfx::GLtexture*& currentTexture);
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
     void zoomTextureWhenScrolled(float& width, float& height);
     void pushMessagetypeImGuiStyleVar(MessageType type);

@@ -19,51 +19,12 @@ namespace Editor
 
     void TextureViewer::draw()
     {
-        constexpr int flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
-
-        if (m_open)
-        {
-            ImGui::Begin(m_windowId.data(), &m_open, flags);
-            const char* preview = m_currentTexture ? m_currentTexture->name.data() : "";
-            void* texId = m_currentTexture ? (void*)m_currentTexture->textureID : nullptr;
-
-            ImVec2 size = ImGui::GetWindowSize();
-
-            static const int comboBoxGap = 100;
-
-            ImGui::BeginChild("Texture viewer", ImVec2(size.x, size.y - comboBoxGap), false, flags);
-
-            if (ImGui::IsWindowHovered() && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
-            {
-                zoomTextureWhenScrolled(m_scale.x, m_scale.y);
-                moveTextureWhenDragged(m_offset.x, m_offset.y);
-            }
-
-            // Dear Imgui draws textures upper left corner on current cursor position.
-            // When we zoom the texture we want to keep it centered. We do this by
-            // computing correct upper left corner so that the center of the texture is in the middle of the window.
-            ImVec2 center = { (size.x - m_scale.x) * 0.5f + m_offset.x, (size.y - m_scale.y) * 0.5f + m_offset.y };
-
-            // By moving the cursor position we can move the texture.
-            ImGui::SetCursorPos(center);
-            ImGui::Image(texId, ImVec2(m_scale.x, m_scale.y));
-            ImGui::EndChild();
-
-            if (ImGui::BeginCombo("Textures", preview))
-            {
-                for (int i = 0; i < m_textStore->size(); ++i)
-                {
-                    auto* tex = &m_textStore->at(i);
-                    bool isSelected = (tex && m_currentTexture && m_currentTexture->textureID == tex->textureID);
-                    if (ImGui::Selectable(tex->name.data(), isSelected))
-                    {
-                        m_currentTexture = tex;
-                    }
-                }
-                ImGui::EndCombo();
-            }
-            ImGui::End();
-        }
+        ImGui::Begin(m_windowId.data(), &m_open);
+        void* currentTexId = m_currentTexture ? (void*)m_currentTexture->textureID : nullptr;
+        const char* preview = m_currentTexture ? m_currentTexture->name.data() : "";
+        drawTextureView(currentTexId, m_offset, m_scale, m_open);
+        drawTexturePickerComboBox(preview, m_textStore, m_currentTexture);
+        ImGui::End();
     }
 
     LogViewer::LogViewer() :
@@ -138,7 +99,6 @@ namespace Editor
     {
         if (m_open)
         {
-            static int current;
             ImGui::Begin(m_windowId.data(), &m_open);
             for (auto& widget : *m_widgetStore)
             {
@@ -282,6 +242,52 @@ namespace Editor
         }
     }
 
+    void drawTextureView(void* texId, ImVec2& offset, ImVec2& scale, bool& open)
+    {
+        constexpr int flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+
+        if (open)
+        {
+            ImVec2 size = ImGui::GetWindowSize();
+
+            constexpr const int comboBoxGap = 100;
+
+            ImGui::BeginChild("Texture viewer", {size.x, size.y - comboBoxGap}, false, flags);
+
+            if (ImGui::IsWindowHovered() && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
+            {
+                zoomTextureWhenScrolled(scale.x, scale.y);
+                moveTextureWhenDragged(offset.x, offset.y);
+            }
+
+            // Dear Imgui draws textures upper left corner on current cursor position.
+            // When we zoom the texture we want to keep it centered. We do this by
+            // computing correct upper left corner so that the center of the texture is in the middle of the window.
+            ImVec2 center = {(size.x - scale.x) * 0.5f + offset.x, (size.y - scale.y) * 0.5f + offset.y};
+
+            // By moving the cursor position we can move the texture.
+            ImGui::SetCursorPos(center);
+            ImGui::Image(texId, ImVec2(scale.x, scale.y));
+            ImGui::EndChild();
+        }
+    }
+
+    void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Gfx::GLtexture*& currentTexture)
+    {
+        ImGui::BeginChild("Texture Picker", {180, 30});
+        if (ImGui::BeginCombo("Textures", preview))
+        {
+            for (auto& tex : *textureStore)
+            {
+                bool isSelected = (currentTexture && currentTexture->textureID == tex.textureID);
+                if (ImGui::Selectable(tex.name.data(), isSelected))
+                    currentTexture = &tex;
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::EndChild();
+    }
+
     void moveTextureWhenDragged(float& offsetX, float& offsetY)
     {
         if (ImGui::IsMouseDragging(0))
@@ -327,4 +333,6 @@ namespace Editor
                 widgetStore.erase(i);
         }
     }
+
+
 }
