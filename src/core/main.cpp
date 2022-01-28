@@ -1,4 +1,6 @@
 #include "editor/Editor.h"
+#include "io/Io.h"
+#include <iostream>
 
 int main()
 {

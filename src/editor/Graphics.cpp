@@ -11,6 +11,17 @@
 
 namespace Editor::Gfx
 {
+    Framebuffer::Framebuffer()
+    {
+        glGenFramebuffers(1, &m_framebufferID);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
+    }
+
+    Framebuffer::~Framebuffer()
+    {
+        glDeleteFramebuffers(1, &m_framebufferID);
+    }
+
     RenderTexture::RenderTexture(unsigned int width, unsigned height, bool depthTesting) :
         m_width(width), m_height(height), m_depthTestEnabled(depthTesting)
     {
@@ -19,6 +30,7 @@ namespace Editor::Gfx
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE,0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
         if (depthTesting)
         {
@@ -26,6 +38,7 @@ namespace Editor::Gfx
             glBindRenderbuffer(GL_RENDERBUFFER, m_depthBufferId);
             glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthBufferId);
+            glBindRenderbuffer(GL_RENDERBUFFER, 0);
         }
     }
 

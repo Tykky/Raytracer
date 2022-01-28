@@ -20,6 +20,7 @@ set(RAYTRACER_SRC core/Ray.cpp
         samplers/FastSampler.cpp
         threads/Threadpool.cpp
         logging/Logging.cpp
+        io/Io.cpp
 )
 set(RAYTRACER_GUI
         editor/Editor.cpp

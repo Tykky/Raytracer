@@ -103,6 +103,7 @@ namespace Editor
     public:
         Viewport();
         void draw() override;
+    private:
     };
 
     // Shows the main menubar at the top of the main window

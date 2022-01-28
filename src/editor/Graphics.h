@@ -18,6 +18,15 @@ namespace Editor::Gfx
         unsigned int  textureID;
     };
 
+    class Framebuffer
+    {
+    public:
+        Framebuffer();
+        ~Framebuffer();
+    private:
+        unsigned int m_framebufferID;
+    };
+
     // A texture we can use as render target
     class RenderTexture
     {
@@ -40,7 +49,6 @@ namespace Editor::Gfx
     // does have some restriction to what file formats
     // are supported.
     std::optional<Texture> loadTexture(const char* filename);
-    // get rid of this
     void* createTexture(unsigned char* data, int w, int h, char fmt);
 
    void clear();
