@@ -150,6 +150,18 @@ namespace Editor
         }
     }
 
+    Viewport::Viewport() :
+        Widget("Viewport") {}
+
+    void Viewport::draw()
+    {
+        if (m_open)
+        {
+            ImGui::Begin(m_windowId.data());
+            ImGui::End();
+        }
+    }
+
     void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore)
     {
         if (ImGui::BeginMainMenuBar())
@@ -272,7 +284,7 @@ namespace Editor
         }
     }
 
-    void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Gfx::GLtexture*& currentTexture)
+    void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Gfx::Texture*& currentTexture)
     {
         ImGui::BeginChild("Texture Picker", {180, 30});
         if (ImGui::BeginCombo("Textures", preview))

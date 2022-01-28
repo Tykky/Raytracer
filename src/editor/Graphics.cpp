@@ -11,9 +11,34 @@
 
 namespace Editor::Gfx
 {
-    std::optional<GLtexture> loadTexture(const char* filename)
+    RenderTexture::RenderTexture(unsigned int width, unsigned height, bool depthTesting) :
+        m_width(width), m_height(height), m_depthTestEnabled(depthTesting)
     {
-        GLtexture gltexture;
+        glGenTextures(1, &m_renderTextureId);
+        glBindTexture(GL_TEXTURE_2D, m_renderTextureId);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE,0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        if (depthTesting)
+        {
+            glGenRenderbuffers(1, &m_depthBufferId);
+            glBindRenderbuffer(GL_RENDERBUFFER, m_depthBufferId);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthBufferId);
+        }
+    }
+
+    RenderTexture::~RenderTexture()
+    {
+        glDeleteTextures(1, &m_renderTextureId);
+        if (m_depthTestEnabled)
+            glDeleteRenderbuffers(1, &m_renderTextureId);
+    }
+
+    std::optional<Texture> loadTexture(const char* filename)
+    {
+        Texture gltexture;
         unsigned char* data = stbi_load(filename, &gltexture.width, &gltexture.height, nullptr, 4);
 
         if (!data)

@@ -108,7 +108,7 @@ namespace Editor
         ImGuiIO &io = ImGui::GetIO();
         while (!glfwWindowShouldClose(window))
         {
-            // Limit to 10 fps when no inputs received
+            // Limit to 10 fps when no input is received
             glfwWaitEventsTimeout(0.1);
             Gfx::clear();
             cleanInactiveWidgets(widgetStore);
@@ -161,7 +161,7 @@ namespace Editor
 
     void createDefaultEditorWidgets(WidgetStore& widgetStore, TextureStore& textureStore)
     {
-        widgetStore.push(std::make_unique<TextureViewer>(&textureStore));
+        widgetStore.push(std::make_unique<Viewport>());
         widgetStore.push(std::make_unique<LogViewer>());
 #ifndef NDEBUG
         widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
