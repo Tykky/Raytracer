@@ -156,7 +156,6 @@ namespace Editor
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(window);
         }
-
         renderImguiDrawData();
     }
 
@@ -164,6 +163,9 @@ namespace Editor
     {
         widgetStore.push(std::make_unique<TextureViewer>(&textureStore));
         widgetStore.push(std::make_unique<LogViewer>());
+#ifndef NDEBUG
         widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
+        widgetStore.push(std::make_unique<ImGuiMetrics>());
+#endif
     }
 }

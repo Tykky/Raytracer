@@ -59,7 +59,7 @@ namespace Editor
     };
 
     // TODO: hide the use of unique_ptr inside the implementation.
-    // Don't make users having to deal with the creation of unique_ptr
+    // Don't make users have to deal with the creation of unique_ptr
     class WidgetStore
     {
     public:
