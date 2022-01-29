@@ -30,12 +30,12 @@ namespace Editor
         // ImFIleDialog needs functions for creating and freeing textures for icons
         ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void*
         {
-            return Gfx::createTexture(data, w, h, fmt);
+            return createTexture(data, w, h, fmt);
         };
 
         ifd::FileDialog::Instance().DeleteTexture = [](void* tex)
         {
-            Gfx::deleteTexture(tex);
+            deleteTexture(tex);
         };
 
         // Load custom font
@@ -47,7 +47,6 @@ namespace Editor
         // save and load settings. For nowe we only load the default init file.
         io.WantSaveIniSettings = false;
 #endif
-
         createDefaultEditorWidgets(widgetStore, textureStore);
     }
 
@@ -110,7 +109,7 @@ namespace Editor
         {
             // Limit to 10 fps when no input is received
             glfwWaitEventsTimeout(0.1);
-            Gfx::clear();
+            clear();
             cleanInactiveWidgets(widgetStore);
             renderGui(io, widgetStore, textureStore);
             glfwSwapBuffers(window);

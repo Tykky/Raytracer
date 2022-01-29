@@ -33,7 +33,7 @@ void logWarning(std::string& msg)
 
 void logError(std::string&& msg)
 {
-    auto tmp = "[WRANGING] " + msg;
+    auto tmp = "[ERROR] " + msg;
     std::cout << tmp << std::endl;
     MESSAGE_STORE.push_back({ std::move(tmp), MessageType::ERROR});
 }

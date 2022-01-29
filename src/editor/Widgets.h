@@ -46,7 +46,7 @@ namespace Editor
         TextureStore*   m_textStore      = nullptr;
         ImVec2          m_offset         = {0.0f, 0.0f};
         ImVec2          m_scale          = {600.0f, 600.0f};
-        Gfx::Texture*   m_currentTexture = nullptr;
+        Texture*   m_currentTexture = nullptr;
     };
 
     class LogViewer : public Widget
@@ -111,8 +111,8 @@ namespace Editor
     // Dockspace simply allows windows to be docked to the main window
     void drawDockspace(const char* name, ImGuiID dockspaceID, const ImGuiIO& io);
     void drawImFileDialogAndProcessInput();
-    void drawTextureView(void* currentTexId, ImVec2& offset, ImVec2& scale, bool& open);
-    void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Gfx::Texture*& currentTexture);
+    void drawTextureView(const char* windowName, void* currentTexId, ImVec2& offset, ImVec2& scale, bool& open);
+    void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture);
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
     void zoomTextureWhenScrolled(float& width, float& height);
     void pushMessagetypeImGuiStyleVar(MessageType type);

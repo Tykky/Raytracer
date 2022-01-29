@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+ #include <GL/glew.h>
 #include "Widgets.h"
 #include "imgui.h"
 #include "GLFW/glfw3.h"
@@ -22,7 +22,7 @@ namespace Editor
         ImGui::Begin(m_windowId.data(), &m_open);
         void* currentTexId = m_currentTexture ? (void*)m_currentTexture->textureID : nullptr;
         const char* preview = m_currentTexture ? m_currentTexture->name.data() : "";
-        drawTextureView(currentTexId, m_offset, m_scale, m_open);
+        drawTextureView("Texture viewer", currentTexId, m_offset, m_scale, m_open);
         drawTexturePickerComboBox(preview, m_textStore, m_currentTexture);
         ImGui::End();
     }
@@ -254,7 +254,7 @@ namespace Editor
         }
     }
 
-    void drawTextureView(void* texId, ImVec2& offset, ImVec2& scale, bool& open)
+    void drawTextureView(const char* windowName, void* texId, ImVec2& offset, ImVec2& scale, bool& open)
     {
         constexpr int flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
@@ -264,7 +264,7 @@ namespace Editor
 
             constexpr const int comboBoxGap = 100;
 
-            ImGui::BeginChild("Texture viewer", {size.x, size.y - comboBoxGap}, false, flags);
+            ImGui::BeginChild(windowName, {size.x, size.y - comboBoxGap}, false, flags);
 
             if (ImGui::IsWindowHovered() && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
             {
@@ -284,7 +284,7 @@ namespace Editor
         }
     }
 
-    void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Gfx::Texture*& currentTexture)
+    void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture)
     {
         ImGui::BeginChild("Texture Picker", {180, 30});
         if (ImGui::BeginCombo("Textures", preview))
@@ -345,6 +345,4 @@ namespace Editor
                 widgetStore.erase(i);
         }
     }
-
-
 }

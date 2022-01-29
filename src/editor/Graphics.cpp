@@ -9,12 +9,11 @@
 #include <stdexcept>
 #include <string>
 
-namespace Editor::Gfx
+namespace Editor
 {
     Framebuffer::Framebuffer()
     {
         glGenFramebuffers(1, &m_framebufferID);
-        glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
     }
 
     Framebuffer::~Framebuffer()
@@ -47,6 +46,93 @@ namespace Editor::Gfx
         glDeleteTextures(1, &m_renderTextureId);
         if (m_depthTestEnabled)
             glDeleteRenderbuffers(1, &m_renderTextureId);
+    }
+
+    Shader::Shader(const char* name, const char* filePath, ShaderType shaderType) :
+            m_shaderType(shaderType), m_name(name), m_filePath(filePath)
+    {
+        Rawbuffer source;
+        if (readRawFile(source, filePath))
+        {
+            const char* sourceData = source.data();
+            const int sourceLength = source.size();
+            m_shaderId = glCreateShader(static_cast<unsigned int>(shaderType));
+            glShaderSource(m_shaderId, 1, &sourceData, &sourceLength);
+            m_readFileSuccess = true;
+            logMsg("Shader loaded: " + m_name);
+        }
+    }
+
+    Shader::~Shader()
+    {
+        if (m_readFileSuccess)
+            glDeleteShader(m_shaderId);
+    }
+
+    bool Shader::compile()
+    {
+        glCompileShader(m_shaderId);
+        if (m_readFileSuccess && checkShaderCompilation(m_shaderId))
+        {
+            m_compileSuccess = true;
+            logMsg("Compiled shader: " + m_name);
+            return true;
+        }
+        logError("Failed to compile shader" + m_name);
+        return false;
+    }
+
+    Shader::Shader(Shader&& shader)
+    {
+        m_name = std::move(shader.m_name);
+        m_filePath = std::move(shader.m_filePath);
+        m_shaderId = shader.m_shaderId;
+        m_shaderType = shader.m_shaderType;
+        m_readFileSuccess = shader.m_readFileSuccess;
+        m_compileSuccess = shader.m_compileSuccess;
+        // When readFIleSuccess is false the destructor doesn't do anything
+        // TODO this is hacky solution, figure out something better
+        shader.m_readFileSuccess = false;
+    }
+
+    Shader& Shader::operator=(Shader&& shader)
+    {
+        m_name = std::move(shader.m_name);
+        m_filePath = std::move(shader.m_filePath);
+        m_shaderId = shader.m_shaderId;
+        m_shaderType = shader.m_shaderType;
+        m_readFileSuccess = shader.m_readFileSuccess;
+        m_compileSuccess = shader.m_compileSuccess;
+        // When readFIleSuccess is false the destructor doesn't do anything
+        // TODO this is hacky solution, figure out something better
+        shader.m_readFileSuccess = false;
+        return *this;
+    }
+
+    ShaderProgram::ShaderProgram(ShaderStore* shaders) :
+        m_shaders(shaders)
+    {
+        if (!shaders)
+        {
+            logError("Failed to create shader program, nullptr given");
+            return;
+        }
+
+        m_shaderProgramId = glCreateProgram();
+        std::string shaderNames = "";
+
+        for (auto& shader : *shaders)
+        {
+            glAttachShader(m_shaderProgramId, shader.getId());
+            shaderNames += shader.getName() + ", ";
+        }
+
+        glLinkProgram(m_shaderProgramId);
+        if (!checkShaderLink(m_shaderProgramId))
+        {
+            logError("Failed to link shaders into program: " + std::move(shaderNames));
+        }
+        logMsg("Linked shaders: " + std::move(shaderNames));
     }
 
     std::optional<Texture> loadTexture(const char* filename)
@@ -110,5 +196,35 @@ namespace Editor::Gfx
     {
         GLuint texID = (GLuint)tex;
         glDeleteTextures(1, &texID);
+    }
+
+    bool checkShaderCompilation(unsigned int shaderId)
+    {
+        int success;
+        const int logSize = 1024;
+        char infolog[logSize];
+
+        glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(shaderId, logSize, NULL, infolog);
+            return false;
+        }
+        return true;
+    }
+
+    bool checkShaderLink(unsigned int shaderId)
+    {
+        int success;
+        const int logSize = 1024;
+        char infoLog[logSize];
+
+        glGetProgramiv(shaderId, GL_LINK_STATUS, &success);
+        if (!success)
+        {
+            glGetProgramInfoLog(shaderId, logSize, NULL, infoLog);
+            return false;
+        }
+        return true;
     }
 }
