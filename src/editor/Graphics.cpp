@@ -25,7 +25,7 @@ namespace Editor
         glEnableVertexAttribArray(0);
 
         // Texture coordinates
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
         // TODO: construct index/element buffer
@@ -37,6 +37,11 @@ namespace Editor
     {
         glDeleteVertexArrays(1, &m_vao);
         glDeleteBuffers(1, &m_vbo);
+    }
+
+    void VertexBuffer::bind()
+    {
+        glBindVertexArray(m_vao);
     }
 
     Framebuffer::Framebuffer()
@@ -76,91 +81,113 @@ namespace Editor
             glDeleteRenderbuffers(1, &m_renderTextureId);
     }
 
-    Shader::Shader(const char* name, const char* filePath, ShaderType shaderType) :
-            m_shaderType(shaderType), m_name(name), m_filePath(filePath)
+    ShaderProgram::~ShaderProgram()
     {
-        Rawbuffer source;
-        if (readRawFile(source, filePath))
-        {
-            const char* sourceData = source.data();
-            const int sourceLength = source.size();
-            m_shaderId = glCreateShader(static_cast<unsigned int>(shaderType));
-            glShaderSource(m_shaderId, 1, &sourceData, &sourceLength);
-            m_readFileSuccess = true;
-            logMsg("Shader loaded: " + m_name);
-        }
+        if (m_shaderProgramId)
+            glDeleteProgram(m_shaderProgramId);
+        if (m_vertexShaderId)
+            glDeleteShader(m_vertexShaderId);
+        if (m_fragmentShaderId)
+            glDeleteShader(m_fragmentShaderId);
+        if (m_computeShaderId)
+            glDeleteShader(m_computeShaderId);
     }
 
-    Shader::~Shader()
+    ShaderProgram::ShaderProgram(ShaderProgram&& shaderProgram)
     {
-        if (m_readFileSuccess)
-            glDeleteShader(m_shaderId);
+        m_shaderProgramId = shaderProgram.m_shaderProgramId;
+        shaderProgram.m_shaderProgramId = 0;
+        m_vertexShaderId = shaderProgram.m_vertexShaderId;
+        shaderProgram.m_vertexShaderId = 0;
+        m_fragmentShaderId = shaderProgram.m_fragmentShaderId;
+        shaderProgram.m_computeShaderId = 0;
+        m_computeShaderId = shaderProgram.m_computeShaderId;
     }
 
-    bool Shader::compile()
+    ShaderProgram& ShaderProgram::operator=(ShaderProgram&& shaderProgram)
     {
-        glCompileShader(m_shaderId);
-        if (m_readFileSuccess && checkShaderCompilation(m_shaderId))
-        {
-            m_compileSuccess = true;
-            logMsg("Compiled shader: " + m_name);
-            return true;
-        }
-        logError("Failed to compile shader" + m_name);
-        return false;
-    }
-
-    Shader::Shader(Shader&& shader)
-    {
-        m_name = std::move(shader.m_name);
-        m_filePath = std::move(shader.m_filePath);
-        m_shaderId = shader.m_shaderId;
-        m_shaderType = shader.m_shaderType;
-        m_readFileSuccess = shader.m_readFileSuccess;
-        m_compileSuccess = shader.m_compileSuccess;
-        // When readFIleSuccess is false the destructor doesn't do anything
-        // TODO this is hacky solution, figure out something better
-        shader.m_readFileSuccess = false;
-    }
-
-    Shader& Shader::operator=(Shader&& shader)
-    {
-        m_name = std::move(shader.m_name);
-        m_filePath = std::move(shader.m_filePath);
-        m_shaderId = shader.m_shaderId;
-        m_shaderType = shader.m_shaderType;
-        m_readFileSuccess = shader.m_readFileSuccess;
-        m_compileSuccess = shader.m_compileSuccess;
-        // When readFIleSuccess is false the destructor doesn't do anything
-        // TODO this is hacky solution, figure out something better
-        shader.m_readFileSuccess = false;
+        m_shaderProgramId = shaderProgram.m_shaderProgramId;
+        shaderProgram.m_shaderProgramId = 0;
+        m_vertexShaderId = shaderProgram.m_vertexShaderId;
+        shaderProgram.m_vertexShaderId = 0;
+        m_fragmentShaderId = shaderProgram.m_fragmentShaderId;
+        shaderProgram.m_computeShaderId = 0;
+        m_computeShaderId = shaderProgram.m_computeShaderId;
         return *this;
     }
 
-    ShaderProgram::ShaderProgram(ShaderStore* shaders) :
-        m_shaders(shaders)
+    bool ShaderProgram::addShader(const char* path, ShaderType shaderType)
     {
-        if (!shaders)
+        Rawbuffer buf;
+        if (readRawFile(buf, path))
         {
-            logError("Failed to create shader program, nullptr given");
-            return;
+            const char* bufPtr = buf.data();
+            const int size = buf.size();
+            if (unsigned int shader = compileShader(&bufPtr, &size, shaderType))
+            {
+                logMsg("Successfully compiled shader from path: " + std::string(path));
+                switch (shaderType)
+                {
+                    case ShaderType::VERTEX:
+                        m_vertexShaderId = shader;
+                        return true;
+                    case ShaderType::FRAGMENT:
+                        m_fragmentShaderId = shader;
+                        return true;
+                    case ShaderType::COMPUTE:
+                        m_computeShaderId = shader;
+                        return true;
+                }
+            }
+            else
+            {
+                logError("Failed to compile shader from path: " + std::string(path));
+            }
         }
+        return false;
+    }
 
+    bool ShaderProgram::link()
+    {
         m_shaderProgramId = glCreateProgram();
-        std::string shaderNames = "";
-
-        for (auto& shader : *shaders)
-        {
-            glAttachShader(m_shaderProgramId, shader.getId());
-            shaderNames += shader.getName() + ", ";
-        }
-
+        if (m_vertexShaderId)
+            glAttachShader(m_shaderProgramId, m_vertexShaderId);
+        if (m_fragmentShaderId)
+            glAttachShader(m_shaderProgramId, m_fragmentShaderId);
+        if (m_computeShaderId)
+            glAttachShader(m_shaderProgramId, m_computeShaderId);
         glLinkProgram(m_shaderProgramId);
-        if (!checkShaderLink(m_shaderProgramId))
+        if (checkShaderLink(m_shaderProgramId))
         {
-            logError("Failed to link shaders into program: " + std::move(shaderNames));
+            logMsg("Shaders successfully linked into a program");
+            // TODO: cosnider calling delete on shaders when they are linked
+            return true;
         }
-        logMsg("Linked shaders: " + std::move(shaderNames));
+        else
+        {
+            logError("Failed to link shaders");
+            return false;
+        }
+    }
+
+
+
+    unsigned int compileShader(const char** data, const int* size, ShaderType shaderType)
+    {
+        unsigned int shader;
+        glCreateShader(static_cast<unsigned int>(shaderType));
+        glShaderSource(shader, 1, data, size);
+        glCompileShader(shader);
+
+        if (checkShaderCompilation(shader))
+        {
+            return shader;
+        }
+        else
+        {
+            glDeleteShader(shader);
+            return 0;
+        }
     }
 
     std::optional<Texture> loadTexture(const char* filename)
@@ -255,4 +282,8 @@ namespace Editor
         }
         return true;
     }
+
+
+
+
 }

@@ -8,16 +8,61 @@
 #include <string>
 #include "io/Io.h"
 
+// Cube for testing purposes
+static constexpr float defaultCubeData[] =
+{
+//       Vertices           tex uv
+//  <----------------->  <---------->
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+};
+
 namespace Editor
 {
     enum class ShaderType
     {
-        VERTEX = GL_VERTEX_SHADER,
-        TESS_CONTROL = GL_TESS_CONTROL_SHADER,
-        TESS_EVAL = GL_TESS_EVALUATION_SHADER,
-        GEOMETRY = GL_GEOMETRY_SHADER,
+        VERTEX   = GL_VERTEX_SHADER,
         FRAGMENT = GL_FRAGMENT_SHADER,
-        COMPUTE = GL_COMPUTE_SHADER
+        COMPUTE  = GL_COMPUTE_SHADER
     };
 
     // Wrapper for OpenGL texture.
@@ -39,21 +84,24 @@ namespace Editor
         ~VertexBuffer();
         VertexBuffer() = delete;
         VertexBuffer(const VertexBuffer& vertexBuffer) = delete;
+
+        void bind();
+
     private:
         unsigned int m_vbo; // Vertex Buffer Object
         unsigned int m_vao; // Vertex Array Object
         unsigned int m_ebo; // Vertex Element Object
     };
 
-    class Framebuffer
+    struct Framebuffer
     {
-    public:
         Framebuffer();
         ~Framebuffer();
+
+        unsigned int m_framebufferID;
+
         Framebuffer(const Framebuffer& framebuffer) = delete;
         Framebuffer& operator=(const Framebuffer& framebuffer) = delete;
-    private:
-        unsigned int m_framebufferID;
     };
 
     // A texture we can use as render target
@@ -75,55 +123,27 @@ namespace Editor
         const bool m_depthTestEnabled;
     };
 
-    // WHen Shader or ShaderProgram constructor fails it creates invalid object.
-    // This is bad design and could be perhaps resolved better with similar system to std::optional
-    // or even by using std::optional. We'll save this for later though.
-
-    class Shader
-    {
-    public:
-        Shader(const char* name, const char* filePath, ShaderType shaderType);
-        ~Shader();
-
-        Shader() = delete;
-        Shader(const Shader& shader) = delete;
-        Shader& operator=(const Shader& shader) = delete;
-        Shader(Shader&& shader);
-        Shader& operator=(Shader&& shader);
-
-        inline unsigned int getId() { return m_shaderId; }
-        inline const std::string& getName() const { return m_name; }
-        inline bool isCompiled() { return m_readFileSuccess; }
-        inline bool isValid() { return m_readFileSuccess; }
-        bool compile();
-
-    private:
-        std::string  m_name;
-        std::string  m_filePath;
-        unsigned int m_shaderId;
-        ShaderType   m_shaderType;
-        // Using these to avoid using exceptions, is hacky
-        // TODO: figure out less hacky way of doing this
-        bool         m_readFileSuccess = false;
-        bool         m_compileSuccess  = false;
-    };
-
-    typedef std::vector<Shader> ShaderStore;
-
     class ShaderProgram
     {
     public:
-        ShaderProgram(ShaderStore* shaders);
-        ShaderProgram() = delete;
+        ~ShaderProgram();
         ShaderProgram(const ShaderProgram& shaderProgram) = delete;
         ShaderProgram& operator=(const ShaderProgram& shaderProgram) = delete;
+        ShaderProgram(ShaderProgram&& shaderProgram);
+        ShaderProgram& operator=(ShaderProgram&& shaderProgram);
+
+        bool addShader(const char* path, ShaderType shaderType);
+        bool link();
+
     private:
-        ShaderStore* m_shaders;
-        unsigned int m_shaderProgramId;
-        // to avoid exceptions, a bit of a hack
-        // TODO: figure out less hacky way of doing this
-        bool         m_programSuccess = false;
+        unsigned int m_shaderProgramId   = 0;
+        unsigned int m_vertexShaderId    = 0;
+        unsigned int m_fragmentShaderId  = 0;
+        unsigned int m_computeShaderId   = 0;
     };
+
+    // Creates and compiles a shader
+    unsigned int compileShader(const char** data, const int* size, ShaderType shaderType);
 
     // Simply uploads texture from disk
     // to GPU memory. Uses stb_image under the hood,

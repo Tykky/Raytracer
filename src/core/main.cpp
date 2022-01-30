@@ -4,14 +4,6 @@
 
 void test()
 {
-    Editor::Shader frag("frag.glsl", "../../src/editor/shaders/frag.glsl", Editor::ShaderType::FRAGMENT);
-    Editor::Shader vert("vert.glsl", "../../src/editor/shaders/vert.glsl", Editor::ShaderType::VERTEX);
-
-    Editor::ShaderStore shaderStore;
-    shaderStore.push_back(std::move(frag));
-    shaderStore.push_back(std::move(vert));
-
-    Editor::ShaderProgram program = {&shaderStore};
 }
 
 int main()
