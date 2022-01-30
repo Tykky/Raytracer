@@ -47,7 +47,6 @@ private:
     FastSampler m_sampler;
 
     void clearColorbuffer();
-
 };
 
 

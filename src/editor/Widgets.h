@@ -104,6 +104,8 @@ namespace Editor
         Viewport();
         void draw() override;
     private:
+        ImVec2 m_offset = {0.0f, 0.0f};
+        ImVec2 m_scale = {800.0f, 600.0f};
     };
 
     // Shows the main menubar at the top of the main window
@@ -111,7 +113,7 @@ namespace Editor
     // Dockspace simply allows windows to be docked to the main window
     void drawDockspace(const char* name, ImGuiID dockspaceID, const ImGuiIO& io);
     void drawImFileDialogAndProcessInput();
-    void drawTextureView(const char* windowName, void* currentTexId, ImVec2& offset, ImVec2& scale, bool& open);
+    void drawTextureView(void* currentTexId, ImVec2& offset, ImVec2& scale, bool& open);
     void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture);
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
     void zoomTextureWhenScrolled(float& width, float& height);

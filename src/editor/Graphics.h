@@ -30,11 +30,28 @@ namespace Editor
         unsigned int textureID;
     };
 
+    // We clump OpenGls vertex buffer, vertex array and index (element)
+    // buffer into one object
+    class VertexBuffer
+    {
+    public:
+        VertexBuffer(float* vertices, std::size_t size);
+        ~VertexBuffer();
+        VertexBuffer() = delete;
+        VertexBuffer(const VertexBuffer& vertexBuffer) = delete;
+    private:
+        unsigned int m_vbo; // Vertex Buffer Object
+        unsigned int m_vao; // Vertex Array Object
+        unsigned int m_ebo; // Vertex Element Object
+    };
+
     class Framebuffer
     {
     public:
         Framebuffer();
         ~Framebuffer();
+        Framebuffer(const Framebuffer& framebuffer) = delete;
+        Framebuffer& operator=(const Framebuffer& framebuffer) = delete;
     private:
         unsigned int m_framebufferID;
     };
@@ -58,6 +75,10 @@ namespace Editor
         const bool m_depthTestEnabled;
     };
 
+    // WHen Shader or ShaderProgram constructor fails it creates invalid object.
+    // This is bad design and could be perhaps resolved better with similar system to std::optional
+    // or even by using std::optional. We'll save this for later though.
+
     class Shader
     {
     public:
@@ -72,6 +93,8 @@ namespace Editor
 
         inline unsigned int getId() { return m_shaderId; }
         inline const std::string& getName() const { return m_name; }
+        inline bool isCompiled() { return m_readFileSuccess; }
+        inline bool isValid() { return m_readFileSuccess; }
         bool compile();
 
     private:
@@ -79,7 +102,8 @@ namespace Editor
         std::string  m_filePath;
         unsigned int m_shaderId;
         ShaderType   m_shaderType;
-        // Using these to avoid using exceptions
+        // Using these to avoid using exceptions, is hacky
+        // TODO: figure out less hacky way of doing this
         bool         m_readFileSuccess = false;
         bool         m_compileSuccess  = false;
     };
@@ -96,7 +120,8 @@ namespace Editor
     private:
         ShaderStore* m_shaders;
         unsigned int m_shaderProgramId;
-        // to avoid exceptions
+        // to avoid exceptions, a bit of a hack
+        // TODO: figure out less hacky way of doing this
         bool         m_programSuccess = false;
     };
 
@@ -113,15 +138,11 @@ namespace Editor
 
     // Used by ImFileDialog
     void *createTexture(unsigned char* data, int w, int h, char fmt);
-
     void deleteTexture(void* tex);
 
     bool checkShaderCompilation(unsigned int shaderId);
     bool checkShaderLink(unsigned int shaderId);
 
-}
-namespace Editor
-{
     typedef std::vector<Editor::Texture> TextureStore;
 }
 

@@ -11,6 +11,34 @@
 
 namespace Editor
 {
+    VertexBuffer::VertexBuffer(float* vertices, std::size_t size)
+    {
+        glGenVertexArrays(1, &m_vao);
+        glBindVertexArray(m_vao);
+
+        glGenBuffers(1, &m_vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+        glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+
+        // Vertex data
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        // Texture coordinates
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+
+        // TODO: construct index/element buffer
+
+        glBindVertexArray(0);
+    }
+
+    VertexBuffer::~VertexBuffer()
+    {
+        glDeleteVertexArrays(1, &m_vao);
+        glDeleteBuffers(1, &m_vbo);
+    }
+
     Framebuffer::Framebuffer()
     {
         glGenFramebuffers(1, &m_framebufferID);
