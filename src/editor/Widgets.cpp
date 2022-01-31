@@ -159,6 +159,8 @@ namespace Editor
         {
             ImGui::Begin(m_windowId.data());
             drawTextureView(nullptr, m_offset, m_scale, m_open);
+            ImGui::Text("Press left ALT and mouse 1 to move the image");
+            ImGui::Text("Pressing left ALT and scrolling zooms the image");
             ImGui::End();
         }
     }

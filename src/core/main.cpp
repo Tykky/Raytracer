@@ -6,6 +6,9 @@ void test()
 {
     Editor::ShaderProgram shader;
     shader.addShader("vert.glsl",Editor::ShaderType::VERTEX);
+    shader.addShader("frag.glsl", Editor::ShaderType::FRAGMENT);
+    shader.link();
+    shader.use();
 }
 
 int main()

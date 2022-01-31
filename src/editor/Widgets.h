@@ -105,7 +105,7 @@ namespace Editor
         void draw() override;
     private:
         ImVec2 m_offset = {0.0f, 0.0f};
-        ImVec2 m_scale = {800.0f, 600.0f};
+        ImVec2 m_scale  = {800.0f, 600.0f};
     };
 
     // Shows the main menubar at the top of the main window
