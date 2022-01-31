@@ -17,6 +17,7 @@
 
 namespace Editor
 {
+    // TODO: refactor to get rid of setId and getId
     class Widget
     {
     public:
@@ -46,7 +47,7 @@ namespace Editor
         TextureStore*   m_textStore      = nullptr;
         ImVec2          m_offset         = {0.0f, 0.0f};
         ImVec2          m_scale          = {600.0f, 600.0f};
-        Texture*   m_currentTexture = nullptr;
+        Texture*        m_currentTexture = nullptr;
     };
 
     class LogViewer : public Widget
@@ -104,8 +105,12 @@ namespace Editor
         Viewport();
         void draw() override;
     private:
-        ImVec2 m_offset = {0.0f, 0.0f};
-        ImVec2 m_scale  = {800.0f, 600.0f};
+        unsigned int  m_resX   = 800;
+        unsigned int  m_resY   = 600;
+        ImVec2        m_offset = {0.0f, 0.0f};
+        ImVec2        m_scale  = {800.0f, 600.0f};
+        Framebuffer   m_framebuffer;
+        Camera        m_camera;
     };
 
     // Shows the main menubar at the top of the main window

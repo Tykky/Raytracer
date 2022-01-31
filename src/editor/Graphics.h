@@ -107,8 +107,8 @@ namespace Editor
         RenderTexture &operator=(const RenderTexture& renderTexture) = delete;
         RenderTexture(RenderTexture&& renderTexture);
         RenderTexture& operator=(RenderTexture&& renderTexture);
-        inline unsigned int id() { return m_renderTextureId; }
-        inline unsigned int depthId() { return m_depthRenderBufferId; }
+        inline unsigned int id() const { return m_renderTextureId; }
+        inline unsigned int depthId() const { return m_depthRenderBufferId; }
 
     private:
         int          m_width               = 0;
@@ -127,11 +127,13 @@ namespace Editor
         Framebuffer& operator=(const Framebuffer& framebuffer) = delete;
 
         void addColorAttachment(RenderTexture&& renderTexture);
+        inline unsigned int getNumColorAttachments() const { return m_numColorAttachments; }
+        inline const RenderTexture* getColorAttachments() const { return m_colorAttachments; }
 
     private:
-        unsigned int       m_framebufferID;
-        RenderTexture      m_colorAttachments[16]; // GL_COLOR_ATTACHMENT0 - GL_COLO_ATTACHMENT15
-        unsigned int       m_numColorAttachments = 0;
+        unsigned int   m_framebufferID;
+        RenderTexture  m_colorAttachments[16];
+        unsigned int   m_numColorAttachments = 0;
     };
 
     class ShaderProgram
@@ -159,19 +161,28 @@ namespace Editor
     {
     public:
         Camera();
-        Camera(glm::vec3 pos, glm::vec3 target);
+        Camera(unsigned int width, unsigned int height, glm::vec3 pos, glm::vec3 target);
         void move(glm::vec3 dir);
         void update();
         // Renders all visible objects to screen, performs culling
-        // if needed beforehand.
+        // if needed beforehand (we don't have any culling implemented yet though).
         void render();
+
     private:
+        unsigned int m_width;
+        unsigned int m_height;
+
         glm::vec3 m_pos;
         glm::vec3 m_target;
         glm::vec3 m_dir;
         glm::vec3 m_right;
         glm::vec3 m_up;
+        float     m_fov; // field of view in degrees
+        float     m_zNear = 0.1f;
+        float     m_zFar  = 100.0f;
+
         glm::mat4 m_view;
+        glm::mat4 m_projection;
     };
 
     // Creates and compiles a shader

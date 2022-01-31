@@ -66,7 +66,7 @@ namespace Editor
         }
         else
         {
-            logWarning("Color attachments already full, ");
+            logWarning("Color attachments already full! New color attachment not added");
         }
     }
 
@@ -237,13 +237,10 @@ namespace Editor
     }
 
     Camera::Camera() :
-        m_pos({0.0f, 0.0f, 0.0f}), m_target({0.0f, 0.0f, 0.0f})
-    {
-        update();
-    }
+        m_pos({0.0f, 0.0f, 0.0f}), m_target({0.0f, 0.0f, 0.0f}), m_width(0), m_height(0) {}
 
-    Camera::Camera(glm::vec3 pos, glm::vec3 target) :
-        m_pos(pos), m_target(target)
+    Camera::Camera(unsigned int width, unsigned int height, glm::vec3 pos, glm::vec3 target) :
+        m_pos(pos), m_target(target), m_width(width), m_height(height)
     {
         update();
     }
@@ -260,14 +257,33 @@ namespace Editor
         m_right = glm::normalize(glm::cross({0.0f, 1.0f, 0.0f}, m_dir));
         m_up = glm::cross(m_dir, m_right);
         m_view = glm::lookAt(m_pos, m_dir, m_up);
+        m_projection = glm::perspective(glm::radians(m_fov), static_cast<float>(m_width) / static_cast<float>(m_height), m_zNear, m_zFar);
     }
 
     void Camera::render()
     {
+        if (m_width == 0 || m_height == 0)
+        {
+            logWarning("Width or height is 0, nothing will be drawn");
+            return;
+        }
     }
 
     void drawAllBuffers(Framebuffer& framebuffer)
     {
+        GLenum drawBuffers[16];
+        const RenderTexture* colorAttachments = framebuffer.getColorAttachments();
+        const unsigned int numAttachments = framebuffer.getNumColorAttachments();
+        for (int i = 0; i < numAttachments; ++i)
+        {
+            drawBuffers[i] = colorAttachments[i].id();
+        }
+        glDrawBuffers(numAttachments, drawBuffers);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        {
+            logError("Failed to draw to framebuffer");
+        }
     }
 
     std::optional<Texture> loadTexture(const char* filename)
@@ -362,7 +378,4 @@ namespace Editor
         }
         return true;
     }
-
-
-
 }

@@ -151,7 +151,11 @@ namespace Editor
     }
 
     Viewport::Viewport() :
-        Widget("Viewport") {}
+        Widget("Viewport")
+    {
+        // Create default color attachment with depth buffer (color attachment 0)
+        m_framebuffer.addColorAttachment({m_resX, m_resY, true});
+    }
 
     void Viewport::draw()
     {

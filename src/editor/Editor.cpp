@@ -22,7 +22,7 @@ namespace Editor
             io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         }
         io.ConfigWindowsMoveFromTitleBarOnly = true;
-        execDarkTheme(); // use dark theme by defualt
+        execDarkTheme(); // use dark theme by default
 
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 440");
@@ -68,12 +68,12 @@ namespace Editor
 
             if (!options.enableVsync)
             {
-                logMsg("Vsync enabled");
+                logMsg("Vsync disabled");
                 glfwSwapInterval(0);
             }
             else
             {
-                logMsg("Vsync disabled");
+                logMsg("Vsync enabled");
             }
 
             if (glewInit() != GLEW_OK)
@@ -132,9 +132,9 @@ namespace Editor
         drawImFileDialogAndProcessInput();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
         drawDockspace("Main", dockspaceID, io);
-        for (int i = 0; i < widgetStore.size(); ++i)
+        for (auto& widget : widgetStore)
         {
-            widgetStore[i]->draw();
+            widget->draw();
         }
     }
 
