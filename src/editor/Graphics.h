@@ -94,7 +94,6 @@ namespace Editor
     };
 
     // A texture we can use as render target
-    // TODO: might consider getting rid of this, we don't really need another class for this
     class RenderTexture
     {
     public:
@@ -104,15 +103,15 @@ namespace Editor
         RenderTexture(const RenderTexture& renderTexture) = delete;
         RenderTexture &operator=(const RenderTexture& renderTexture) = delete;
         RenderTexture(RenderTexture&& renderTexture);
-        const bool isDepthTestEnabled;
         inline unsigned int id() { return m_renderTextureId; }
         inline unsigned int depthId() { return m_depthRenderBufferId; }
 
     private:
-        int m_width;
-        int m_height;
-        unsigned int m_renderTextureId;
-        unsigned int m_depthRenderBufferId;
+        int          m_width               = 0;
+        int          m_height              = 0;
+        unsigned int m_renderTextureId     = 0;
+        unsigned int m_depthRenderBufferId = 0;
+        const bool   m_isDepthTestEnabled  = 0;
     };
 
     class Framebuffer
@@ -126,8 +125,9 @@ namespace Editor
         void addColorAttachment(RenderTexture&& renderTexture);
 
     private:
-        unsigned int m_framebufferID;
-        std::vector<RenderTexture> m_renderTextures;
+        unsigned int       m_framebufferID;
+        RenderTexture      m_colorAttachments[16]; // GL_COLOR_ATTACHMENT0 - GL_COLO_ATTACHMENT15
+        unsigned int       m_numColorAttachments = 0;
     };
 
     class ShaderProgram
@@ -142,6 +142,7 @@ namespace Editor
 
         bool addShader(const char* path, ShaderType shaderType);
         bool link();
+        void use();
 
     private:
         unsigned int m_shaderProgramId   = 0;
@@ -150,8 +151,19 @@ namespace Editor
         unsigned int m_computeShaderId   = 0;
     };
 
+    class Camera
+    {
+    public:
+        Camera();
+        void move();
+    private:
+    };
+
     // Creates and compiles a shader
     unsigned int compileShader(const char** data, const int* size, ShaderType shaderType);
+
+    // Draws all current color attachments
+    void drawAllBuffers(Framebuffer& framebuffer);
 
     // Simply uploads texture from disk
     // to GPU memory. Uses stb_image under the hood,

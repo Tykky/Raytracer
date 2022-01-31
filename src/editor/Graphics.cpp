@@ -57,14 +57,20 @@ namespace Editor
     void Framebuffer::addColorAttachment(RenderTexture&& renderTexture)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
-        unsigned int nextIdx = m_renderTextures.size() + 1;
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + nextIdx, renderTexture.id(), 0);
-        m_renderTextures.push_back(std::move(renderTexture));
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        if (nextIdx < sizeof(m_colorAttachments))
+        {
+            glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + nextIdx, renderTexture.id(), 0);
+            m_colorAttachments[nextIdx] = std::move(renderTexture);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+        else
+        {
+            logWarning("Color attachments already full, ");
+        }
     }
 
     RenderTexture::RenderTexture(unsigned int width, unsigned height, bool depthTesting) :
-            m_width(width), m_height(height), isDepthTestEnabled(depthTesting)
+            m_width(width), m_height(height), m_isDepthTestEnabled(depthTesting)
     {
         glGenTextures(1, &m_renderTextureId);
         glBindTexture(GL_TEXTURE_2D, m_renderTextureId);
@@ -86,12 +92,12 @@ namespace Editor
     RenderTexture::~RenderTexture()
     {
         glDeleteTextures(1, &m_renderTextureId);
-        if (isDepthTestEnabled)
+        if (m_isDepthTestEnabled)
             glDeleteRenderbuffers(1, &m_renderTextureId);
     }
 
     RenderTexture::RenderTexture(RenderTexture&& renderTexture) :
-        isDepthTestEnabled(renderTexture.isDepthTestEnabled)
+            m_isDepthTestEnabled(renderTexture.m_isDepthTestEnabled)
     {
         m_width = renderTexture.m_width;
         renderTexture.m_width = 0;
@@ -192,6 +198,11 @@ namespace Editor
         }
     }
 
+    void ShaderProgram::use()
+    {
+        glUseProgram(m_shaderProgramId);
+    }
+
     unsigned int compileShader(const char** data, const int* size, ShaderType shaderType)
     {
         unsigned int shader = glCreateShader(static_cast<unsigned int>(shaderType));
@@ -206,6 +217,10 @@ namespace Editor
             glDeleteShader(shader);
             return 0;
         }
+    }
+
+    void drawAllBuffers(Framebuffer& framebuffer)
+    {
     }
 
     std::optional<Texture> loadTexture(const char* filename)
@@ -300,4 +315,6 @@ namespace Editor
         }
         return true;
     }
+
+
 }
