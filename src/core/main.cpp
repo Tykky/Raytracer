@@ -4,6 +4,8 @@
 
 void test()
 {
+    Editor::ShaderProgram shader;
+    shader.addShader("vert.glsl",Editor::ShaderType::VERTEX);
 }
 
 int main()

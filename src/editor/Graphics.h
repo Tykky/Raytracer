@@ -90,21 +90,11 @@ namespace Editor
     private:
         unsigned int m_vbo; // Vertex Buffer Object
         unsigned int m_vao; // Vertex Array Object
-        unsigned int m_ebo; // Vertex Element Object
-    };
-
-    struct Framebuffer
-    {
-        Framebuffer();
-        ~Framebuffer();
-
-        unsigned int m_framebufferID;
-
-        Framebuffer(const Framebuffer& framebuffer) = delete;
-        Framebuffer& operator=(const Framebuffer& framebuffer) = delete;
+        // unsigned int m_ebo; // Vertex Element Object
     };
 
     // A texture we can use as render target
+    // TODO: might consider getting rid of this, we don't really need another class for this
     class RenderTexture
     {
     public:
@@ -113,19 +103,37 @@ namespace Editor
         RenderTexture() = delete;
         RenderTexture(const RenderTexture& renderTexture) = delete;
         RenderTexture &operator=(const RenderTexture& renderTexture) = delete;
+        RenderTexture(RenderTexture&& renderTexture);
+        const bool isDepthTestEnabled;
+        inline unsigned int id() { return m_renderTextureId; }
+        inline unsigned int depthId() { return m_depthRenderBufferId; }
 
     private:
-        std::string m_name;
         int m_width;
         int m_height;
         unsigned int m_renderTextureId;
-        unsigned int m_depthBufferId;
-        const bool m_depthTestEnabled;
+        unsigned int m_depthRenderBufferId;
+    };
+
+    class Framebuffer
+    {
+    public:
+        Framebuffer();
+        ~Framebuffer();
+        Framebuffer(const Framebuffer& framebuffer) = delete;
+        Framebuffer& operator=(const Framebuffer& framebuffer) = delete;
+
+        void addColorAttachment(RenderTexture&& renderTexture);
+
+    private:
+        unsigned int m_framebufferID;
+        std::vector<RenderTexture> m_renderTextures;
     };
 
     class ShaderProgram
     {
     public:
+        ShaderProgram() = default;
         ~ShaderProgram();
         ShaderProgram(const ShaderProgram& shaderProgram) = delete;
         ShaderProgram& operator=(const ShaderProgram& shaderProgram) = delete;
