@@ -21,6 +21,7 @@ set(OpenGL_GL_PREFERENCE "GLVND")
 include_directories(external/tinyobjloader)
 include_directories(external/stb_image)
 include_directories(external/ImFileDialog)
+include_directories(external/glm)
 include_directories(external)
 
 if(BUILD_TEST)

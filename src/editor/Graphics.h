@@ -7,6 +7,9 @@
 #include <optional>
 #include <string>
 #include "io/Io.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 // Cube for testing purposes
 static constexpr float defaultCubeData[] =
@@ -99,10 +102,11 @@ namespace Editor
     public:
         RenderTexture(unsigned int width, unsigned int height, bool depthTesting);
         ~RenderTexture();
-        RenderTexture() = delete;
+        RenderTexture() = default;
         RenderTexture(const RenderTexture& renderTexture) = delete;
         RenderTexture &operator=(const RenderTexture& renderTexture) = delete;
         RenderTexture(RenderTexture&& renderTexture);
+        RenderTexture& operator=(RenderTexture&& renderTexture);
         inline unsigned int id() { return m_renderTextureId; }
         inline unsigned int depthId() { return m_depthRenderBufferId; }
 
@@ -111,7 +115,7 @@ namespace Editor
         int          m_height              = 0;
         unsigned int m_renderTextureId     = 0;
         unsigned int m_depthRenderBufferId = 0;
-        const bool   m_isDepthTestEnabled  = 0;
+        bool         m_isDepthTestEnabled  = 0;
     };
 
     class Framebuffer
@@ -155,8 +159,19 @@ namespace Editor
     {
     public:
         Camera();
-        void move();
+        Camera(glm::vec3 pos, glm::vec3 target);
+        void move(glm::vec3 dir);
+        void update();
+        // Renders all visible objects to screen, performs culling
+        // if needed beforehand.
+        void render();
     private:
+        glm::vec3 m_pos;
+        glm::vec3 m_target;
+        glm::vec3 m_dir;
+        glm::vec3 m_right;
+        glm::vec3 m_up;
+        glm::mat4 m_view;
     };
 
     // Creates and compiles a shader

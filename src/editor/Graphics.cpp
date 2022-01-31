@@ -57,11 +57,12 @@ namespace Editor
     void Framebuffer::addColorAttachment(RenderTexture&& renderTexture)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
-        if (nextIdx < sizeof(m_colorAttachments))
+        if (m_numColorAttachments < sizeof(m_colorAttachments))
         {
-            glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + nextIdx, renderTexture.id(), 0);
-            m_colorAttachments[nextIdx] = std::move(renderTexture);
+            glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + m_numColorAttachments, renderTexture.id(), 0);
+            m_colorAttachments[m_numColorAttachments] = std::move(renderTexture);
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            m_numColorAttachments++;
         }
         else
         {
@@ -96,9 +97,10 @@ namespace Editor
             glDeleteRenderbuffers(1, &m_renderTextureId);
     }
 
-    RenderTexture::RenderTexture(RenderTexture&& renderTexture) :
-            m_isDepthTestEnabled(renderTexture.m_isDepthTestEnabled)
+    RenderTexture::RenderTexture(RenderTexture&& renderTexture)
     {
+        m_isDepthTestEnabled = renderTexture.m_isDepthTestEnabled;
+        renderTexture.m_isDepthTestEnabled = false;
         m_width = renderTexture.m_width;
         renderTexture.m_width = 0;
         m_height = renderTexture.m_height;
@@ -107,6 +109,21 @@ namespace Editor
         renderTexture.m_renderTextureId = 0;
         m_depthRenderBufferId = renderTexture.m_depthRenderBufferId;
         renderTexture.m_depthRenderBufferId = 0;
+    }
+
+    RenderTexture& RenderTexture::operator=(RenderTexture&& renderTexture)
+    {
+        m_isDepthTestEnabled = renderTexture.m_isDepthTestEnabled;
+        renderTexture.m_isDepthTestEnabled = false;
+        m_width = renderTexture.m_width;
+        renderTexture.m_width = 0;
+        m_height = renderTexture.m_height;
+        renderTexture.m_height = 0;
+        m_renderTextureId = renderTexture.m_renderTextureId;
+        renderTexture.m_renderTextureId = 0;
+        m_depthRenderBufferId = renderTexture.m_depthRenderBufferId;
+        renderTexture.m_depthRenderBufferId = 0;
+        return *this;
     }
 
     ShaderProgram::~ShaderProgram()
@@ -219,6 +236,36 @@ namespace Editor
         }
     }
 
+    Camera::Camera() :
+        m_pos({0.0f, 0.0f, 0.0f}), m_target({0.0f, 0.0f, 0.0f})
+    {
+        update();
+    }
+
+    Camera::Camera(glm::vec3 pos, glm::vec3 target) :
+        m_pos(pos), m_target(target)
+    {
+        update();
+    }
+
+    void Camera::move(glm::vec3 dir)
+    {
+        m_pos += dir;
+    }
+
+    void Camera::update()
+    {
+        // Gram-Schmidt process
+        m_dir = glm::normalize(m_pos - m_target);
+        m_right = glm::normalize(glm::cross({0.0f, 1.0f, 0.0f}, m_dir));
+        m_up = glm::cross(m_dir, m_right);
+        m_view = glm::lookAt(m_pos, m_dir, m_up);
+    }
+
+    void Camera::render()
+    {
+    }
+
     void drawAllBuffers(Framebuffer& framebuffer)
     {
     }
@@ -315,6 +362,7 @@ namespace Editor
         }
         return true;
     }
+
 
 
 }
