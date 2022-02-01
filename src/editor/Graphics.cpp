@@ -250,11 +250,8 @@ namespace Editor
         }
     }
 
-    Camera::Camera() :
-        m_pos({0.0f, 0.0f, 0.0f}), m_target({0.0f, 0.0f, 0.0f}), m_width(0), m_height(0) {}
-
-    Camera::Camera(unsigned int width, unsigned int height, glm::vec3 pos, glm::vec3 target) :
-        m_pos(pos), m_target(target), m_width(width), m_height(height)
+    Camera::Camera(float aspectRatio, glm::vec3 pos, glm::vec3 target) :
+        m_pos(pos), m_target(target), m_aspectRatio(aspectRatio)
     {
         update();
     }
@@ -271,16 +268,11 @@ namespace Editor
         m_right = glm::normalize(glm::cross({0.0f, 1.0f, 0.0f}, m_dir));
         m_up = glm::cross(m_dir, m_right);
         m_view = glm::lookAt(m_pos, m_dir, m_up);
-        m_projection = glm::perspective(glm::radians(m_fov), static_cast<float>(m_width) / static_cast<float>(m_height), m_zNear, m_zFar);
+        m_projection = glm::perspective(glm::radians(m_fov), m_aspectRatio, m_zNear, m_zFar);
     }
 
     void Camera::render()
     {
-        if (m_width == 0 || m_height == 0)
-        {
-            logWarning("Width or height is 0, nothing will be drawn");
-            return;
-        }
     }
 
     void drawToTexture(Vertexbuffer& vertexBuffer, ShaderProgram& shader, Framebuffer& framebuffer)
@@ -299,7 +291,7 @@ namespace Editor
         framebuffer.bind();
 
         glDrawBuffers(numAttachments, drawBuffers);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawArrays(GL_TRIANGLES, 0, 720/5);
 
         framebuffer.unbind();
 

@@ -12,6 +12,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 // Quad for testing purposes
+
 static constexpr float defaultRectangleData[] =
 {
 //       Vertices
@@ -179,8 +180,8 @@ namespace Editor
     class Camera
     {
     public:
-        Camera();
-        Camera(unsigned int width, unsigned int height, glm::vec3 pos, glm::vec3 target);
+        Camera() = delete;
+        Camera(float aspectRatio, glm::vec3 pos, glm::vec3 target);
         void move(glm::vec3 dir);
 
         // Applies all changes done
@@ -195,15 +196,14 @@ namespace Editor
         inline glm::mat4 getViewMatrix() { return m_view; }
 
     private:
-        unsigned int m_width;
-        unsigned int m_height;
+        float m_aspectRatio;
 
         glm::vec3 m_pos;
         glm::vec3 m_target;
         glm::vec3 m_dir;
         glm::vec3 m_right;
         glm::vec3 m_up;
-        float     m_fov; // field of view in degrees
+        float     m_fov   = 90.0f; // field of view in degrees
         float     m_zNear = 0.1f;
         float     m_zFar  = 100.0f;
 

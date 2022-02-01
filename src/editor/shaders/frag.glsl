@@ -1,4 +1,4 @@
-#version 330 core
+#version 440 core
 layout(location = 0) out vec3 color;
 
 in vec2 texCoord;

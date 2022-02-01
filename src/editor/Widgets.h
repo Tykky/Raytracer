@@ -117,7 +117,7 @@ namespace Editor
         ImVec2        m_offset = {0.0f, 0.0f};
         ImVec2        m_scale  = {800.0f, 600.0f};
         Framebuffer   m_framebuffer;
-        Camera        m_camera = {m_resX, m_resY, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}};
+        Camera        m_camera = {(float)m_resX/float(m_resY),{0, 0, 3}, {0.0, 0.0, -1}};
         Vertexbuffer  m_vertexbuffer;
         ShaderProgram m_shaderProgram;
     };
