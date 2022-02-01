@@ -151,10 +151,13 @@ namespace Editor
     }
 
     Viewport::Viewport() :
-        Widget("Viewport")
+            Widget("Viewport"), m_vertexbuffer(static_cast<const float*>(defaultRectangleData), sizeof(defaultRectangleData))
     {
         // Create default color attachment with depth buffer (color attachment 0)
         m_framebuffer.addColorAttachment({m_resX, m_resY, true});
+        m_shaderProgram.addShader("../../src/editor/shaders/vert.glsl", ShaderType::VERTEX);
+        m_shaderProgram.addShader("../../src/editor/shaders/frag.glsl", ShaderType::FRAGMENT);
+        m_shaderProgram.link();
     }
 
     void Viewport::draw()
@@ -162,7 +165,8 @@ namespace Editor
         if (m_open)
         {
             ImGui::Begin(m_windowId.data());
-            drawTextureView(nullptr, m_offset, m_scale, m_open);
+            drawAllBuffers(m_vertexbuffer, m_shaderProgram, m_framebuffer);
+            drawTextureView((void*)m_framebuffer.getColorAttachments()[0].id(), m_offset, m_scale, m_open);
             ImGui::Text("Press left ALT and mouse 1 to move the image");
             ImGui::Text("Pressing left ALT and scrolling zooms the image");
             ImGui::End();

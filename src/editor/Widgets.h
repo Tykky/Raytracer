@@ -111,6 +111,8 @@ namespace Editor
         ImVec2        m_scale  = {800.0f, 600.0f};
         Framebuffer   m_framebuffer;
         Camera        m_camera;
+        Vertexbuffer  m_vertexbuffer;
+        ShaderProgram m_shaderProgram;
     };
 
     // Shows the main menubar at the top of the main window

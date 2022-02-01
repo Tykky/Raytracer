@@ -11,6 +11,19 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+// Quad for testing purposes
+static constexpr float defaultRectangleData[] =
+{
+//       Vertices
+//  <----------------->
+    -1.0f, -1.0f, 0.0f,
+     1.0f, -1.0f, 0.0f,
+    -1.0f,  1.0f, 0.0f,
+    -1.0f,  1.0f, 0.0f,
+     1.0f, -1.0f, 0.0f,
+     1.0f,  1.0f, 0.0f,
+};
+
 // Cube for testing purposes
 static constexpr float defaultCubeData[] =
 {
@@ -80,13 +93,13 @@ namespace Editor
 
     // We clump OpenGls vertex buffer, vertex array and index (element)
     // buffer into one object
-    class VertexBuffer
+    class Vertexbuffer
     {
     public:
-        VertexBuffer(float* vertices, std::size_t size);
-        ~VertexBuffer();
-        VertexBuffer() = delete;
-        VertexBuffer(const VertexBuffer& vertexBuffer) = delete;
+        Vertexbuffer(const float* vertices, std::size_t size);
+        ~Vertexbuffer();
+        Vertexbuffer() = delete;
+        Vertexbuffer(const Vertexbuffer& vertexBuffer) = delete;
 
         void bind();
 
@@ -130,6 +143,9 @@ namespace Editor
         inline unsigned int getNumColorAttachments() const { return m_numColorAttachments; }
         inline const RenderTexture* getColorAttachments() const { return m_colorAttachments; }
 
+        void bind();
+        void unbind();
+
     private:
         unsigned int   m_framebufferID;
         RenderTexture  m_colorAttachments[16];
@@ -148,7 +164,7 @@ namespace Editor
 
         bool addShader(const char* path, ShaderType shaderType);
         bool link();
-        void use();
+        void bind();
 
     private:
         unsigned int m_shaderProgramId   = 0;
@@ -163,6 +179,8 @@ namespace Editor
         Camera();
         Camera(unsigned int width, unsigned int height, glm::vec3 pos, glm::vec3 target);
         void move(glm::vec3 dir);
+
+        // Applies all changes done
         void update();
         // Renders all visible objects to screen, performs culling
         // if needed beforehand (we don't have any culling implemented yet though).
@@ -189,7 +207,7 @@ namespace Editor
     unsigned int compileShader(const char** data, const int* size, ShaderType shaderType);
 
     // Draws all current color attachments
-    void drawAllBuffers(Framebuffer& framebuffer);
+    void drawAllBuffers(Vertexbuffer& vertexBuffer, ShaderProgram& shader, Framebuffer& framebuffer);
 
     // Simply uploads texture from disk
     // to GPU memory. Uses stb_image under the hood,
@@ -198,6 +216,10 @@ namespace Editor
     std::optional<Texture> loadTexture(const char* filename);
 
     void clear();
+
+    void setUniform(unsigned int shader, const char* name, glm::vec3 v);
+    void setUniform(unsigned int shader, const char* name, glm::vec4 v);
+    void setUniform(unsigned int shader, const char* name, glm::mat4 m);
 
     // and this, use RAII instead
     void deleteTexture(unsigned int textureID);

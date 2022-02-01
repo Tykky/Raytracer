@@ -11,7 +11,7 @@
 
 namespace Editor
 {
-    VertexBuffer::VertexBuffer(float* vertices, std::size_t size)
+    Vertexbuffer::Vertexbuffer(const float* vertices, std::size_t size)
     {
         glGenVertexArrays(1, &m_vao);
         glBindVertexArray(m_vao);
@@ -31,15 +31,16 @@ namespace Editor
         // TODO: construct index/element buffer
 
         glBindVertexArray(0);
+        logMsg("Vertex buffer created with " + std::to_string(size) + " vertices");
     }
 
-    VertexBuffer::~VertexBuffer()
+    Vertexbuffer::~Vertexbuffer()
     {
         glDeleteVertexArrays(1, &m_vao);
         glDeleteBuffers(1, &m_vbo);
     }
 
-    void VertexBuffer::bind()
+    void Vertexbuffer::bind()
     {
         glBindVertexArray(m_vao);
     }
@@ -56,18 +57,30 @@ namespace Editor
 
     void Framebuffer::addColorAttachment(RenderTexture&& renderTexture)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
         if (m_numColorAttachments < sizeof(m_colorAttachments))
         {
+            glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
             glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + m_numColorAttachments, renderTexture.id(), 0);
             m_colorAttachments[m_numColorAttachments] = std::move(renderTexture);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            logMsg("Color attachment " + std::to_string(m_numColorAttachments) + " added to framebuffer");
             m_numColorAttachments++;
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
         else
         {
             logWarning("Color attachments already full! New color attachment not added");
         }
+    }
+
+    void Framebuffer::bind()
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
+    }
+
+    void Framebuffer::unbind()
+    {
+        // bind "default" framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     RenderTexture::RenderTexture(unsigned int width, unsigned height, bool depthTesting) :
@@ -88,6 +101,7 @@ namespace Editor
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthRenderBufferId);
             glBindRenderbuffer(GL_RENDERBUFFER, 0);
         }
+        logMsg("RenderTexture created with: size: " + std::to_string(width) + "x" + std::to_string(height) + ", depth test: " + std::to_string(depthTesting));
     }
 
     RenderTexture::~RenderTexture()
@@ -215,7 +229,7 @@ namespace Editor
         }
     }
 
-    void ShaderProgram::use()
+    void ShaderProgram::bind()
     {
         glUseProgram(m_shaderProgramId);
     }
@@ -269,16 +283,25 @@ namespace Editor
         }
     }
 
-    void drawAllBuffers(Framebuffer& framebuffer)
+    void drawAllBuffers(Vertexbuffer& vertexBuffer, ShaderProgram& shader, Framebuffer& framebuffer)
     {
         GLenum drawBuffers[16];
-        const RenderTexture* colorAttachments = framebuffer.getColorAttachments();
+
         const unsigned int numAttachments = framebuffer.getNumColorAttachments();
+
         for (int i = 0; i < numAttachments; ++i)
         {
-            drawBuffers[i] = colorAttachments[i].id();
-        }
+            drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
+       }
+
+        vertexBuffer.bind();
+        shader.bind();
+        framebuffer.bind();
+
         glDrawBuffers(numAttachments, drawBuffers);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        framebuffer.unbind();
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
@@ -319,6 +342,24 @@ namespace Editor
     void clear()
     {
         glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    void setUniform(unsigned int shader, const char* name, glm::vec3 v)
+    {
+        int loc = glGetUniformLocation(shader, name);
+        glUniform3f(loc, v[0], v[1], v[2]);
+    }
+
+    void Editor::setUniform(unsigned int shader, const char* name, glm::vec4 v)
+    {
+        int loc = glGetUniformLocation(shader, name);
+        glUniform4f(loc, v[0], v[1], v[2], v[3]);
+    }
+
+    void Editor::setUniform(unsigned int shader, const char* name, glm::mat4 m)
+    {
+        int loc = glGetUniformLocation(shader, name);
+        glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(m));
     }
 
     void deleteTexture(unsigned int textureID)
