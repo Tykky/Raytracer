@@ -164,7 +164,10 @@ namespace Editor
 
         bool addShader(const char* path, ShaderType shaderType);
         bool link();
-        void bind();
+        void use();
+        inline unsigned int getVertexShaderId() { return m_vertexShaderId; }
+        inline unsigned int getFragmentId() { return m_fragmentShaderId; }
+        inline unsigned int getComputeId() { return m_computeShaderId; }
 
     private:
         unsigned int m_shaderProgramId   = 0;
@@ -185,6 +188,11 @@ namespace Editor
         // Renders all visible objects to screen, performs culling
         // if needed beforehand (we don't have any culling implemented yet though).
         void render();
+
+        glm::vec3 getDir() { return m_dir; }
+
+        inline glm::mat4 getProjectionMatrix() { return m_projection; };
+        inline glm::mat4 getViewMatrix() { return m_view; }
 
     private:
         unsigned int m_width;
@@ -207,7 +215,7 @@ namespace Editor
     unsigned int compileShader(const char** data, const int* size, ShaderType shaderType);
 
     // Draws all current color attachments
-    void drawAllBuffers(Vertexbuffer& vertexBuffer, ShaderProgram& shader, Framebuffer& framebuffer);
+    void drawToTexture(Vertexbuffer& vertexBuffer, ShaderProgram& shader, Framebuffer& framebuffer);
 
     // Simply uploads texture from disk
     // to GPU memory. Uses stb_image under the hood,

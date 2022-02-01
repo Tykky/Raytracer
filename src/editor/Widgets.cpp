@@ -151,7 +151,7 @@ namespace Editor
     }
 
     Viewport::Viewport() :
-            Widget("Viewport"), m_vertexbuffer(static_cast<const float*>(defaultRectangleData), sizeof(defaultRectangleData))
+            Widget("Viewport"), m_vertexbuffer(static_cast<const float*>(defaultCubeData), sizeof(defaultCubeData))
     {
         // Create default color attachment with depth buffer (color attachment 0)
         m_framebuffer.addColorAttachment({m_resX, m_resY, true});
@@ -165,12 +165,27 @@ namespace Editor
         if (m_open)
         {
             ImGui::Begin(m_windowId.data());
-            drawAllBuffers(m_vertexbuffer, m_shaderProgram, m_framebuffer);
+            setUniform(m_shaderProgram.getVertexShaderId(), "view", m_camera.getViewMatrix());
+            setUniform(m_shaderProgram.getVertexShaderId(), "projection", m_camera.getProjectionMatrix());
+            drawToTexture(m_vertexbuffer, m_shaderProgram, m_framebuffer);
             drawTextureView((void*)m_framebuffer.getColorAttachments()[0].id(), m_offset, m_scale, m_open);
             ImGui::Text("Press left ALT and mouse 1 to move the image");
             ImGui::Text("Pressing left ALT and scrolling zooms the image");
             ImGui::End();
         }
+    }
+
+    void Viewport::processInput()
+    {
+        if (ImGui::IsKeyPressed(ImGuiKey_W))
+        {
+            m_camera.move(m_camera.getDir());
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_S))
+        {
+            m_camera.move(-m_camera.getDir());
+        }
+        m_camera.update();
     }
 
     void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore)
@@ -204,7 +219,7 @@ namespace Editor
                     widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
 
                 if (ImGui::MenuItem("ImGui Metrics"))
-                    widgetStore.push(std::make_unique<ImGuiMetrics>());
+                    widgetStore.push(std::make_unique<ImGuiMtericsWidget>());
                 ImGui::EndMenu();
             }
 #endif

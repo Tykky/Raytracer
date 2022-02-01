@@ -7,8 +7,8 @@ int main()
     Editor::Options options;
 
     options.enableViewports = true;
-    GLFWwindow* window = Editor::createWindow("kebab", 800, 800, options);
-    Editor::WidgetStore widgetStore;
+    GLFWwindow* window = Editor::createWindow("kebab", 1920, 1080, options);
+    Editor::WidgetStore  widgetStore;
     Editor::TextureStore textureStore;
 
     if (auto tex = Editor::loadTexture("scot.png"))

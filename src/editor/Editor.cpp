@@ -43,8 +43,8 @@ namespace Editor
         io.IniFilename = "default-settings.ini";
 
 #ifdef NDEBUG
-        // We don't want to save user settings for now, maybe at sometime there is a feature
-        // save and load settings. For nowe we only load the default init file.
+        // We don't want to save user settings for now, maybe at sometime there is a feature to
+        // save and load user settings. For nowe we only load the default init file.
         io.WantSaveIniSettings = false;
 #endif
         createDefaultEditorWidgets(widgetStore, textureStore);
@@ -164,7 +164,8 @@ namespace Editor
         widgetStore.push(std::make_unique<LogViewer>());
 #ifndef NDEBUG
         widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
-        widgetStore.push(std::make_unique<ImGuiMetrics>());
+        widgetStore.push(std::make_unique<ImGuiMtericsWidget>());
+        widgetStore.push(std::make_unique<ImguiStackToolWidget>());
 #endif
     }
 }

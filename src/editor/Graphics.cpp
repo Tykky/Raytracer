@@ -218,7 +218,7 @@ namespace Editor
         glLinkProgram(m_shaderProgramId);
         if (checkShaderLink(m_shaderProgramId))
         {
-            logMsg("Shaders successfully linked into a program");
+            logMsg("Successfully linked shaders, ready for execution");
             // TODO: consider calling delete on shaders when they are linked
             return true;
         }
@@ -229,7 +229,7 @@ namespace Editor
         }
     }
 
-    void ShaderProgram::bind()
+    void ShaderProgram::use()
     {
         glUseProgram(m_shaderProgramId);
     }
@@ -283,19 +283,19 @@ namespace Editor
         }
     }
 
-    void drawAllBuffers(Vertexbuffer& vertexBuffer, ShaderProgram& shader, Framebuffer& framebuffer)
+    void drawToTexture(Vertexbuffer& vertexBuffer, ShaderProgram& shader, Framebuffer& framebuffer)
     {
         GLenum drawBuffers[16];
 
         const unsigned int numAttachments = framebuffer.getNumColorAttachments();
-
-        for (int i = 0; i < numAttachments; ++i)
+        for (int i = 0; i < numAttachments; ++i
+)
         {
             drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
        }
 
         vertexBuffer.bind();
-        shader.bind();
+        shader.use();
         framebuffer.bind();
 
         glDrawBuffers(numAttachments, drawBuffers);
@@ -394,12 +394,15 @@ namespace Editor
     {
         int success;
         const int logSize = 1024;
-        char infolog[logSize];
+        char infoLog[logSize];
 
         glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
         if (!success)
         {
-            glGetShaderInfoLog(shaderId, logSize, NULL, infolog);
+            glGetShaderInfoLog(shaderId, logSize, NULL, infoLog);
+            logError("---SHADER COMPILE LOG BEGIN---");
+            logRaw(infoLog, MessageType::ERROR);
+            logError("---SHADER COMPILE LOG END---");
             return false;
         }
         return true;
@@ -414,7 +417,10 @@ namespace Editor
         glGetProgramiv(shaderId, GL_LINK_STATUS, &success);
         if (!success)
         {
-            glGetProgramInfoLog(shaderId, logSize, NULL, infoLog);
+            glGetShaderInfoLog(shaderId, logSize, NULL, infoLog);
+            logError("---SHADER LINK LOG BEGIN---");
+            logRaw(infoLog, MessageType::ERROR);
+            logError("---SHADER LINK LOG END---");
             return false;
         }
         return true;

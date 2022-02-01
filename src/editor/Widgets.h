@@ -17,7 +17,6 @@
 
 namespace Editor
 {
-    // TODO: refactor to get rid of setId and getId
     class Widget
     {
     public:
@@ -59,8 +58,6 @@ namespace Editor
         bool m_srollToBottom = true;
     };
 
-    // TODO: hide the use of unique_ptr inside the implementation.
-    // Don't make users have to deal with the creation of unique_ptr
     class WidgetStore
     {
     public:
@@ -93,10 +90,17 @@ namespace Editor
     };
 
     // Small wrapper for Dear Imgui metrics command.
-    struct ImGuiMetrics : public Widget
+    struct ImGuiMtericsWidget : public Widget
     {
-        inline ImGuiMetrics() : Widget("Dear Imgui Metrics") {}
+        inline ImGuiMtericsWidget() : Widget("Dear Imgui Metrics") {}
         inline void draw() override { ImGui::ShowMetricsWindow(&m_open); }
+    };
+
+    // Small wrapper for Dear ImGui stack tool
+    struct ImguiStackToolWidget : public Widget
+    {
+        inline ImguiStackToolWidget() : Widget("Dear Imgui Stack tool") {}
+        inline void draw() override { ImGui::ShowStackToolWindow(); }
     };
 
     class Viewport : public Widget
@@ -104,13 +108,16 @@ namespace Editor
     public:
         Viewport();
         void draw() override;
+
     private:
+        void processInput();
+
         unsigned int  m_resX   = 800;
         unsigned int  m_resY   = 600;
         ImVec2        m_offset = {0.0f, 0.0f};
         ImVec2        m_scale  = {800.0f, 600.0f};
         Framebuffer   m_framebuffer;
-        Camera        m_camera;
+        Camera        m_camera = {m_resX, m_resY, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}};
         Vertexbuffer  m_vertexbuffer;
         ShaderProgram m_shaderProgram;
     };

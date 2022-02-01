@@ -8,7 +8,8 @@ enum class MessageType
 {
     INFO,
     WARNING,
-    ERROR
+    ERROR,
+    NONE
 };
 
 struct Message
@@ -19,12 +20,17 @@ struct Message
 
 typedef std::vector<Message> MessageStore;
 
-void logMsg (std::string&& msg);
-void logMsg (std::string& msg);
-void logWarning (std::string&& msg);
-void logWarning (std::string& msg);
-void logError (std::string&& msg);
-void logError (std::string& msg);
+// Appends newline and flushes
+void logMsg(std::string&& msg);
+void logMsg(std::string& msg);
+void logWarning(std::string&& msg);
+void logWarning(std::string& msg);
+void logError(std::string&& msg);
+void logError(std::string& msg);
+
+// Doesn't append new line or flush
+void logRaw(std::string&& msg, MessageType type);
+void logRaw(std::string& msg, MessageType type);
 
 MessageStore& getLogMessages();
 

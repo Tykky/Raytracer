@@ -37,6 +37,7 @@ void logError(std::string&& msg)
     std::cout << tmp << std::endl;
     MESSAGE_STORE.push_back({ std::move(tmp), MessageType::ERROR});
 }
+
 void logError(std::string& msg)
 {
     auto tmp = "[ERROR] " + msg;
@@ -47,4 +48,16 @@ void logError(std::string& msg)
 MessageStore& getLogMessages()
 {
     return MESSAGE_STORE;
+}
+
+void logRaw(std::string&& msg, MessageType type)
+{
+    std::cout << msg;
+    MESSAGE_STORE.push_back({std::move(msg), type});
+}
+
+void logRaw(std::string& msg, MessageType type)
+{
+    std::cout << msg;
+    MESSAGE_STORE.push_back({msg, type});
 }
