@@ -75,6 +75,9 @@ static constexpr float defaultCubeData[] =
 
 namespace Editor
 {
+    // Measures time in between frames
+    float getDeltaTime();
+
     enum class ShaderType
     {
         VERTEX   = GL_VERTEX_SHADER,
@@ -92,7 +95,7 @@ namespace Editor
         unsigned int textureID;
     };
 
-    // We clump OpenGls vertex buffer, vertex array and index (element)
+    // We clump OpenGls vertex buffer, vertex array and element
     // buffer into one object
     class Vertexbuffer
     {
@@ -121,8 +124,11 @@ namespace Editor
         RenderTexture &operator=(const RenderTexture& renderTexture) = delete;
         RenderTexture(RenderTexture&& renderTexture);
         RenderTexture& operator=(RenderTexture&& renderTexture);
+
         inline unsigned int id() const { return m_renderTextureId; }
         inline unsigned int depthId() const { return m_depthRenderBufferId; }
+        inline int getHeight() const { return m_height; }
+        inline int getWidth() const { return m_width; }
 
     private:
         int          m_width               = 0;
@@ -146,6 +152,7 @@ namespace Editor
 
         void bind();
         void unbind();
+        void clear();
 
     private:
         unsigned int   m_framebufferID;
@@ -181,24 +188,23 @@ namespace Editor
     public:
         Camera() = delete;
         Camera(float aspectRatio, glm::vec3 pos, glm::vec3 target);
-        void move(glm::vec3 dir);
 
         // Applies all changes done
         void update();
-        // Renders all visible objects to screen, performs culling
-        // if needed beforehand (we don't have any culling implemented yet though).
-        void render();
 
         glm::vec3 getDir() { return m_dir; }
 
         inline glm::mat4 getProjectionMatrix() { return m_projection; };
         inline glm::mat4 getViewMatrix() { return m_view; }
+        inline glm::vec3 getRight() { return m_right; }
+
+        float speed = 0.2f;
+        glm::vec3 pos;
+        glm::vec3 target;
 
     private:
         float m_aspectRatio;
 
-        glm::vec3 m_pos;
-        glm::vec3 m_target;
         glm::vec3 m_dir;
         glm::vec3 m_right;
         glm::vec3 m_up;

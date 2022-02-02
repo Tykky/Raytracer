@@ -65,6 +65,16 @@ namespace Editor
             logMsg("Color attachment " + std::to_string(m_numColorAttachments) + " added to framebuffer");
             m_numColorAttachments++;
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+            GLenum drawBuffers[16];
+
+            const unsigned int numAttachments = getNumColorAttachments();
+            for (int i = 0; i < numAttachments; ++i
+                    )
+            {
+                drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
+            }
+            glDrawBuffers(numAttachments, drawBuffers);
         }
         else
         {
@@ -81,6 +91,12 @@ namespace Editor
     {
         // bind "default" framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void Framebuffer::clear()
+    {
+        const GLint clearColor[4] = {0, 0, 0, 0};
+        glClearBufferiv(GL_COLOR, 0, clearColor);
     }
 
     RenderTexture::RenderTexture(unsigned int width, unsigned height, bool depthTesting) :
@@ -251,48 +267,31 @@ namespace Editor
     }
 
     Camera::Camera(float aspectRatio, glm::vec3 pos, glm::vec3 target) :
-        m_pos(pos), m_target(target), m_aspectRatio(aspectRatio)
+            pos(pos), target(target), m_aspectRatio(aspectRatio)
     {
         update();
-    }
-
-    void Camera::move(glm::vec3 dir)
-    {
-        m_pos += dir;
     }
 
     void Camera::update()
     {
         // Gram-Schmidt process
-        m_dir = glm::normalize(m_pos - m_target);
+        m_dir = glm::normalize(pos - target);
         m_right = glm::normalize(glm::cross({0.0f, 1.0f, 0.0f}, m_dir));
         m_up = glm::cross(m_dir, m_right);
-        m_view = glm::lookAt(m_pos, m_dir, m_up);
+        m_view = glm::lookAt(pos, m_dir, m_up);
         m_projection = glm::perspective(glm::radians(m_fov), m_aspectRatio, m_zNear, m_zFar);
-    }
-
-    void Camera::render()
-    {
     }
 
     void drawToTexture(Vertexbuffer& vertexBuffer, ShaderProgram& shader, Framebuffer& framebuffer)
     {
-        GLenum drawBuffers[16];
-
-        const unsigned int numAttachments = framebuffer.getNumColorAttachments();
-        for (int i = 0; i < numAttachments; ++i
-)
-        {
-            drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
-       }
-
-        glViewport(0, 0, 800, 600);
+        // We assume that all color attachments are same size
+        glViewport(0, 0, framebuffer.getColorAttachments()[0].getWidth(), framebuffer.getColorAttachments()[0].getHeight());
 
         vertexBuffer.bind();
         shader.use();
         framebuffer.bind();
+        framebuffer.clear();
 
-        glDrawBuffers(numAttachments, drawBuffers);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         framebuffer.unbind();

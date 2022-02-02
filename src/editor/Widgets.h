@@ -1,7 +1,7 @@
 #ifndef RAYTRACER_WIDGETS_H
 #define RAYTRACER_WIDGETS_H
 
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 #include "imgui.h"
 #include <vector>
 #include <memory>
@@ -17,6 +17,9 @@
 
 namespace Editor
 {
+    // wrapper around glfw input functions. The key codes directly map to GLFW
+    int getKey(int key);
+
     class Widget
     {
     public:
@@ -112,12 +115,15 @@ namespace Editor
     private:
         void processInput();
 
+        bool          m_wireframe = false;
+        float         m_pointSize = 1.0f;
+
         unsigned int  m_resX   = 800;
         unsigned int  m_resY   = 600;
         ImVec2        m_offset = {0.0f, 0.0f};
         ImVec2        m_scale  = {800.0f, 600.0f};
         Framebuffer   m_framebuffer;
-        Camera        m_camera = {(float)m_resX/float(m_resY),{0, 0.5, 4}, {0.0, 0.0, 0}};
+        Camera        m_camera = {(float)m_resX/float(m_resY),{0, 0.0, 3}, {0.0, 0.0, -1}};
         Vertexbuffer  m_vertexbuffer;
         ShaderProgram m_shaderProgram;
     };

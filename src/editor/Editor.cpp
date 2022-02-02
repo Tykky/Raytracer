@@ -11,8 +11,12 @@
 
 namespace Editor
 {
+    static GLFWwindow* editorWindowHandle = nullptr;
+    static float deltaTime = 0.0f;
+
     void init(GLFWwindow* window, const Options &options, WidgetStore& widgetStore, TextureStore& textureStore)
     {
+        editorWindowHandle = window;
         ImGui::CreateContext();
 
         ImGuiIO &io = ImGui::GetIO();
@@ -105,14 +109,20 @@ namespace Editor
     void renderLoop(GLFWwindow* window, WidgetStore& widgetStore, TextureStore& textureStore)
     {
         ImGuiIO &io = ImGui::GetIO();
+        double beginTime;
+        double endTime = glfwGetTime();
         while (!glfwWindowShouldClose(window))
         {
+            beginTime = glfwGetTime();
+            deltaTime = static_cast<float>(beginTime - endTime);
             // Limit to 10 fps when no input is received
-            glfwWaitEventsTimeout(0.1);
+            //glfwWaitEventsTimeout(0.1);
+            glfwPollEvents();
             clear();
             cleanInactiveWidgets(widgetStore);
             renderGui(io, widgetStore, textureStore);
             glfwSwapBuffers(window);
+            endTime = glfwGetTime();
         }
     }
 
@@ -167,5 +177,15 @@ namespace Editor
         widgetStore.push(std::make_unique<ImGuiMtericsWidget>());
         widgetStore.push(std::make_unique<ImguiStackToolWidget>());
 #endif
+    }
+
+    int getKey(int key)
+    {
+        return glfwGetKey(editorWindowHandle, key);
+    }
+
+    float getDeltaTime()
+    {
+        return deltaTime;
     }
 }

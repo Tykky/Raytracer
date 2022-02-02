@@ -33,6 +33,8 @@ namespace Editor
     void drawEditor(const ImGuiIO& io, const WidgetStore& widgetStore, TextureStore& textureStore);
     void windowErrorCallback(int code, const char* description);
     void createDefaultEditorWidgets(WidgetStore& widgets, TextureStore& textureStore);
+
+
 }
 
 #endif //RAYTRACER_EDITOR_H

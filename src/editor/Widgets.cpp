@@ -164,6 +164,9 @@ namespace Editor
     {
         if (m_open)
         {
+            // TODO: consider moving the rendering of the viewport over to camera.
+            // Right now we don't have much stuff in here but at some point the "renderer" will become more complex
+            processInput();
             ImGui::Begin(m_windowId.data());
             setUniform(m_shaderProgram.getProgramId(), "view", m_camera.getViewMatrix());
             setUniform(m_shaderProgram.getProgramId(), "projection", m_camera.getProjectionMatrix());
@@ -171,21 +174,54 @@ namespace Editor
             drawTextureView((void*)m_framebuffer.getColorAttachments()[0].id(), m_offset, m_scale, m_open);
             ImGui::Text("Press left ALT and mouse 1 to move the image");
             ImGui::Text("Pressing left ALT and scrolling zooms the image");
+            if (ImGui::Button("Toggle wireframe"))
+            {
+                m_wireframe ^= 1;
+                if (m_wireframe)
+                {
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+                }
+                else
+                {
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                }
+                logMsg(std::to_string(m_wireframe));
+            }
+            ImGui::SameLine(150);
+            if (ImGui::InputFloat("point size", &m_pointSize))
+            {
+                glPointSize(m_pointSize);
+            }
             ImGui::End();
         }
     }
 
     void Viewport::processInput()
     {
-        if (ImGui::IsKeyPressed(ImGuiKey_W))
+        if (getKey(GLFW_KEY_W) == GLFW_PRESS)
         {
-            m_camera.move(m_camera.getDir());
+            m_camera.pos += - m_camera.getDir() * m_camera.speed;
+            m_camera.update();
         }
-        if (ImGui::IsKeyPressed(ImGuiKey_S))
+
+        if (getKey(GLFW_KEY_S) == GLFW_PRESS)
         {
-            m_camera.move(-m_camera.getDir());
+            m_camera.pos += m_camera.getDir() * m_camera.speed;
+            m_camera.update();
         }
-        m_camera.update();
+
+        if (getKey(GLFW_KEY_D) == GLFW_PRESS)
+        {
+            m_camera.pos += m_camera.getRight() * m_camera.speed;
+            m_camera.update();
+        }
+
+        if (getKey(GLFW_KEY_A) == GLFW_PRESS)
+        {
+            m_camera.pos += - m_camera.getRight() * m_camera.speed;
+            m_camera.update();
+        }
+        logMsg(std::to_string(m_camera.pos[0]) + " " + std::to_string(m_camera.pos[1]) + " " + std::to_string(m_camera.pos[2]));
     }
 
     void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore)
