@@ -286,12 +286,14 @@ namespace Editor
             drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
        }
 
+        glViewport(0, 0, 800, 600);
+
         vertexBuffer.bind();
         shader.use();
         framebuffer.bind();
 
         glDrawBuffers(numAttachments, drawBuffers);
-        glDrawArrays(GL_TRIANGLES, 0, 720/5);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         framebuffer.unbind();
 
@@ -326,7 +328,7 @@ namespace Editor
 
         gltexture.name = filename;
 
-        logMsg("Loaded texture " + std::string(filename));
+        logMsg("Loaded texture " + std::string(filename) + ", with size: " + std::to_string(gltexture.width) + "x" + std::to_string(gltexture.height));
 
         return { gltexture };
     }

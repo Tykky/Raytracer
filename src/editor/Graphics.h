@@ -166,9 +166,8 @@ namespace Editor
         bool addShader(const char* path, ShaderType shaderType);
         bool link();
         void use();
-        inline unsigned int getVertexShaderId() { return m_vertexShaderId; }
-        inline unsigned int getFragmentId() { return m_fragmentShaderId; }
-        inline unsigned int getComputeId() { return m_computeShaderId; }
+
+        inline unsigned int getProgramId() { return m_shaderProgramId; }
 
     private:
         unsigned int m_shaderProgramId   = 0;

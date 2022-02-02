@@ -165,8 +165,8 @@ namespace Editor
         if (m_open)
         {
             ImGui::Begin(m_windowId.data());
-            setUniform(m_shaderProgram.getVertexShaderId(), "view", m_camera.getViewMatrix());
-            setUniform(m_shaderProgram.getVertexShaderId(), "projection", m_camera.getProjectionMatrix());
+            setUniform(m_shaderProgram.getProgramId(), "view", m_camera.getViewMatrix());
+            setUniform(m_shaderProgram.getProgramId(), "projection", m_camera.getProjectionMatrix());
             drawToTexture(m_vertexbuffer, m_shaderProgram, m_framebuffer);
             drawTextureView((void*)m_framebuffer.getColorAttachments()[0].id(), m_offset, m_scale, m_open);
             ImGui::Text("Press left ALT and mouse 1 to move the image");
