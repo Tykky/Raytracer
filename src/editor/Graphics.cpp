@@ -40,6 +40,23 @@ namespace Editor
         glDeleteBuffers(1, &m_vbo);
     }
 
+    Vertexbuffer::Vertexbuffer(Vertexbuffer&& vertexbuffer)
+    {
+        m_vao = vertexbuffer.m_vao;
+        vertexbuffer.m_vao = 0;
+        m_vbo = vertexbuffer.m_vbo;
+        vertexbuffer.m_vbo = 0;
+    }
+
+    Vertexbuffer &Vertexbuffer::operator=(Vertexbuffer&& vertexbuffer)
+    {
+        m_vao = vertexbuffer.m_vao;
+        vertexbuffer.m_vao = 0;
+        m_vbo = vertexbuffer.m_vbo;
+        vertexbuffer.m_vbo = 0;
+        return *this;
+    }
+
     void Vertexbuffer::bind()
     {
         glBindVertexArray(m_vao);
@@ -53,6 +70,31 @@ namespace Editor
     Framebuffer::~Framebuffer()
     {
         glDeleteFramebuffers(1, &m_framebufferID);
+    }
+
+    Framebuffer::Framebuffer(Framebuffer&& framebuffer)
+    {
+        m_framebufferID = framebuffer.m_framebufferID;
+        framebuffer.m_framebufferID = 0;
+        for (int i = 0; i < framebuffer.m_numColorAttachments; ++i)
+        {
+            m_colorAttachments[i] = std::move(framebuffer.m_colorAttachments[i]);
+        }
+        m_numColorAttachments = framebuffer.m_numColorAttachments;
+        framebuffer.m_numColorAttachments = 0;
+    }
+
+    Framebuffer& Framebuffer::operator=(Framebuffer&& framebuffer)
+    {
+        m_framebufferID = framebuffer.m_framebufferID;
+        framebuffer.m_framebufferID = 0;
+        for (int i = 0; i < framebuffer.m_numColorAttachments; ++i)
+        {
+            m_colorAttachments[i] = std::move(framebuffer.m_colorAttachments[i]);
+        }
+        m_numColorAttachments = framebuffer.m_numColorAttachments;
+        framebuffer.m_numColorAttachments = 0;
+        return *this;
     }
 
     void Framebuffer::addColorAttachment(RenderTexture&& renderTexture)

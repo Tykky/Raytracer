@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 if(WIN32)
 	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+	add_compile_options("/EHa")
 endif()
 
 option(BUILD_GUI "" ON)

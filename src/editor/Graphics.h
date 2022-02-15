@@ -100,10 +100,14 @@ namespace Editor
     class Vertexbuffer
     {
     public:
+        Vertexbuffer() = delete;
         Vertexbuffer(const float* vertices, std::size_t size);
         ~Vertexbuffer();
-        Vertexbuffer() = delete;
-        Vertexbuffer(const Vertexbuffer& vertexBuffer) = delete;
+
+        Vertexbuffer(const Vertexbuffer& vertexbuffer) = delete;
+        Vertexbuffer& operator=(const Vertexbuffer& vertexbuffer) = delete;
+        Vertexbuffer(Vertexbuffer&& vertexbuffer);
+        Vertexbuffer& operator=(Vertexbuffer&& vertexbuffer);
 
         void bind();
 
@@ -117,9 +121,10 @@ namespace Editor
     class RenderTexture
     {
     public:
+        RenderTexture() = default;
         RenderTexture(unsigned int width, unsigned int height, bool depthTesting);
         ~RenderTexture();
-        RenderTexture() = default;
+
         RenderTexture(const RenderTexture& renderTexture) = delete;
         RenderTexture &operator=(const RenderTexture& renderTexture) = delete;
         RenderTexture(RenderTexture&& renderTexture);
@@ -143,10 +148,14 @@ namespace Editor
     public:
         Framebuffer();
         ~Framebuffer();
+
         Framebuffer(const Framebuffer& framebuffer) = delete;
         Framebuffer& operator=(const Framebuffer& framebuffer) = delete;
+        Framebuffer(Framebuffer&& framebuffer);
+        Framebuffer& operator=(Framebuffer&& framebuffer);
 
         void addColorAttachment(RenderTexture&& renderTexture);
+
         inline unsigned int getNumColorAttachments() const { return m_numColorAttachments; }
         inline const RenderTexture* getColorAttachments() const { return m_colorAttachments; }
 
@@ -165,6 +174,7 @@ namespace Editor
     public:
         ShaderProgram() = default;
         ~ShaderProgram();
+
         ShaderProgram(const ShaderProgram& shaderProgram) = delete;
         ShaderProgram& operator=(const ShaderProgram& shaderProgram) = delete;
         ShaderProgram(ShaderProgram&& shaderProgram);
