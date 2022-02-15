@@ -200,28 +200,27 @@ namespace Editor
     {
         if (getKey(GLFW_KEY_W) == GLFW_PRESS)
         {
-            m_camera.pos += - m_camera.getDir() * m_camera.speed;
+            m_camera.pos += m_camera.getDir() * m_camera.speed * 0.1f;
             m_camera.update();
         }
 
         if (getKey(GLFW_KEY_S) == GLFW_PRESS)
         {
-            m_camera.pos += m_camera.getDir() * m_camera.speed;
-            m_camera.update();
-        }
-
-        if (getKey(GLFW_KEY_D) == GLFW_PRESS)
-        {
-            m_camera.pos += m_camera.getRight() * m_camera.speed;
+            m_camera.pos -= m_camera.getDir() * m_camera.speed * 0.1f;
             m_camera.update();
         }
 
         if (getKey(GLFW_KEY_A) == GLFW_PRESS)
         {
-            m_camera.pos += - m_camera.getRight() * m_camera.speed;
+            m_camera.pos -= m_camera.getRight() * m_camera.speed * 0.1f;
             m_camera.update();
         }
-        logMsg(std::to_string(m_camera.pos[0]) + " " + std::to_string(m_camera.pos[1]) + " " + std::to_string(m_camera.pos[2]));
+
+        if (getKey(GLFW_KEY_D) == GLFW_PRESS)
+        {
+            m_camera.pos += m_camera.getRight() * m_camera.speed * 0.1f;
+            m_camera.update();
+        }
     }
 
     void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore)

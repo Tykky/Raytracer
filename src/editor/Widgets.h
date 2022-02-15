@@ -20,6 +20,8 @@ namespace Editor
     // wrapper around glfw input functions. The key codes directly map to GLFW
     int getKey(int key);
 
+    GLFWwindow* getEditorWindowHandle();
+
     class Widget
     {
     public:

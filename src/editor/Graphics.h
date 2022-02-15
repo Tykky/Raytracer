@@ -198,9 +198,10 @@ namespace Editor
         inline glm::mat4 getViewMatrix() { return m_view; }
         inline glm::vec3 getRight() { return m_right; }
 
-        float speed = 0.2f;
+        float speed = 1.0f;
         glm::vec3 pos;
-        glm::vec3 target;
+        float     yaw = -90.0f;
+        float     pitch = 0.0f;
 
     private:
         float m_aspectRatio;
@@ -238,7 +239,7 @@ namespace Editor
     void deleteTexture(unsigned int textureID);
 
     // Used by ImFileDialog
-    void *createTexture(unsigned char* data, int w, int h, char fmt);
+    void* createTexture(unsigned char* data, int w, int h, char fmt);
     void deleteTexture(void* tex);
 
     bool checkShaderCompilation(unsigned int shaderId);

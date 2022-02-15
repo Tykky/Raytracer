@@ -188,4 +188,9 @@ namespace Editor
     {
         return deltaTime;
     }
+
+    GLFWwindow* getEditorWindowHandle()
+    {
+        return editorWindowHandle;
+    }
 }

@@ -69,8 +69,7 @@ namespace Editor
             GLenum drawBuffers[16];
 
             const unsigned int numAttachments = getNumColorAttachments();
-            for (int i = 0; i < numAttachments; ++i
-                    )
+            for (int i = 0; i < numAttachments; ++i)
             {
                 drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
             }
@@ -232,6 +231,7 @@ namespace Editor
         if (m_computeShaderId)
             glAttachShader(m_shaderProgramId, m_computeShaderId);
         glLinkProgram(m_shaderProgramId);
+
         if (checkShaderLink(m_shaderProgramId))
         {
             logMsg("Successfully linked shaders, ready for execution");
@@ -267,18 +267,20 @@ namespace Editor
     }
 
     Camera::Camera(float aspectRatio, glm::vec3 pos, glm::vec3 target) :
-            pos(pos), target(target), m_aspectRatio(aspectRatio)
+            pos(pos), m_aspectRatio(aspectRatio)
     {
         update();
     }
 
     void Camera::update()
     {
-        // Gram-Schmidt process
-        m_dir = glm::normalize(pos - target);
-        m_right = glm::normalize(glm::cross({0.0f, 1.0f, 0.0f}, m_dir));
-        m_up = glm::cross(m_dir, m_right);
-        m_view = glm::lookAt(pos, m_dir, m_up);
+        m_dir.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+        m_dir.y = glm::sin(glm::radians(pitch));
+        m_dir.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+
+        m_right = glm::normalize(glm::cross({0.0f, 1.0f, 0.0f}, -m_dir));
+        m_up = glm::cross(-m_dir, m_right);
+        m_view = glm::lookAt(pos, pos + m_dir, m_up);
         m_projection = glm::perspective(glm::radians(m_fov), m_aspectRatio, m_zNear, m_zFar);
     }
 
