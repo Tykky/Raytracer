@@ -172,25 +172,17 @@ namespace Editor
             setUniform(m_shaderProgram.getProgramId(), "projection", m_camera.getProjectionMatrix());
             drawToTexture(m_vertexbuffer, m_shaderProgram, m_framebuffer);
             drawTextureView((void*)m_framebuffer.getColorAttachments()[0].id(), m_offset, m_scale, m_open);
-            ImGui::Text("Press left ALT and mouse 1 to move the image");
-            ImGui::Text("Pressing left ALT and scrolling zooms the image");
             if (ImGui::Button("Toggle wireframe"))
             {
                 m_wireframe ^= 1;
                 if (m_wireframe)
                 {
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
                 }
                 else
                 {
                     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 }
-                logMsg(std::to_string(m_wireframe));
-            }
-            ImGui::SameLine(150);
-            if (ImGui::InputFloat("point size", &m_pointSize))
-            {
-                glPointSize(m_pointSize);
             }
             ImGui::End();
         }
@@ -198,6 +190,9 @@ namespace Editor
 
     void Viewport::processInput()
     {
+        static float prevMouseX = 0.0f;
+        static float prevMouseY = 0.0f;
+
         if (getKey(GLFW_KEY_W) == GLFW_PRESS)
         {
             m_camera.pos += m_camera.getDir() * m_camera.speed * 0.1f;
@@ -221,6 +216,16 @@ namespace Editor
             m_camera.pos += m_camera.getRight() * m_camera.speed * 0.1f;
             m_camera.update();
         }
+
+        double mousePosX, mousePosY;
+        glfwGetCursorPos(getEditorWindowHandle(), &mousePosX, &mousePosY);
+        float mousePoxXDelta = static_cast<float>(mousePosX) - prevMouseX;
+        float mousePosYDelta = static_cast<float>(mousePosY) - prevMouseY;
+        prevMouseX = mousePosX;
+        prevMouseY = mousePosY;
+        m_camera.yaw += mousePoxXDelta;
+        m_camera.pitch += mousePosYDelta;
+        m_camera.update();
     }
 
     void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore)

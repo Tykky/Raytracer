@@ -114,7 +114,7 @@ namespace Editor
     private:
         unsigned int m_vbo; // Vertex Buffer Object
         unsigned int m_vao; // Vertex Array Object
-        // unsigned int m_ebo; // Vertex Element Object
+        unsigned int m_ebo; // Vertex Element Object
     };
 
     // A texture we can use as render target
@@ -230,7 +230,7 @@ namespace Editor
     // Creates and compiles a shader
     unsigned int compileShader(const char** data, const int* size, ShaderType shaderType);
 
-    // Draws all current color attachments
+    // Draws to all current color attachments
     void drawToTexture(Vertexbuffer& vertexBuffer, ShaderProgram& shader, Framebuffer& framebuffer);
 
     // Simply uploads texture from disk
