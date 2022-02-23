@@ -12,7 +12,7 @@
 #include <functional>
 
 // Contains a set of widgets that can be drawn using Widget::draw().
-// Generally widgets are drawn as separate ImGui windows but exceptions exist such as
+// Generally widgets are drawn as separate Dear ImGui windows but exceptions exist such as
 // drawing the MainMenuBar or Dockspace.
 
 namespace Editor
@@ -95,6 +95,7 @@ namespace Editor
     };
 
     // Small wrapper for Dear Imgui metrics command.
+    // Used only for debugging
     struct ImGuiMtericsWidget : public Widget
     {
         inline ImGuiMtericsWidget() : Widget("Dear Imgui Metrics") {}
@@ -102,6 +103,7 @@ namespace Editor
     };
 
     // Small wrapper for Dear ImGui stack tool
+    // Used only for debugging
     struct ImguiStackToolWidget : public Widget
     {
         inline ImguiStackToolWidget() : Widget("Dear Imgui Stack tool") {}
