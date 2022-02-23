@@ -155,8 +155,8 @@ namespace Editor
     {
         // Create default color attachment with depth buffer (color attachment 0)
         m_framebuffer.addColorAttachment({m_resX, m_resY, true});
-        m_shaderProgram.addShader("../../src/editor/shaders/vert.glsl", ShaderType::VERTEX);
-        m_shaderProgram.addShader("../../src/editor/shaders/frag.glsl", ShaderType::FRAGMENT);
+        m_shaderProgram.addShader("data/shaders/vert.glsl", ShaderType::VERTEX);
+        m_shaderProgram.addShader("data/shaders/frag.glsl", ShaderType::FRAGMENT);
         m_shaderProgram.link();
     }
 

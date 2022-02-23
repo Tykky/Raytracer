@@ -31,12 +31,5 @@ set(RAYTRACER_GUI
     ${DEAR_IMGUI_SOURCE}
 )
 
-if(BUILD_GUI)
-    include_directories(../external/imgui ../external/imgui/backends)
-    if(WIN32)
-        add_executable(raytracer core/main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
-    else()
-        add_executable(raytracer core/main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
-    endif()
-        target_link_libraries(raytracer OpenGL::GL libglew_static glfw)
-endif()
+add_executable(raytracer core/main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
+target_link_libraries(raytracer ${EXTERNAL})

@@ -11,9 +11,6 @@ int main()
     Editor::WidgetStore  widgetStore;
     Editor::TextureStore textureStore;
 
-    if (auto tex = Editor::loadTexture("scot.png"))
-        textureStore.push_back(std::move(tex.value()));
-
     Editor::init(window, options, widgetStore, textureStore);
     Editor::renderLoop(window, widgetStore, textureStore);
     Editor::destroyWindow(window);

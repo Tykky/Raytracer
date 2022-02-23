@@ -13,7 +13,7 @@ bool readRawFile(Rawbuffer& buffer, const char* filename)
     file.ignore(std::numeric_limits<std::streamsize>::max());
     std::streamsize size = file.gcount();
     buffer.resize(size);
-    file.clear(); // ignore sets eof
+    file.clear();
     file.seekg(0, std::ios_base::beg);
     file.read(buffer.data(), size);
     buffer.push_back('\0');

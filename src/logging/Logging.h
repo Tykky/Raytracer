@@ -4,6 +4,17 @@
 #include <vector>
 #include <string>
 
+#ifdef WIN32
+#undef ERROR
+#endif
+
+// Cursed ms macro. We need to undefine this because of 
+// ERROR used in MessageType
+#ifdef WIN32
+#undef ERROR
+#endif // WIN32
+
+
 enum class MessageType
 {
     INFO,

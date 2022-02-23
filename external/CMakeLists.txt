@@ -1,10 +1,12 @@
 include(FetchContent)
 
+#[[
 FetchContent_Declare(
     googletest
     GIT_REPOSITORY https://github.com/google/googletest.git
     GIT_TAG c9461a9b55ba954df0489bab6420eb297bed846b
 )
+]]
 
 FetchContent_Declare(
     glfw
@@ -36,12 +38,21 @@ FetchContent_Declare(
     GIT_TAG 8322e00ae685ea623ab6ac5a6cebcfa2d22fbf93
 )
 
-FetchContent_MakeAvailable(googletest)
-FetchContent_MakeAvailable(glfw)
-FetchContent_MakeAvailable(glew-cmake)
-FetchContent_MakeAvailable(glm)
-FetchContent_MakeAvailable(imgui)
-FetchContent_MakeAvailable(tinyobjloader)
+FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_TAG 2f2d04b3e840428a18942ca2d3d65203ec564647
+)
+
+FetchContent_MakeAvailable(
+   #googletest
+   glfw
+   glew-cmake
+   glm
+   imgui
+   tinyobjloader
+   spdlog
+)
 
 find_package(OpenGL REQUIRED)
 
@@ -53,7 +64,13 @@ include_directories(${glm_SOURCE_DIR})
 include_directories(${glew-cmake_SOURCE_DIR}/include)
 include_directories(${imgui_SOURCE_DIR})
 include_directories(${imgui_SOURCE_DIR}/backends)
-include_directories(external)
+include_directories(${spdlog_SOURCE_DIR}/include)
+
+set(EXTERNAL
+    OpenGL::GL
+    libglew_static
+    glfw
+)
 
 set(DEAR_IMGUI_SOURCE
     ${imgui_SOURCE_DIR}/imgui.cpp

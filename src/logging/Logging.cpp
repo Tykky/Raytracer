@@ -1,5 +1,6 @@
-#include "Logging.h"
 #include <iostream>
+#include <spdlog/spdlog.h>
+#include "Logging.h"
 
 static MessageStore MESSAGE_STORE;
 

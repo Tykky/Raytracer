@@ -44,7 +44,7 @@ namespace Editor
 
         // Load custom font
         //io.Fonts->AddFontFromFileTTF("Roboto-Regular.ttf", 16.0f);
-        io.IniFilename = "default-settings.ini";
+        io.IniFilename = "data/config/default-settings.ini";
 
 #ifdef NDEBUG
         // We don't want to save user settings for now, maybe at sometime there is a feature to
