@@ -37,20 +37,14 @@ namespace Editor
             ImGui::Begin(m_windowId.data(), &m_open);
             ImGui::Checkbox("Scroll to bottom", &m_srollToBottom);
 
-            ImGui::SameLine(170.0f);
-            if (ImGui::Button("clear"))
-                getLogMessages().clear();
-
             ImGui::BeginChild("Logtext###ID");
 
             if (m_srollToBottom)
                 ImGui::SetScrollY(ImGui::GetScrollMaxY());
 
-            for (auto& msg : getLogMessages())
+            for (auto& msg : logMessages())
             {
-                pushMessagetypeImGuiStyleVar(msg.type);
-                ImGui::Text(msg.message.data());
-                ImGui::PopStyleVar(1);
+                ImGui::Text(msg.data());
             }
 
             ImGui::EndChild();
@@ -384,22 +378,6 @@ namespace Editor
         {
             width *= zoom;
             height *= zoom;
-        }
-    }
-
-    void pushMessagetypeImGuiStyleVar(MessageType type)
-    {
-        switch (type)
-        {
-            case MessageType::ERROR:
-                ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 0, 0 ,255));
-                break;
-            case MessageType::WARNING:
-                ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 128, 0 ,255));
-                break;
-            default:
-                ImGui::PushStyleVar(ImGuiCol_Text, IM_COL32(255, 255, 255 ,255));
-                break;
         }
     }
 

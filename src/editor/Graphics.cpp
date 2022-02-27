@@ -438,7 +438,7 @@ namespace Editor
         {
             glGetShaderInfoLog(shaderId, logSize, NULL, infoLog);
             logError("---SHADER COMPILE LOG BEGIN---");
-            logRaw(infoLog, MessageType::ERROR);
+            logRaw(infoLog);
             logError("---SHADER COMPILE LOG END---");
             return false;
         }
@@ -456,7 +456,7 @@ namespace Editor
         {
             glGetShaderInfoLog(shaderId, logSize, NULL, infoLog);
             logError("---SHADER LINK LOG BEGIN---");
-            logRaw(infoLog, MessageType::ERROR);
+            logRaw(infoLog);
             logError("---SHADER LINK LOG END---");
             return false;
         }

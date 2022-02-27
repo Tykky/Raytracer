@@ -6,6 +6,8 @@ int main()
 {
     Editor::Options options;
 
+    initLogger();
+
     options.enableViewports = true;
     GLFWwindow* window = Editor::createWindow("kebab", 1920, 1080, options);
     Editor::WidgetStore  widgetStore;

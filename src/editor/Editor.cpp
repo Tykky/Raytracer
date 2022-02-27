@@ -115,8 +115,7 @@ namespace Editor
         {
             beginTime = glfwGetTime();
             deltaTime = static_cast<float>(beginTime - endTime);
-            // Limit to 10 fps when no input is received
-            //glfwWaitEventsTimeout(0.1);
+
             glfwPollEvents();
             clear();
             cleanInactiveWidgets(widgetStore);

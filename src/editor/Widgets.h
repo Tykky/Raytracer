@@ -141,7 +141,6 @@ namespace Editor
     void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture);
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
     void zoomTextureWhenScrolled(float& width, float& height);
-    void pushMessagetypeImGuiStyleVar(MessageType type);
     void cleanInactiveWidgets(WidgetStore& widgetStore);
 }
 #endif //RAYTRACER_WIDGETS_H

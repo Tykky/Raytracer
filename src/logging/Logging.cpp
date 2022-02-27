@@ -1,64 +1,76 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/ringbuffer_sink.h>
 #include "Logging.h"
 
-static MessageStore MESSAGE_STORE;
+static std::shared_ptr<spdlog::logger> LOGGER;
+static std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> RINGBUFFER_SINK;
+
+#ifdef WIN32
+#include <spdlog/sinks/msvc_sink.h>
+#endif
+
+void initLogger()
+{
+    spdlog::set_pattern("%^[&T] %n: %v%$");
+    LOGGER = spdlog::stdout_color_mt("RT");
+    LOGGER->set_level(spdlog::level::trace);
+
+    constexpr int ringSize = 128;
+
+    // Store log messages to ringbuffer in order to display them inside the editor
+    RINGBUFFER_SINK = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(ringSize);
+
+    LOGGER->sinks().push_back(RINGBUFFER_SINK);
+
+#ifdef WIN32
+    auto msvc = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+    LOGGER->sinks().push_back(msvc);
+#endif
+}
 
 void logMsg(std::string&& msg)
 {
-    auto tmp = "[INFO] " + std::move(msg);
-    std::cout << tmp << std::endl;
-    MESSAGE_STORE.push_back({ std::move(tmp), MessageType::INFO});
+    LOGGER->info(std::move(msg));
 }
 
 void logMsg(std::string& msg)
 {
-    auto tmp = "[INFO] " + msg;
-    std::cout << tmp << std::endl;
-    MESSAGE_STORE.push_back({ std::move(tmp), MessageType::INFO});
+    LOGGER->info(msg);
 }
 
 void logWarning(std::string&& msg)
 {
-    auto tmp = "[WARNING] " + std::move(msg);
-    std::cout << tmp << std::endl;
-    MESSAGE_STORE.push_back({ std::move(tmp), MessageType::WARNING});
+    LOGGER->warn(std::move(msg));
 }
 
 void logWarning(std::string& msg)
 {
-    auto tmp = "[WARNING] " + msg;
-    std::cout << tmp << std::endl;
-    MESSAGE_STORE.push_back({ std::move(tmp), MessageType::WARNING});
+    LOGGER->warn(msg);
 }
 
 void logError(std::string&& msg)
 {
-    auto tmp = "[ERROR] " + msg;
-    std::cout << tmp << std::endl;
-    MESSAGE_STORE.push_back({ std::move(tmp), MessageType::ERROR});
+    LOGGER->error(std::move(msg));
 }
 
 void logError(std::string& msg)
 {
-    auto tmp = "[ERROR] " + msg;
-    std::cout << tmp << std::endl;
-    MESSAGE_STORE.push_back({ std::move(tmp), MessageType::ERROR});
+    LOGGER->error(msg);
 }
 
-MessageStore& getLogMessages()
+const std::vector<std::string> logMessages()
 {
-    return MESSAGE_STORE;
+    return RINGBUFFER_SINK->last_formatted();
 }
 
-void logRaw(std::string&& msg, MessageType type)
+void logRaw(std::string&& msg)
 {
-    std::cout << msg;
-    MESSAGE_STORE.push_back({std::move(msg), type});
+    LOGGER->info(msg, "");
 }
 
-void logRaw(std::string& msg, MessageType type)
+void logRaw(std::string& msg)
 {
-    std::cout << msg;
-    MESSAGE_STORE.push_back({msg, type});
+    LOGGER->info(msg, "");
 }
