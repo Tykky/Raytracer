@@ -261,7 +261,7 @@ namespace Editor
             {
                 if (ImGui::MenuItem("Settings"))
                     widgetStore.push(std::make_unique<SettingsWidget>());
-                ImGui::EndMenu()
+                ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("New widget"))
             {
