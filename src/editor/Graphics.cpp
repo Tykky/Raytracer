@@ -438,7 +438,7 @@ namespace Editor
         {
             glGetShaderInfoLog(shaderId, logSize, NULL, infoLog);
             logError("---SHADER COMPILE LOG BEGIN---");
-            logRaw(infoLog);
+            logError(infoLog);
             logError("---SHADER COMPILE LOG END---");
             return false;
         }
@@ -456,10 +456,30 @@ namespace Editor
         {
             glGetShaderInfoLog(shaderId, logSize, NULL, infoLog);
             logError("---SHADER LINK LOG BEGIN---");
-            logRaw(infoLog);
+            logError(infoLog);
             logError("---SHADER LINK LOG END---");
             return false;
         }
         return true;
+    }
+
+    std::string getGPUVendor()
+    {
+        return { reinterpret_cast<const char*>(glGetString(GL_VENDOR)) };
+    }
+
+    std::string getRenderer()
+    {
+        return { reinterpret_cast<const char*>(glGetString(GL_RENDERER)) };
+    }
+
+    std::string getGLVersion() 
+    {
+        return { reinterpret_cast<const char*>(glGetString(GL_VERSION)) };
+    }
+
+    std::string getGLSLVersion()
+    {
+        return { reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)) };
     }
 }

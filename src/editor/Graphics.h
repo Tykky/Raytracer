@@ -235,8 +235,7 @@ namespace Editor
 
     // Simply uploads texture from disk
     // to GPU memory. Uses stb_image under the hood,
-    // does have some restriction to what file formats
-    // are supported.
+    // does have some restriction to what file formats are supported
     std::optional<Texture> loadTexture(const char* filename);
 
     void clear();
@@ -254,6 +253,11 @@ namespace Editor
 
     bool checkShaderCompilation(unsigned int shaderId);
     bool checkShaderLink(unsigned int shaderId);
+
+    std::string getGPUVendor();
+    std::string getRenderer();
+    std::string getGLVersion();
+    std::string getGLSLVersion();
 
     typedef std::vector<Editor::Texture> TextureStore;
 }

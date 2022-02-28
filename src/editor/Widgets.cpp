@@ -34,6 +34,7 @@ namespace Editor
     {
         if (m_open)
         {
+            ImGui::SetNextWindowSize({800,300});
             ImGui::Begin(m_windowId.data(), &m_open);
             ImGui::Checkbox("Scroll to bottom", &m_srollToBottom);
 
@@ -86,6 +87,7 @@ namespace Editor
         return m_widgets.end();
     }
 
+#ifndef NDEBUG
     WidgetInspector::WidgetInspector(WidgetStore* widgetStore) :
             Widget("Widget Inspector"), m_widgetStore(widgetStore) {}
 
@@ -102,6 +104,7 @@ namespace Editor
             ImGui::End();
         }
     }
+#endif
 
     SettingsWidget::SettingsWidget() :
             Widget("Settings") {}
@@ -111,6 +114,7 @@ namespace Editor
         static const char* preview = "Dark";
         if (m_open)
         {
+            ImGui::SetNextWindowSize({300, 200});
             ImGui::Begin(m_windowId.data(), &m_open);
             if (ImGui::BeginCombo("Theme", preview))
             {
@@ -222,7 +226,28 @@ namespace Editor
         m_camera.update();
     }
 
-    void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore)
+    SystemInfo::SystemInfo() :
+        Widget("SystemInfo"), m_GPUVendor(getGPUVendor()), m_renderer(getRenderer()),
+        m_GLVersion(getGLVersion()), m_GLSLVersion(getGLSLVersion())
+    {}
+
+    void SystemInfo::draw()
+    {
+        if (m_open)
+        {
+            ImGui::SetNextWindowSize({500, 300});
+            ImGui::Begin(m_windowId.data(), &m_open);
+            ImGui::Text("GPU vendor: %s", m_GPUVendor.data());
+            ImGui::Text("Renderer: %s", m_renderer.data());
+            ImGui::Text("GL version: %s", m_GLVersion.data());
+            ImGui::Text("GLSL version: %s", m_GLSLVersion.data());
+            ImGui::Text("Framerate: %f fps", ImGui::GetIO().Framerate);
+            ImGui::Text("Delta time: %f ms", getDeltaTime() * 1000000.0f);
+            ImGui::End();
+        }
+    }
+
+    void drawMainMenuBar(WidgetStore& widgetStore)
     {
         if (ImGui::BeginMainMenuBar())
         {
@@ -236,16 +261,25 @@ namespace Editor
             {
                 if (ImGui::MenuItem("Settings"))
                     widgetStore.push(std::make_unique<SettingsWidget>());
-                ImGui::EndMenu();
+                ImGui::EndMenu()
             }
             if (ImGui::BeginMenu("New widget"))
             {
                 if (ImGui::MenuItem("Texture viewer"))
-                    widgetStore.push(std::make_unique<TextureViewer>(&textureStore));
+                    widgetStore.push(std::make_unique<TextureViewer>(nullptr));
                 if (ImGui::MenuItem("Log viewer"))
                     widgetStore.push(std::make_unique<LogViewer>());
                 ImGui::EndMenu();
             }
+            if (ImGui::BeginMenu("Help"))
+            {
+                if (ImGui::MenuItem("System info"))
+                {
+                    widgetStore.push(std::make_unique<SystemInfo>());
+                }
+                ImGui::EndMenu();
+            }
+
 #ifndef NDEBUG
             if (ImGui::BeginMenu("Debug"))
             {
@@ -290,7 +324,7 @@ namespace Editor
                                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse      | ImGuiWindowFlags_NoNavFocus |
                                ImGuiWindowFlags_NoBringToFrontOnFocus;
 
-            if (ImGui::Begin(name, nullptr, windowFlags))
+           if (ImGui::Begin(name, nullptr, windowFlags))
            {
                 ImGui::PopStyleVar(3);
                 const auto dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;

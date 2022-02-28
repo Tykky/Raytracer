@@ -14,7 +14,9 @@ namespace Editor
     static GLFWwindow* editorWindowHandle = nullptr;
     static float deltaTime = 0.0f;
 
-    void init(GLFWwindow* window, const Options &options, WidgetStore& widgetStore, TextureStore& textureStore)
+    static WidgetStore WIDGETSTORE;
+
+    void init(GLFWwindow* window, const Options &options)
     {
         editorWindowHandle = window;
         ImGui::CreateContext();
@@ -51,7 +53,7 @@ namespace Editor
         // save and load user settings. For nowe we only load the default init file.
         io.WantSaveIniSettings = false;
 #endif
-        createDefaultEditorWidgets(widgetStore, textureStore);
+        createDefaultEditorWidgets();
     }
 
     GLFWwindow* createWindow(const char* title, int width, int height, const Options& options)
@@ -106,7 +108,7 @@ namespace Editor
         logMsg("GLFW terminated");
     }
 
-    void renderLoop(GLFWwindow* window, WidgetStore& widgetStore, TextureStore& textureStore)
+    void renderLoop(GLFWwindow* window)
     {
         ImGuiIO &io = ImGui::GetIO();
         double beginTime;
@@ -118,8 +120,8 @@ namespace Editor
 
             glfwPollEvents();
             clear();
-            cleanInactiveWidgets(widgetStore);
-            renderGui(io, widgetStore, textureStore);
+            cleanInactiveWidgets(WIDGETSTORE);
+            renderGui(io);
             glfwSwapBuffers(window);
             endTime = glfwGetTime();
         }
@@ -135,25 +137,25 @@ namespace Editor
         logError("[GLFW CALLBACK] (" + std::to_string(code) + ") " + description);
     }
 
-    void drawEditor(const ImGuiIO& io, WidgetStore& widgetStore, TextureStore& textureStore)
+    void drawEditor(const ImGuiIO& io)
     {
-        drawMainMenuBar(widgetStore, textureStore);
+        drawMainMenuBar(WIDGETSTORE);
         drawImFileDialogAndProcessInput();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
         drawDockspace("Main", dockspaceID, io);
-        for (auto& widget : widgetStore)
+        for (auto& widget : WIDGETSTORE)
         {
             widget->draw();
         }
     }
 
-    void renderGui(ImGuiIO& io, WidgetStore& widgetStore, TextureStore& textureStore)
+    void renderGui(ImGuiIO& io)
     {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        drawEditor(io, widgetStore, textureStore);
+        drawEditor(io);
 
         ImGui::Render(); // calls Imgui::EndFrame()
 
@@ -167,14 +169,14 @@ namespace Editor
         renderImguiDrawData();
     }
 
-    void createDefaultEditorWidgets(WidgetStore& widgetStore, TextureStore& textureStore)
+    void createDefaultEditorWidgets()
     {
-        widgetStore.push(std::make_unique<Viewport>());
-        widgetStore.push(std::make_unique<LogViewer>());
+        WIDGETSTORE.push(std::make_unique<Viewport>());
+        WIDGETSTORE.push(std::make_unique<LogViewer>());
 #ifndef NDEBUG
-        widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
-        widgetStore.push(std::make_unique<ImGuiMtericsWidget>());
-        widgetStore.push(std::make_unique<ImguiStackToolWidget>());
+        WIDGETSTORE.push(std::make_unique<WidgetInspector>(&WIDGETSTORE));
+        WIDGETSTORE.push(std::make_unique<ImGuiMtericsWidget>());
+        WIDGETSTORE.push(std::make_unique<ImguiStackToolWidget>());
 #endif
     }
 

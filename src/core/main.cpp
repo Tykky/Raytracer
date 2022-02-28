@@ -10,10 +10,8 @@ int main()
 
     options.enableViewports = true;
     GLFWwindow* window = Editor::createWindow("kebab", 1920, 1080, options);
-    Editor::WidgetStore  widgetStore;
-    Editor::TextureStore textureStore;
 
-    Editor::init(window, options, widgetStore, textureStore);
-    Editor::renderLoop(window, widgetStore, textureStore);
+    Editor::init(window, options);
+    Editor::renderLoop(window);
     Editor::destroyWindow(window);
 }

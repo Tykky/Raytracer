@@ -78,6 +78,7 @@ namespace Editor
         unsigned int m_currentUniqueIdx = 0; // Used to create unique ids for new widgets
     };
 
+#ifndef NDEBUG
     class WidgetInspector : public Widget
     {
     public:
@@ -86,6 +87,7 @@ namespace Editor
     private:
         WidgetStore* m_widgetStore;
     };
+#endif
 
     class SettingsWidget : public Widget
     {
@@ -94,6 +96,7 @@ namespace Editor
         void draw() override;
     };
 
+#ifndef NDEBUG
     // Small wrapper for Dear Imgui metrics command.
     // Used only for debugging
     struct ImGuiMtericsWidget : public Widget
@@ -109,6 +112,7 @@ namespace Editor
         inline ImguiStackToolWidget() : Widget("Dear Imgui Stack tool") {}
         inline void draw() override { ImGui::ShowStackToolWindow(); }
     };
+#endif
 
     class Viewport : public Widget
     {
@@ -131,9 +135,21 @@ namespace Editor
         Vertexbuffer  m_vertexbuffer;
         ShaderProgram m_shaderProgram;
     };
+    
+    class SystemInfo : public Widget
+    {
+    public:
+        SystemInfo();
+        void draw() override;
+    private:
+        std::string m_GPUVendor;
+        std::string m_renderer;
+        std::string m_GLVersion;
+        std::string m_GLSLVersion;
+    };
 
     // Shows the main menubar at the top of the main window
-    void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore);
+    void drawMainMenuBar(WidgetStore& widgetStore);
     // Dockspace simply allows windows to be docked to the main window
     void drawDockspace(const char* name, ImGuiID dockspaceID, const ImGuiIO& io);
     void drawImFileDialogAndProcessInput();

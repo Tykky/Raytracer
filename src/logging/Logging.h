@@ -23,12 +23,6 @@ void logWarning(std::string& msg);
 void logError(std::string&& msg);
 void logError(std::string& msg);
 
-// Doesn't append new line or flush
-void logRaw(std::string&& msg);
-void logRaw(std::string& msg);
-
 const std::vector<std::string> logMessages();
-
-// TODO: improve logging with spdlog
 
 #endif //RAYTRACER_LOGGING_H

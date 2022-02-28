@@ -15,7 +15,7 @@ namespace Editor
         bool enableViewports         = false; // Viewports allow moving editor windows outside the main window
         bool enableVsync             = true;
         bool enableMainWindowBorders = true;  // Enables OS window title bar and borders
-        const char* defaultTheme     = "light";
+        const char* defaultTheme     = "dark";
     };
 
     // Creates GLFW window and loads OpenGL extensions
@@ -23,17 +23,17 @@ namespace Editor
     void destroyWindow(GLFWwindow* window);
 
     // Creates editor context (Dear Imgui) and initializes it with options
-    void init(GLFWwindow* window, const Options& options, WidgetStore& widgetStore, TextureStore& textureStore);
+    void init(GLFWwindow* window, const Options& options);
 
     // Begins executing draw/input loop
-    void renderLoop(GLFWwindow* window, WidgetStore& widgetStore, TextureStore& textureStore);
+    void renderLoop(GLFWwindow* window);
 
     // Stuff that is used internally
     void renderImguiDrawData();
-    void renderGui(ImGuiIO &io, WidgetStore& widgetStore, TextureStore& textureStore);
-    void drawEditor(const ImGuiIO& io, const WidgetStore& widgetStore, TextureStore& textureStore);
+    void renderGui(ImGuiIO &io);
+    void drawEditor(const ImGuiIO& io);
     void windowErrorCallback(int code, const char* description);
-    void createDefaultEditorWidgets(WidgetStore& widgets, TextureStore& textureStore);
+    void createDefaultEditorWidgets();
 }
 
 #endif //RAYTRACER_EDITOR_H

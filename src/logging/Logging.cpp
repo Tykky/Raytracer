@@ -7,19 +7,21 @@
 static std::shared_ptr<spdlog::logger> LOGGER;
 static std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> RINGBUFFER_SINK;
 
+static const char* formatting = "%^[&T] %n: %v%$";
+
 #ifdef WIN32
 #include <spdlog/sinks/msvc_sink.h>
 #endif
 
 void initLogger()
 {
-    spdlog::set_pattern("%^[&T] %n: %v%$");
-    LOGGER = spdlog::stdout_color_mt("RT");
+    spdlog::set_pattern(formatting);
+    LOGGER = spdlog::stdout_color_mt("raytracer");
     LOGGER->set_level(spdlog::level::trace);
 
     constexpr int ringSize = 128;
 
-    // Store log messages to ringbuffer in order to display them inside the editor
+    // in order to display log messages inside the editor
     RINGBUFFER_SINK = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(ringSize);
 
     LOGGER->sinks().push_back(RINGBUFFER_SINK);
@@ -63,14 +65,4 @@ void logError(std::string& msg)
 const std::vector<std::string> logMessages()
 {
     return RINGBUFFER_SINK->last_formatted();
-}
-
-void logRaw(std::string&& msg)
-{
-    LOGGER->info(msg, "");
-}
-
-void logRaw(std::string& msg)
-{
-    LOGGER->info(msg, "");
 }
