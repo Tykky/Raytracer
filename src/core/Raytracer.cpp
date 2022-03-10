@@ -16,7 +16,7 @@ Raytracer::Raytracer(Primitive* world, RTCamera* camera, int width, int height) 
     m_framebuffer(3 * width * height),
     m_colorbuffer(3 * width * height),
     m_sampleCounter(0),
-    m_sampler(world, camera, &m_colorbuffer, &m_framebuffer, width, height)
+    m_sampler(world, camera, &m_colorbuffer, &m_framebuffer, width, height, 10)
 {}
 
 void Raytracer::render(unsigned int samples) 

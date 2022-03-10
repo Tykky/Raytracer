@@ -163,7 +163,7 @@ namespace Editor
     {
         // Create default color attachment with depth buffer (color attachment 0)
         m_framebuffer.addColorAttachment({m_resX, m_resY, true});
-        setRenderTextureToColorAttachment(0);
+        setViewportTextureToColorAttachment(0);
         m_shaderProgram.addShader("data/shaders/vert.glsl", ShaderType::VERTEX);
         m_shaderProgram.addShader("data/shaders/frag.glsl", ShaderType::FRAGMENT);
         m_shaderProgram.link();
@@ -182,7 +182,7 @@ namespace Editor
             setUniform(m_shaderProgram.getProgramId(), "projection", m_camera.getProjectionMatrix());
 
             drawToTexture(m_vertexbuffer, m_shaderProgram, m_framebuffer);
-            drawTextureView(m_renderTexture, m_offset, m_scale, m_open);
+            drawTextureView(m_viewportTexture, m_offset, m_scale, m_open);
 
             if (ImGui::Button("Toggle wireframe"))
             {
@@ -200,15 +200,20 @@ namespace Editor
         }
     }
 
-    void Viewport::setRenderTexture(const RenderTexture& renderTexture)
+    void Viewport::setViewportTexture(const RenderTexture& renderTexture)
     {
-        m_renderTexture = reinterpret_cast<void*>(renderTexture.id());
+        m_viewportTexture = reinterpret_cast<void*>(renderTexture.id());
     }
 
-    void Viewport::setRenderTextureToColorAttachment(unsigned int attachment)
+    void Viewport::setViewportTexture(unsigned int texID)
+    {
+        m_viewportTexture = reinterpret_cast<void*>(texID);
+    }
+
+    void Viewport::setViewportTextureToColorAttachment(unsigned int attachment)
     {
         assert(attachment < m_framebuffer.getNumColorAttachments());
-        m_renderTexture = reinterpret_cast<void*>(m_framebuffer.getColorAttachments()[attachment].id());
+        m_viewportTexture = reinterpret_cast<void*>(m_framebuffer.getColorAttachments()[attachment].id());
     }
 
     void Viewport::processInput()
@@ -251,8 +256,8 @@ namespace Editor
         m_camera.update();
     }
 
-    RTControls::RTControls(Raytracer* raytracer, WidgetStore* widgetstore) :
-            Widget("RTControls"), m_raytracer(raytracer), m_widgetStore(widgetstore)
+    RTControls::RTControls(Raytracer* raytracer, WidgetStore* widgetstore, TextureStore* textureStore) :
+        Widget("RTControls"), m_raytracer(raytracer), m_widgetStore(widgetstore), m_textureStore(textureStore)
     {}
 
     void RTControls::draw()
@@ -267,9 +272,13 @@ namespace Editor
                 m_raytracer->render(m_samples);
                 if (Viewport* viewport = findPrimaryViewport(*m_widgetStore))
                 {
-                    viewport->setRenderTexture({});
+                    m_textureStore->push_back({ "Render" , m_raytracer->getFramebuffer().data(), m_raytracer->getWidth(), m_raytracer->getHeight() });
+                    m_viewportTexture = m_textureStore->back().getTextureId();
+                    viewport->setViewportTexture(m_viewportTexture);
                 }
             }
+
+			blitTexture(m_viewportTexture, m_raytracer->getWidth(), m_raytracer->getHeight(), m_raytracer->getFramebuffer().data());
 
             ImGui::SameLine(62.0f);
 
@@ -303,7 +312,7 @@ namespace Editor
         }
     }
 
-    void drawMainMenuBar(WidgetStore& widgetStore)
+    void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore)
     {
         if (ImGui::BeginMainMenuBar())
         {
@@ -322,7 +331,7 @@ namespace Editor
             if (ImGui::BeginMenu("New widget"))
             {
                 if (ImGui::MenuItem("Texture viewer"))
-                    widgetStore.push(std::make_unique<TextureViewer>(nullptr));
+                    widgetStore.push(std::make_unique<TextureViewer>(&textureStore));
                 if (ImGui::MenuItem("Log viewer"))
                     widgetStore.push(std::make_unique<LogViewer>());
                 ImGui::EndMenu();

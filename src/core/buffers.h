@@ -41,7 +41,7 @@ inline void updateSample(int idx, RTColorbuffer* colorbuf, RTFramebuffer* frameb
     {
         (*colorbuf)[idx + i] += color[i];
         const float totalColor = (*colorbuf)[idx + i];
-        const int framebufferColor = static_cast<int>(std::sqrt(totalColor / static_cast<float>(sampleCount)) * 255.99);
+        const int framebufferColor = static_cast<int>(std::sqrt(totalColor / static_cast<float>(sampleCount)) * 255.99f);
         assert(framebufferColor <= 256);
         (*framebuf)[idx + i] = static_cast<unsigned char>(framebufferColor);
     }

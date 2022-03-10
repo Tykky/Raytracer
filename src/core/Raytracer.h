@@ -35,6 +35,9 @@ public:
     void resetSampleCounter();
     void setRenderFinishedCallback(std::function<void()> callback);
 
+    inline int getWidth() { return m_width; }
+    inline int getHeight() { return m_height; }
+
 private:
     Primitive* m_world;
     RTFramebuffer m_framebuffer;
@@ -45,7 +48,7 @@ private:
     int m_bouncelimit;
     std::atomic<bool> m_isRendering;
     std::atomic<uint64_t> m_sampleCounter;
-    FastSampler m_sampler;
+    RandomMonteCarloSampler m_sampler;
 
     void clearColorbuffer();
 };

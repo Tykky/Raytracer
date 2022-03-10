@@ -20,8 +20,6 @@ namespace Editor
 
     static int RTWIDTH = 800;
     static int RTHEIGHT = 600;
-    static RTFramebuffer RTFRAMEBUFFER(3 * RTWIDTH * RTHEIGHT);
-    static RTColorbuffer RTCOLORBUFFER(3 * RTWIDTH * RTHEIGHT);
     static RTCamera      RTCAMERA;
     static RTPrimitives  RTPRIMITIVES;
     static RTAccelStruct RTACCELSTRUCT;
@@ -151,7 +149,7 @@ namespace Editor
 
     void drawEditor(const ImGuiIO& io)
     {
-        drawMainMenuBar(WIDGETSTORE);
+        drawMainMenuBar(WIDGETSTORE, TEXTURESTORE);
         drawImFileDialogAndProcessInput();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
         drawDockspace("Main", dockspaceID, io);
@@ -186,7 +184,7 @@ namespace Editor
     {
         WIDGETSTORE.push(std::make_unique<Viewport>());
         WIDGETSTORE.push(std::make_unique<LogViewer>());
-        WIDGETSTORE.push(std::make_unique<RTControls>(&RAYTRACER, &WIDGETSTORE));
+        WIDGETSTORE.push(std::make_unique<RTControls>(&RAYTRACER, &WIDGETSTORE, &TEXTURESTORE));
 #ifndef NDEBUG
         WIDGETSTORE.push(std::make_unique<WidgetInspector>(&WIDGETSTORE));
         WIDGETSTORE.push(std::make_unique<ImGuiMtericsWidget>());

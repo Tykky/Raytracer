@@ -496,6 +496,11 @@ namespace Editor
         return true;
     }
 
+    void blitTexture(unsigned int target, int width, int height, const void* data)
+    {
+        glTexSubImage2D(target, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+    }
+
     std::string getGPUVendor()
     {
         return { reinterpret_cast<const char*>(glGetString(GL_VENDOR)) };

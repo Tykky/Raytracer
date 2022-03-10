@@ -268,6 +268,8 @@ namespace Editor
     bool checkShaderCompilation(unsigned int shaderId);
     bool checkShaderLink(unsigned int shaderId);
 
+    void blitTexture(unsigned int target, int width, int height, const void* data);
+
     std::string getGPUVendor();
     std::string getRenderer();
     std::string getGLVersion();

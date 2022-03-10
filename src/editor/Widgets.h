@@ -124,8 +124,9 @@ namespace Editor
         Viewport();
         void draw() override;
 
-        void setRenderTexture(const RenderTexture& renderTexture);
-        void setRenderTextureToColorAttachment(unsigned int);
+        void setViewportTexture(const RenderTexture& renderTexture);
+        void setViewportTexture(unsigned int texID);
+        void setViewportTextureToColorAttachment(unsigned int);
 
         inline bool isPrimary() const { return m_isPrimary; }
 
@@ -146,18 +147,20 @@ namespace Editor
         ShaderProgram m_shaderProgram;
 
         // Viewport shows this texture
-        void* m_renderTexture = nullptr;
+        void* m_viewportTexture = nullptr;
     };
 
     class RTControls : public Widget
     {
     public:
-        RTControls(Raytracer* raytracer, WidgetStore* widgetStore);
+        RTControls(Raytracer* raytracer, WidgetStore* widgetStore, TextureStore* textureStore);
         void draw() override;
     private:
-        Raytracer*   m_raytracer;
-        int          m_samples = 100;
-        WidgetStore* m_widgetStore;
+        Raytracer*    m_raytracer;
+        int           m_samples = 100;
+        WidgetStore*  m_widgetStore;
+        TextureStore* m_textureStore;
+        unsigned int  m_viewportTexture = 0;
     };
 
     class SystemInfo : public Widget
@@ -173,7 +176,7 @@ namespace Editor
     };
 
     // Shows the main menubar at the top of the main window
-    void drawMainMenuBar(WidgetStore& widgetStore);
+    void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore);
     // Dockspace simply allows windows to be docked to the main window
     void drawDockspace(const char* name, ImGuiID dockspaceID, const ImGuiIO& io);
     void drawImFileDialogAndProcessInput();
