@@ -15,7 +15,6 @@
 
 void initLogger();
 
-// Appends newline and flushes
 void logMsg(std::string&& msg);
 void logMsg(std::string& msg);
 void logWarning(std::string&& msg);

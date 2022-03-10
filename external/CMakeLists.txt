@@ -44,6 +44,12 @@ FetchContent_Declare(
     GIT_TAG 2f2d04b3e840428a18942ca2d3d65203ec564647
 )
 
+FetchContent_Declare(
+    simplejson
+    GIT_REPOSITORY https://github.com/nbsdx/SimpleJSON.git
+    GIT_TAG 8dd3e9b84a0b532c46f22f402bafb2c4cf8621eb
+)
+
 FetchContent_MakeAvailable(
    #googletest
    glfw
@@ -52,6 +58,7 @@ FetchContent_MakeAvailable(
    imgui
    tinyobjloader
    spdlog
+   simplejson
 )
 
 find_package(OpenGL REQUIRED)
@@ -65,6 +72,7 @@ include_directories(${glew-cmake_SOURCE_DIR}/include)
 include_directories(${imgui_SOURCE_DIR})
 include_directories(${imgui_SOURCE_DIR}/backends)
 include_directories(${spdlog_SOURCE_DIR}/include)
+include_directories(${Simplejson_SOURCE_DIR})
 
 set(EXTERNAL
     OpenGL::GL

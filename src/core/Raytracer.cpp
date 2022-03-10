@@ -6,7 +6,7 @@
 #include "utility.h"
 #include "materials/Material.h"
 
-Raytracer::Raytracer(Primitive* world, Camera* camera, int width, int height) :
+Raytracer::Raytracer(Primitive* world, RTCamera* camera, int width, int height) :
     m_world(world),
     m_camera(camera),
     m_width(width),
@@ -21,7 +21,7 @@ Raytracer::Raytracer(Primitive* world, Camera* camera, int width, int height) :
 
 void Raytracer::render(unsigned int samples) 
 {
-    if(m_isRendering) 
+    if (m_isRendering) 
     {
         return;
     }
@@ -30,7 +30,6 @@ void Raytracer::render(unsigned int samples)
 
     m_sampler.render(samples);
 
-    m_isRendering = false;
     clearColorbuffer();
 }
 
@@ -52,7 +51,7 @@ void Raytracer::frammebufferToNetpbm(const std::string& filename)
     of.close();
 }
 
-Framebuffer& Raytracer::getFramebuffer()
+RTFramebuffer& Raytracer::getFramebuffer()
 {
     return m_framebuffer;
 }
@@ -79,7 +78,7 @@ void Raytracer::setBounceLimit(int bouncelimit)
     m_bouncelimit = bouncelimit;
 }
 
-void Raytracer::setCamera(Camera* camera)
+void Raytracer::setCamera(RTCamera* camera)
 {
     m_isRendering = false;
     m_camera = camera;
@@ -105,6 +104,11 @@ const std::atomic<uint64_t>& Raytracer::getSampleCounter()
 void Raytracer::resetSampleCounter() 
 {
     m_sampleCounter = 0;
+}
+
+void Raytracer::setRenderFinishedCallback(std::function<void()> callback)
+{
+    m_sampler.setRenderFinishedCallback(callback);
 }
 
 void Raytracer::clearColorbuffer() 

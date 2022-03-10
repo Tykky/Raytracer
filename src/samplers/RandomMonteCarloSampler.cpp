@@ -61,3 +61,8 @@ void RandomMonteCarloSampler::samplePixel(int x, int y)
     int colorIdx = 3 * m_width * m_height - xyToIdx(x, y, 3, m_width) - 3;
     updateSample(colorIdx, m_colorbuffer, m_framebuffer, color, task.sampleCount);
 }
+
+void RandomMonteCarloSampler::setRenderFinishedCallback(std::function<void()> callback)
+{
+    m_threadpool.renderFinishedCallback = callback;
+}

@@ -5,7 +5,6 @@
 int main()
 {
     Editor::Options options;
-
     initLogger();
 
     options.enableViewports = true;

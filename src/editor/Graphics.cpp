@@ -11,6 +11,49 @@
 
 namespace Editor
 {
+    Texture::Texture(std::string name, unsigned char* data, int width, int height) :
+        m_name(name), m_width(width), m_height(height)
+    {
+        glGenTextures(1, &m_textureID);
+        glBindTexture(GL_TEXTURE_2D, m_textureID);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    Texture::~Texture()
+    {
+        glDeleteTextures(1, &m_textureID);
+    }
+
+    Texture::Texture(Texture&& texture)
+    {
+        m_name = std::move(texture.m_name);
+        texture.m_name = "";
+        m_width = texture.m_width;
+        texture.m_width = 0;
+        m_height = texture.m_height;
+        texture.m_width = 0;
+        m_textureID = texture.m_textureID;
+        texture.m_textureID = 0;
+    }
+
+    Texture& Texture::operator=(Texture&& texture)
+    {
+        m_name = std::move(texture.m_name);
+        texture.m_name = "";
+        m_width = texture.m_width;
+        texture.m_width = 0;
+        m_height = texture.m_height;
+        texture.m_width = 0;
+        m_textureID = texture.m_textureID;
+        texture.m_textureID = 0;
+        return *this;
+    }
+
     Vertexbuffer::Vertexbuffer(const float* vertices, std::size_t size)
     {
         glGenVertexArrays(1, &m_vao);
@@ -348,8 +391,8 @@ namespace Editor
 
     std::optional<Texture> loadTexture(const char* filename)
     {
-        Texture gltexture;
-        unsigned char* data = stbi_load(filename, &gltexture.width, &gltexture.height, nullptr, 4);
+        int width, height;
+        unsigned char* data = stbi_load(filename, &width, &height, nullptr, 4);
 
         if (!data)
         {
@@ -357,23 +400,13 @@ namespace Editor
             return std::nullopt;
         }
 
-        glGenTextures(1, &gltexture.textureID);
-        glBindTexture(GL_TEXTURE_2D, gltexture.textureID);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gltexture.width, gltexture.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        std::optional<Texture> tex(std::in_place, filename, data, width, height);
 
         stbi_image_free(data);
 
-        gltexture.name = filename;
+        logMsg("Loaded texture " + std::string(filename) + ", with size: " + std::to_string(width) + "x" + std::to_string(height));
 
-        logMsg("Loaded texture " + std::string(filename) + ", with size: " + std::to_string(gltexture.width) + "x" + std::to_string(gltexture.height));
-
-        return { gltexture };
+        return tex;
     }
 
     void clear()

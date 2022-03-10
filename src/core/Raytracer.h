@@ -20,25 +20,26 @@ public:
      * @param world is data structure that returns closest
      * hit when .hit() is called, i.e Hitlist or Bvhnode.
      */
-    Raytracer(Primitive* world, Camera* camera, int width, int height);
+    Raytracer(Primitive* world, RTCamera* camera, int width, int height);
 
     void render(unsigned int samples);
     void frammebufferToNetpbm(const std::string& filename);
-    Framebuffer& getFramebuffer();
+    RTFramebuffer& getFramebuffer();
     void clearFramebuffer();
     void resize(int width, int height);
     void setBounceLimit(int bouncelimit);
-    void setCamera(Camera* camera);
+    void setCamera(RTCamera* camera);
     void setWorld(Primitive* world);
     bool isRendering();
     const std::atomic<uint64_t>& getSampleCounter();
     void resetSampleCounter();
+    void setRenderFinishedCallback(std::function<void()> callback);
 
 private:
     Primitive* m_world;
-    Framebuffer m_framebuffer;
-    Colorbuffer m_colorbuffer;
-    Camera* m_camera;
+    RTFramebuffer m_framebuffer;
+    RTColorbuffer m_colorbuffer;
+    RTCamera* m_camera;
     int m_width;
     int m_height;
     int m_bouncelimit;

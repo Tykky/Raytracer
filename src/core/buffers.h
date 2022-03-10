@@ -5,21 +5,28 @@
 #include <cassert>
 #include "Vector3D.h"
 #include <cmath>
+#include "primitives/Primitive.h"
 
 struct Task;
 
 // Colorbuffer stores the sum of
 // all color values for each pixel
-typedef std::vector<float> Colorbuffer;
+typedef std::vector<float> RTColorbuffer;
 
 // In framebuffer we convert colorbuffer
 // to actual colors by averaging the colorbuffer
 // values
-typedef std::vector<unsigned char> Framebuffer;
+typedef std::vector<unsigned char> RTFramebuffer;
 
 // Contains a set of tasks that can be executed
 // in parallel
-typedef std::vector<Task> Taskbuffer;
+typedef std::vector<Task> RTTaskbuffer;
+
+// Simply contains all drawable objects for the scene
+typedef std::vector<std::shared_ptr<Primitive>> RTPrimitives;
+
+// Acceleration structure, usually BVH
+typedef std::shared_ptr<Primitive> RTAccelStruct;
 
 // Convert (x,y) coordinate to colorbuffer or framebuffer index
 inline unsigned int xyToIdx(int x, int y, unsigned int dim, unsigned int rowWidth)
@@ -28,7 +35,7 @@ inline unsigned int xyToIdx(int x, int y, unsigned int dim, unsigned int rowWidt
 }
 
 // First we write a sample to colorbuffer and then update framebuffer accordingly.
-inline void updateSample(int idx, Colorbuffer* colorbuf, Framebuffer* framebuf, Vector3D color, int sampleCount)
+inline void updateSample(int idx, RTColorbuffer* colorbuf, RTFramebuffer* framebuf, Vector3D color, int sampleCount)
 {
     for (int i = 0; i < 3; ++i)
     {

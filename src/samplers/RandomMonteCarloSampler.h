@@ -6,7 +6,7 @@
 class RandomMonteCarloSampler : public Sampler
 {
 public:
-    RandomMonteCarloSampler(Primitive* world, Camera* camera, Colorbuffer* colorbuf, Framebuffer* framebuf, int width, int height, int bounceLimit) :
+    RandomMonteCarloSampler(Primitive* world, RTCamera* camera, RTColorbuffer* colorbuf, RTFramebuffer* framebuf, int width, int height, int bounceLimit) :
         Sampler(world, camera, colorbuf, framebuf, width, height),
         m_bounceLimit(bounceLimit),
         m_threadpool(this)
@@ -17,6 +17,7 @@ public:
     }
     void render(int samples) override;
     void samplePixel(int x, int y) override;
+    void setRenderFinishedCallback(std::function<void()> callback) override;
 
 protected:
     unsigned int m_bounceLimit;

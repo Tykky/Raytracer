@@ -10,6 +10,7 @@
 #include "logging/Logging.h"
 #include "ImFileDialog.h"
 #include <functional>
+#include "core/Raytracer.h"
 
 // Contains a set of widgets that can be drawn using Widget::draw().
 // Generally widgets are drawn as separate Dear ImGui windows but exceptions exist such as
@@ -36,6 +37,7 @@ namespace Editor
     protected:
         bool                m_open = true;
         const std::string   m_name;     // name displayed
+        // Note that ID needs to be explicitly set or otherwise it will be 0
         unsigned int        m_id = 0;   // ID
         // Used to ID Dear Imgui windows
         std::string         m_windowId; // contains string: name###ID
@@ -72,6 +74,8 @@ namespace Editor
         void erase(int idx);
         std::vector<std::unique_ptr<Widget>>::iterator begin();
         std::vector<std::unique_ptr<Widget>>::iterator end();
+        std::vector<std::unique_ptr<Widget>>::const_iterator begin() const;
+        std::vector<std::unique_ptr<Widget>>::const_iterator end() const;
 
     private:
         std::vector<std::unique_ptr<Widget>> m_widgets;
@@ -120,22 +124,42 @@ namespace Editor
         Viewport();
         void draw() override;
 
+        void setRenderTexture(const RenderTexture& renderTexture);
+        void setRenderTextureToColorAttachment(unsigned int);
+
+        inline bool isPrimary() const { return m_isPrimary; }
+
     private:
         void processInput();
 
+        bool          m_isPrimary = false;
         bool          m_wireframe = false;
-        float         m_pointSize = 1.0f;
-
-        unsigned int  m_resX   = 800;
-        unsigned int  m_resY   = 600;
-        ImVec2        m_offset = {0.0f, 0.0f};
-        ImVec2        m_scale  = {800.0f, 600.0f};
+        unsigned int  m_resX      = 1920;
+        unsigned int  m_resY      = 1080;
+        ImVec2        m_offset    = {0.0f, 0.0f};
+        ImVec2        m_scale     = {m_resX, m_resY};
+        Camera        m_camera    = {static_cast<float>(m_resX)/static_cast<float>(m_resY),  // aspect ratio
+                                     {0, 0.0, 3}, // pos
+                                     {0.0, 0.0, -1}}; // target
         Framebuffer   m_framebuffer;
-        Camera        m_camera = {(float)m_resX/float(m_resY),{0, 0.0, 3}, {0.0, 0.0, -1}};
         Vertexbuffer  m_vertexbuffer;
         ShaderProgram m_shaderProgram;
+
+        // Viewport shows this texture
+        void* m_renderTexture = nullptr;
     };
-    
+
+    class RTControls : public Widget
+    {
+    public:
+        RTControls(Raytracer* raytracer, WidgetStore* widgetStore);
+        void draw() override;
+    private:
+        Raytracer*   m_raytracer;
+        int          m_samples = 100;
+        WidgetStore* m_widgetStore;
+    };
+
     class SystemInfo : public Widget
     {
     public:
@@ -158,5 +182,6 @@ namespace Editor
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
     void zoomTextureWhenScrolled(float& width, float& height);
     void cleanInactiveWidgets(WidgetStore& widgetStore);
+    Viewport* findPrimaryViewport(const WidgetStore& widgetStore);
 }
 #endif //RAYTRACER_WIDGETS_H

@@ -20,8 +20,8 @@ namespace Editor
     void TextureViewer::draw()
     {
         ImGui::Begin(m_windowId.data(), &m_open);
-        void* currentTexId = m_currentTexture ? (void*)m_currentTexture->textureID : nullptr;
-        const char* preview = m_currentTexture ? m_currentTexture->name.data() : "";
+        void* currentTexId = m_currentTexture ? (void*)m_currentTexture->getTextureId() : nullptr;
+        const char* preview = m_currentTexture ? m_currentTexture->getName().data() : "";
         drawTextureView(currentTexId, m_offset, m_scale, m_open);
         drawTexturePickerComboBox(preview, m_textStore, m_currentTexture);
         ImGui::End();
@@ -83,6 +83,16 @@ namespace Editor
     }
 
     std::vector<std::unique_ptr<Widget>>::iterator WidgetStore::end()
+    {
+        return m_widgets.end();
+    }
+
+    std::vector<std::unique_ptr<Widget>>::const_iterator WidgetStore::begin() const
+    {
+        return m_widgets.begin();
+    }
+
+    std::vector<std::unique_ptr<Widget>>::const_iterator WidgetStore::end() const
     {
         return m_widgets.end();
     }
@@ -153,6 +163,7 @@ namespace Editor
     {
         // Create default color attachment with depth buffer (color attachment 0)
         m_framebuffer.addColorAttachment({m_resX, m_resY, true});
+        setRenderTextureToColorAttachment(0);
         m_shaderProgram.addShader("data/shaders/vert.glsl", ShaderType::VERTEX);
         m_shaderProgram.addShader("data/shaders/frag.glsl", ShaderType::FRAGMENT);
         m_shaderProgram.link();
@@ -166,10 +177,13 @@ namespace Editor
             // Right now we don't have much stuff in here but at some point the "renderer" will become more complex
             processInput();
             ImGui::Begin(m_windowId.data());
+
             setUniform(m_shaderProgram.getProgramId(), "view", m_camera.getViewMatrix());
             setUniform(m_shaderProgram.getProgramId(), "projection", m_camera.getProjectionMatrix());
+
             drawToTexture(m_vertexbuffer, m_shaderProgram, m_framebuffer);
-            drawTextureView((void*)m_framebuffer.getColorAttachments()[0].id(), m_offset, m_scale, m_open);
+            drawTextureView(m_renderTexture, m_offset, m_scale, m_open);
+
             if (ImGui::Button("Toggle wireframe"))
             {
                 m_wireframe ^= 1;
@@ -184,6 +198,17 @@ namespace Editor
             }
             ImGui::End();
         }
+    }
+
+    void Viewport::setRenderTexture(const RenderTexture& renderTexture)
+    {
+        m_renderTexture = reinterpret_cast<void*>(renderTexture.id());
+    }
+
+    void Viewport::setRenderTextureToColorAttachment(unsigned int attachment)
+    {
+        assert(attachment < m_framebuffer.getNumColorAttachments());
+        m_renderTexture = reinterpret_cast<void*>(m_framebuffer.getColorAttachments()[attachment].id());
     }
 
     void Viewport::processInput()
@@ -221,9 +246,40 @@ namespace Editor
         float mousePosYDelta = static_cast<float>(mousePosY) - prevMouseY;
         prevMouseX = mousePosX;
         prevMouseY = mousePosY;
-        m_camera.yaw += mousePoxXDelta;
-        m_camera.pitch += mousePosYDelta;
+        m_camera.yaw += mousePoxXDelta * 0.1f;
+        m_camera.pitch += mousePosYDelta * 0.1f;
         m_camera.update();
+    }
+
+    RTControls::RTControls(Raytracer* raytracer, WidgetStore* widgetstore) :
+            Widget("RTControls"), m_raytracer(raytracer), m_widgetStore(widgetstore)
+    {}
+
+    void RTControls::draw()
+    {
+        if (m_open)
+        {
+            ImGui::Begin(m_windowId.data());
+            ImGui::InputInt("Samples", &m_samples);
+
+            if (ImGui::Button("Render"))
+            {
+                m_raytracer->render(m_samples);
+                if (Viewport* viewport = findPrimaryViewport(*m_widgetStore))
+                {
+                    viewport->setRenderTexture({});
+                }
+            }
+
+            ImGui::SameLine(62.0f);
+
+            if (ImGui::Button("Stop"))
+            {
+                m_raytracer->clearFramebuffer();
+            }
+
+			ImGui::End();
+        }
     }
 
     SystemInfo::SystemInfo() :
@@ -385,8 +441,8 @@ namespace Editor
         {
             for (auto& tex : *textureStore)
             {
-                bool isSelected = (currentTexture && currentTexture->textureID == tex.textureID);
-                if (ImGui::Selectable(tex.name.data(), isSelected))
+                bool isSelected = (currentTexture && currentTexture->getTextureId() == tex.getTextureId());
+                if (ImGui::Selectable(tex.getName().data(), isSelected))
                     currentTexture = &tex;
             }
             ImGui::EndCombo();
@@ -422,5 +478,16 @@ namespace Editor
             if (!widgetStore[i]->isOpen())
                 widgetStore.erase(i);
         }
+    }
+
+    Viewport* findPrimaryViewport(const WidgetStore& widgetStore)
+    {
+        for (const auto& widget : widgetStore)
+        {
+            if (Viewport* viewport = dynamic_cast<Viewport*>(widget.get()))
+                return viewport;
+        }
+        logWarning("No primary viewport found!");
+        return nullptr;
     }
 }

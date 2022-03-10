@@ -8,13 +8,24 @@
 #include "editor/Styles/DarkTheme.h"
 #include <memory>
 #include "ImFileDialog.h"
+#include "core/Raytracer.h"
 
 namespace Editor
 {
     static GLFWwindow* editorWindowHandle = nullptr;
     static float deltaTime = 0.0f;
 
-    static WidgetStore WIDGETSTORE;
+    static WidgetStore  WIDGETSTORE;
+    static TextureStore TEXTURESTORE;
+
+    static int RTWIDTH = 800;
+    static int RTHEIGHT = 600;
+    static RTFramebuffer RTFRAMEBUFFER(3 * RTWIDTH * RTHEIGHT);
+    static RTColorbuffer RTCOLORBUFFER(3 * RTWIDTH * RTHEIGHT);
+    static RTCamera      RTCAMERA;
+    static RTPrimitives  RTPRIMITIVES;
+    static RTAccelStruct RTACCELSTRUCT;
+    static Raytracer     RAYTRACER(nullptr, &RTCAMERA, RTWIDTH, RTHEIGHT);
 
     void init(GLFWwindow* window, const Options &options)
     {
@@ -53,6 +64,7 @@ namespace Editor
         // save and load user settings. For nowe we only load the default init file.
         io.WantSaveIniSettings = false;
 #endif
+
         createDefaultEditorWidgets();
     }
 
@@ -143,6 +155,7 @@ namespace Editor
         drawImFileDialogAndProcessInput();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
         drawDockspace("Main", dockspaceID, io);
+
         for (auto& widget : WIDGETSTORE)
         {
             widget->draw();
@@ -173,11 +186,17 @@ namespace Editor
     {
         WIDGETSTORE.push(std::make_unique<Viewport>());
         WIDGETSTORE.push(std::make_unique<LogViewer>());
+        WIDGETSTORE.push(std::make_unique<RTControls>(&RAYTRACER, &WIDGETSTORE));
 #ifndef NDEBUG
         WIDGETSTORE.push(std::make_unique<WidgetInspector>(&WIDGETSTORE));
         WIDGETSTORE.push(std::make_unique<ImGuiMtericsWidget>());
         WIDGETSTORE.push(std::make_unique<ImguiStackToolWidget>());
 #endif
+    }
+
+    std::vector<FilePath> filesInsideDirectory()
+    {
+        return std::vector<FilePath>();
     }
 
     int getKey(int key)

@@ -17,7 +17,7 @@ class Sampler;
 class Sampler
 {
 public:
-    Sampler(Primitive* world, Camera* camera, Colorbuffer* colorbuf, Framebuffer* framebuf, int width, int height) :
+    Sampler(Primitive* world, RTCamera* camera, RTColorbuffer* colorbuf, RTFramebuffer* framebuf, int width, int height) :
         m_world(world),
         m_camera(camera),
         m_colorbuffer(colorbuf),
@@ -28,25 +28,26 @@ public:
 
     virtual void render(int samples) = 0;
     virtual void samplePixel(int x, int y) = 0;
+    virtual void setRenderFinishedCallback(std::function<void()> callback) = 0;
 
     inline void setWorld(Primitive* world) { m_world = world; }
-    inline void setCamera(Camera* camera) { m_camera = camera; }
-    inline void setColorbuffer(Colorbuffer* colorbuf) { m_colorbuffer = colorbuf; }
-    inline void locBufferWrites() {  }
+    inline void setCamera(RTCamera* camera) { m_camera = camera; }
+    inline void setColorbuffer(RTColorbuffer* colorbuf) { m_colorbuffer = colorbuf; }
 
     inline void updateBuffers(int x, int y, Vector3D color, int sampleCount)
     {
         updateSample(xyToIdx(x, y, 3, m_width), m_colorbuffer, m_framebuffer, color, sampleCount);
     }
 
+
 protected:
-    Primitive*   m_world;
-    Camera*      m_camera;
-    Colorbuffer* m_colorbuffer;
-    Framebuffer* m_framebuffer;
-    Taskbuffer   m_taskbuffer;
-    unsigned int m_width;
-    unsigned int m_height;
+    Primitive*     m_world;
+    RTCamera*      m_camera;
+    RTColorbuffer* m_colorbuffer;
+    RTFramebuffer* m_framebuffer;
+    RTTaskbuffer   m_taskbuffer;
+    unsigned int   m_width;
+    unsigned int   m_height;
 
 private:
     std::mutex m_writeBufferMutex;

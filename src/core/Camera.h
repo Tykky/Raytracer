@@ -5,7 +5,7 @@
 #include "Vector3D.h"
 #include <functional>
 
-class Camera
+class RTCamera
 {
 public:
     /**
@@ -15,8 +15,8 @@ public:
      * @param up defines "up" direction for the camera. This
      * determines the roll angle.
      */
-    Camera();
-    Camera(float fov, float aspectratio, const Vector3D& origin,const Vector3D& pointat,
+    RTCamera();
+    RTCamera(float fov, float aspectratio, const Vector3D& origin,const Vector3D& pointat,
            const Vector3D& up);
 
     Ray getRay(float x, float y) const;

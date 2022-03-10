@@ -30,17 +30,22 @@ public:
     Task* pop();
 
     bool isEmpty() const;
+    bool renderFinished() const;
     void spawnThreads();
-    void executeThread();
     void killThreads();
 
+    std::function<void()> renderFinishedCallback = nullptr;
+
 private:
+    void executeThread();
+
     std::queue<Task*>        m_queue;
     std::mutex               m_mutex;
     std::vector<std::thread> m_threads;
     Sampler*                 m_sampler;
     unsigned int             m_sleepDuration = 200;
     bool                     m_stop = false;
+    bool                     m_renderFinished = false;
 };
 
-#endif //RAYTRACER_THREADPOOL_H
+#endif //RAYTRACER_THREADPOOL_H;

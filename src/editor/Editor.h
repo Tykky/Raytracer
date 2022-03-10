@@ -28,12 +28,17 @@ namespace Editor
     // Begins executing draw/input loop
     void renderLoop(GLFWwindow* window);
 
-    // Stuff that is used internally
+    // -------------------------------------
+    // Stuff that is mostly used internally
+    // -------------------------------------
+
     void renderImguiDrawData();
     void renderGui(ImGuiIO &io);
     void drawEditor(const ImGuiIO& io);
     void windowErrorCallback(int code, const char* description);
     void createDefaultEditorWidgets();
+
+    std::vector<FilePath> filesInsideDirectory();
 }
 
 #endif //RAYTRACER_EDITOR_H

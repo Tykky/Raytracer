@@ -85,14 +85,28 @@ namespace Editor
         COMPUTE  = GL_COMPUTE_SHADER
     };
 
-    // Wrapper for OpenGL texture.
-    // TODO: use RAII
-    struct Texture
+    class Texture
     {
-        std::string name;
-        int width;
-        int height;
-        unsigned int textureID;
+    public:
+        Texture(std::string name, unsigned char* data, int width, int height);
+        ~Texture();
+
+        Texture() = delete;
+        Texture(const Texture& texture) = delete;
+        Texture(Texture&& texture);
+        Texture& operator=(Texture&& texture);
+
+        const Texture& operator=(const Texture& texture) = delete;
+
+        inline unsigned int getTextureId() const { return m_textureID; }
+        inline const std::string& getName() const { return m_name; }
+
+    private:
+        std::string  m_name;
+        int          m_width;
+        int          m_height;
+        char         m_fmt;
+        unsigned int m_textureID;
     };
 
     // We clump OpenGls vertex buffer, vertex array and element
