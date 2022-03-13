@@ -3,6 +3,7 @@
 #include "core/utility.h"
 #include "materials/Material.h"
 #include <cassert>
+#include "logging/Logging.h"
 
 void FastSampler::render(int samples)
 {

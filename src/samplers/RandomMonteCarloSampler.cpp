@@ -2,6 +2,7 @@
 #include "core/utility.h"
 #include "materials/Material.h"
 #include <cassert>
+#include "logging/Logging.h"
 
 void RandomMonteCarloSampler::render(int samples)
 {
@@ -31,7 +32,7 @@ void RandomMonteCarloSampler::samplePixel(int x, int y)
     Ray r = m_camera->getRayScreenCoordsWithJitter(static_cast<float>(x),static_cast<float>(y),
                                                    m_width, m_height,m_randomFloat);
 
-    while(m_world && m_world->hit(r, epsilon, std::numeric_limits<float>::max(), record))
+    while (m_world && m_world->hit(r, epsilon, std::numeric_limits<float>::max(), record))
     {
         Ray scatter;
         Vector3D attenuation;

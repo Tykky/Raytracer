@@ -19,8 +19,8 @@ namespace Editor
     static WidgetStore  WIDGETSTORE;
     static TextureStore TEXTURESTORE;
 
-    static int RTWIDTH = 800;
-    static int RTHEIGHT = 600;
+    static int RTWIDTH = 1920;
+    static int RTHEIGHT = 1080;
     static RTCamera      RTCAMERA;
     static RTPrimitives  RTPRIMITIVES;
     static RTAccelStruct RTACCELSTRUCT;

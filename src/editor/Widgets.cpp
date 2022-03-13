@@ -303,7 +303,17 @@ namespace Editor
                 }
             }
 
-			blitTexture(m_viewportTexture, m_raytracer->getWidth(), m_raytracer->getHeight(), m_raytracer->getFramebuffer().data());
+            if (ImGui::Button("asd"))
+            {
+                if (Viewport* viewport = findPrimaryViewport(*m_widgetStore))
+                {
+                    m_textureStore->push_back({ "Render" , m_raytracer->getFramebuffer().data(), m_raytracer->getWidth(), m_raytracer->getHeight() });
+                    m_viewportTexture = m_textureStore->back().getTextureId();
+                    viewport->setViewportTexture(m_viewportTexture);
+                }
+
+            }
+
 
             ImGui::SameLine(62.0f);
 
