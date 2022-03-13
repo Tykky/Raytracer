@@ -24,6 +24,7 @@ namespace Editor
 
     // Creates editor context (Dear Imgui) and initializes it with options
     void init(GLFWwindow* window, const Options& options);
+    void cleanup();
 
     // Begins executing draw/input loop
     void renderLoop(GLFWwindow* window);

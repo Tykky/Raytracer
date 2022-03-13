@@ -179,8 +179,8 @@ namespace Editor
 
     void Framebuffer::clear()
     {
-        const GLint clearColor[4] = {0, 0, 0, 0};
-        glClearBufferiv(GL_COLOR, 0, clearColor);
+        const float clearColor[4] = { 0.1f, 0.1f, 0.1f, 0.0f};
+        glClearBufferfv(GL_COLOR, 0, clearColor);
     }
 
     RenderTexture::RenderTexture(unsigned int width, unsigned height, bool depthTesting) :
@@ -352,23 +352,23 @@ namespace Editor
     }
 
     Camera::Camera(float aspectRatio, glm::vec3 pos, glm::vec3 target) :
-            pos(pos), m_aspectRatio(aspectRatio)
+            m_pos(pos), m_aspectRatio(aspectRatio)
     {
         update();
     }
 
     void Camera::update()
     {
-        pos.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-        pos.y = glm::sin(glm::radians(pitch));
-        pos.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+        m_pos.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+        m_pos.y = glm::sin(glm::radians(pitch));
+        m_pos.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
 
-        pos += m_dir * distance;
+        m_pos += m_dir * distance + offset;
 
-        m_dir = glm::normalize(pos - target);
+        m_dir = glm::normalize(m_pos - target);
         m_right = glm::normalize(glm::cross({0.0f, 1.0f, 0.0f}, -m_dir));
         m_up = glm::cross(-m_dir, m_right);
-        m_view = glm::lookAt(pos, target, m_up);
+        m_view = glm::lookAt(m_pos, target, m_up);
         m_projection = glm::perspective(glm::radians(m_fov), m_aspectRatio, m_zNear, m_zFar);
     }
 

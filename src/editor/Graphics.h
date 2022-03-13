@@ -223,9 +223,9 @@ namespace Editor
         inline glm::vec3 getRight() { return m_right; }
         inline glm::vec3 getUp() { return m_up; }
 
+        glm::vec3 offset = { 0.0f, 0.0f, 0.0f };
         float     speed = 0.5f;
         glm::vec3 target = {0.0f, 0.0f, 0.0f};
-        glm::vec3 pos;
         float     distance = 1.0f;
         float     yaw = 0.1f;
         float     pitch = 0.1f;
@@ -233,6 +233,7 @@ namespace Editor
     private:
         float m_aspectRatio;
 
+        glm::vec3 m_pos;
         glm::vec3 m_dir;
         glm::vec3 m_right;
         glm::vec3 m_up;

@@ -233,9 +233,8 @@ namespace Editor
 
 		// This simply prevents "snapping" the camera when we process mouse input for first time.
 		// We don't want to be using the "old" values for prevMouseX an prevMouseDeltaY.
-		if (m_firstInputRecieved)
+        if (getKey(GLFW_KEY_LEFT_ALT) == GLFW_RELEASE && getMouseButton(GLFW_MOUSE_BUTTON_1) == GLFW_RELEASE)
 		{
-			m_firstInputRecieved = false;
 			prevMouseX = mousePosX;
 			prevMouseY = mousePosY;
 		}
@@ -247,10 +246,15 @@ namespace Editor
 		prevMouseY = mousePosY;
 
         // Movement
-        if (getMouseButton(GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
+        if (getKey(GLFW_KEY_LEFT_ALT) == GLFW_PRESS && getMouseButton(GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
         {
-            glm::vec3 x = m_camera.getRight() * mousePoxXDelta;
-            glm::vec3 y = m_camera.getUp() * mousePosYDelta;
+            glm::vec3 x = m_camera.getRight() * mousePoxXDelta * 0.01f;
+            glm::vec3 y = m_camera.getUp() * mousePosYDelta * 0.01f;
+            m_camera.offset += x;
+            m_camera.offset -= y;
+            m_camera.target += x;
+            m_camera.target -= y;
+            m_camera.update();
 		}
 
         // Rotation
@@ -274,11 +278,6 @@ namespace Editor
             m_camera.yaw = newYaw;
             m_camera.pitch = newPitch;
             m_camera.update();
-        }
-
-        if (getKey(GLFW_KEY_LEFT_ALT) == GLFW_RELEASE || getMouseButton(GLFW_MOUSE_BUTTON_1) == GLFW_RELEASE)
-        {
-            m_firstInputRecieved = true;
         }
     }
 

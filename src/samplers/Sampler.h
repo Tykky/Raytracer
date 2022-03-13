@@ -48,9 +48,6 @@ protected:
     RTTaskbuffer   m_taskbuffer;
     unsigned int   m_width;
     unsigned int   m_height;
-
-private:
-    std::mutex m_writeBufferMutex;
 };
 
 #endif //RAYTRACER_SAMPLER_H

@@ -69,6 +69,10 @@ namespace Editor
         glfwSetScrollCallback(EDITORWINDOWHANDLE, mouseScrollCallback);
     }
 
+    void cleanup()
+    {
+    }
+
     GLFWwindow* createWindow(const char* title, int width, int height, const Options& options)
     {
         glfwSetErrorCallback(windowErrorCallback);
@@ -223,7 +227,13 @@ namespace Editor
     void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     {
         if (MOUSESCROLL + yoffset > 0.0f)
+        {
             MOUSESCROLL += yoffset;
+        }
+        else
+        {
+            MOUSESCROLL = 0.1f;
+        }
     }
 
     float getDeltaTime()
