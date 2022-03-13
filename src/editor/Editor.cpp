@@ -12,8 +12,9 @@
 
 namespace Editor
 {
-    static GLFWwindow* editorWindowHandle = nullptr;
-    static float deltaTime = 0.0f;
+    static GLFWwindow* EDITORWINDOWHANDLE = nullptr;
+    static float DELTATIME = 0.0f;
+    static float MOUSESCROLL = 0.0f;
 
     static WidgetStore  WIDGETSTORE;
     static TextureStore TEXTURESTORE;
@@ -25,9 +26,10 @@ namespace Editor
     static RTAccelStruct RTACCELSTRUCT;
     static Raytracer     RAYTRACER(nullptr, &RTCAMERA, RTWIDTH, RTHEIGHT);
 
+
     void init(GLFWwindow* window, const Options &options)
     {
-        editorWindowHandle = window;
+        EDITORWINDOWHANDLE = window;
         ImGui::CreateContext();
 
         ImGuiIO &io = ImGui::GetIO();
@@ -64,6 +66,7 @@ namespace Editor
 #endif
 
         createDefaultEditorWidgets();
+        glfwSetScrollCallback(EDITORWINDOWHANDLE, mouseScrollCallback);
     }
 
     GLFWwindow* createWindow(const char* title, int width, int height, const Options& options)
@@ -126,7 +129,7 @@ namespace Editor
         while (!glfwWindowShouldClose(window))
         {
             beginTime = glfwGetTime();
-            deltaTime = static_cast<float>(beginTime - endTime);
+            DELTATIME = static_cast<float>(beginTime - endTime);
 
             glfwPollEvents();
             clear();
@@ -199,16 +202,37 @@ namespace Editor
 
     int getKey(int key)
     {
-        return glfwGetKey(editorWindowHandle, key);
+        return glfwGetKey(EDITORWINDOWHANDLE, key);
+    }
+
+    int getMouseButton(int button)
+    {
+        return glfwGetMouseButton(EDITORWINDOWHANDLE, button);
+    }
+
+    int getMouseButton()
+    {
+        return 0;
+    }
+
+    float getMouseScroll()
+    {
+        return MOUSESCROLL;
+    }
+
+    void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+    {
+        if (MOUSESCROLL + yoffset > 0.0f)
+            MOUSESCROLL += yoffset;
     }
 
     float getDeltaTime()
     {
-        return deltaTime;
+        return DELTATIME;
     }
 
     GLFWwindow* getEditorWindowHandle()
     {
-        return editorWindowHandle;
+        return EDITORWINDOWHANDLE;
     }
 }

@@ -20,6 +20,10 @@ namespace Editor
 {
     // wrapper around glfw input functions. The key codes directly map to GLFW
     int getKey(int key);
+    int getMouseButton(int button);
+    float getMouseScroll();
+
+    void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
     GLFWwindow* getEditorWindowHandle();
 
@@ -135,6 +139,7 @@ namespace Editor
 
         bool          m_isPrimary = false;
         bool          m_wireframe = false;
+        bool          m_firstInputRecieved = true;
         unsigned int  m_resX      = 1920;
         unsigned int  m_resY      = 1080;
         ImVec2        m_offset    = {0.0f, 0.0f};

@@ -359,13 +359,16 @@ namespace Editor
 
     void Camera::update()
     {
-        m_dir.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-        m_dir.y = glm::sin(glm::radians(pitch));
-        m_dir.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+        pos.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+        pos.y = glm::sin(glm::radians(pitch));
+        pos.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
 
+        pos += m_dir * distance;
+
+        m_dir = glm::normalize(pos - target);
         m_right = glm::normalize(glm::cross({0.0f, 1.0f, 0.0f}, -m_dir));
         m_up = glm::cross(-m_dir, m_right);
-        m_view = glm::lookAt(pos, pos + m_dir, m_up);
+        m_view = glm::lookAt(pos, target, m_up);
         m_projection = glm::perspective(glm::radians(m_fov), m_aspectRatio, m_zNear, m_zFar);
     }
 

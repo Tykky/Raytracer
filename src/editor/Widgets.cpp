@@ -221,39 +221,65 @@ namespace Editor
         static float prevMouseX = 0.0f;
         static float prevMouseY = 0.0f;
 
-        if (getKey(GLFW_KEY_W) == GLFW_PRESS)
+        float scroll = getMouseScroll();
+        if (m_camera.distance != scroll)
         {
-            m_camera.pos += m_camera.getDir() * m_camera.speed * 0.1f;
+            m_camera.distance = scroll * 0.5f;
             m_camera.update();
         }
 
-        if (getKey(GLFW_KEY_S) == GLFW_PRESS)
+		double mousePosX, mousePosY;
+		glfwGetCursorPos(getEditorWindowHandle(), &mousePosX, &mousePosY);
+
+		// This simply prevents "snapping" the camera when we process mouse input for first time.
+		// We don't want to be using the "old" values for prevMouseX an prevMouseDeltaY.
+		if (m_firstInputRecieved)
+		{
+			m_firstInputRecieved = false;
+			prevMouseX = mousePosX;
+			prevMouseY = mousePosY;
+		}
+
+		float mousePoxXDelta = static_cast<float>(mousePosX) - prevMouseX;
+		float mousePosYDelta = static_cast<float>(mousePosY) - prevMouseY;
+
+		prevMouseX = mousePosX;
+		prevMouseY = mousePosY;
+
+        // Movement
+        if (getMouseButton(GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
         {
-            m_camera.pos -= m_camera.getDir() * m_camera.speed * 0.1f;
+            glm::vec3 x = m_camera.getRight() * mousePoxXDelta;
+            glm::vec3 y = m_camera.getUp() * mousePosYDelta;
+		}
+
+        // Rotation
+        if (getKey(GLFW_KEY_LEFT_ALT) == GLFW_PRESS && getMouseButton(GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
+        {
+            float newYaw = m_camera.yaw += mousePoxXDelta * m_camera.speed;
+            float newPitch = m_camera.pitch -= mousePosYDelta * m_camera.speed;
+
+            if (newYaw < 0.1f && newYaw >= 0.0f)
+                newYaw = 0.1f;
+
+            if (newYaw > -0.1f && newYaw <= 0.0f)
+                newYaw = -0.1f;
+
+            if (newPitch > 89.9f)
+                newPitch = 89.9f;
+
+            if (newPitch < -89.9f)
+                newPitch = -89.9f;
+
+            m_camera.yaw = newYaw;
+            m_camera.pitch = newPitch;
             m_camera.update();
         }
 
-        if (getKey(GLFW_KEY_A) == GLFW_PRESS)
+        if (getKey(GLFW_KEY_LEFT_ALT) == GLFW_RELEASE || getMouseButton(GLFW_MOUSE_BUTTON_1) == GLFW_RELEASE)
         {
-            m_camera.pos -= m_camera.getRight() * m_camera.speed * 0.1f;
-            m_camera.update();
+            m_firstInputRecieved = true;
         }
-
-        if (getKey(GLFW_KEY_D) == GLFW_PRESS)
-        {
-            m_camera.pos += m_camera.getRight() * m_camera.speed * 0.1f;
-            m_camera.update();
-        }
-
-        double mousePosX, mousePosY;
-        glfwGetCursorPos(getEditorWindowHandle(), &mousePosX, &mousePosY);
-        float mousePoxXDelta = static_cast<float>(mousePosX) - prevMouseX;
-        float mousePosYDelta = static_cast<float>(mousePosY) - prevMouseY;
-        prevMouseX = mousePosX;
-        prevMouseY = mousePosY;
-        m_camera.yaw += mousePoxXDelta * 0.1f;
-        m_camera.pitch += mousePosYDelta * 0.1f;
-        m_camera.update();
     }
 
     RTControls::RTControls(Raytracer* raytracer, WidgetStore* widgetstore, TextureStore* textureStore) :
@@ -425,7 +451,7 @@ namespace Editor
 
             ImGui::BeginChild("TextureViewer", {size.x, size.y - comboBoxGap}, false, flags);
 
-            if (ImGui::IsWindowHovered() && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
+            if (ImGui::IsWindowHovered() && ImGui::IsKeyDown(ImGuiKey_LeftCtrl))
             {
                 zoomTextureWhenScrolled(scale.x, scale.y);
                 moveTextureWhenDragged(offset.x, offset.y);

@@ -221,11 +221,14 @@ namespace Editor
         inline glm::mat4 getProjectionMatrix() { return m_projection; };
         inline glm::mat4 getViewMatrix() { return m_view; }
         inline glm::vec3 getRight() { return m_right; }
+        inline glm::vec3 getUp() { return m_up; }
 
-        float speed = 1.0f;
+        float     speed = 0.5f;
+        glm::vec3 target = {0.0f, 0.0f, 0.0f};
         glm::vec3 pos;
-        float     yaw = -90.0f;
-        float     pitch = 0.0f;
+        float     distance = 1.0f;
+        float     yaw = 0.1f;
+        float     pitch = 0.1f;
 
     private:
         float m_aspectRatio;

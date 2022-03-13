@@ -38,6 +38,9 @@ namespace Editor
     void windowErrorCallback(int code, const char* description);
     void createDefaultEditorWidgets();
 
+    float getMouseScroll();
+    void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+
     std::vector<FilePath> filesInsideDirectory();
 }
 
