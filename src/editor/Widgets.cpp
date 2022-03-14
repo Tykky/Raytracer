@@ -218,9 +218,6 @@ namespace Editor
 
     void Viewport::processInput()
     {
-        static float prevMouseX = 0.0f;
-        static float prevMouseY = 0.0f;
-
         float scroll = getMouseScroll();
         if (m_camera.distance != scroll)
         {
@@ -235,17 +232,17 @@ namespace Editor
 		// We don't want to be using the "old" values for prevMouseX an prevMouseDeltaY.
         if (getKey(GLFW_KEY_LEFT_ALT) == GLFW_RELEASE && getMouseButton(GLFW_MOUSE_BUTTON_1) == GLFW_RELEASE)
 		{
-			prevMouseX = mousePosX;
-			prevMouseY = mousePosY;
+			m_prevMouseX = mousePosX;
+			m_prevMouseY = mousePosY;
 		}
 
-		float mousePoxXDelta = static_cast<float>(mousePosX) - prevMouseX;
-		float mousePosYDelta = static_cast<float>(mousePosY) - prevMouseY;
+		float mousePoxXDelta = static_cast<float>(mousePosX) - m_prevMouseX;
+		float mousePosYDelta = static_cast<float>(mousePosY) - m_prevMouseY;
 
-		prevMouseX = mousePosX;
-		prevMouseY = mousePosY;
+		m_prevMouseX = mousePosX;
+		m_prevMouseY = mousePosY;
 
-        // Movement
+        // Move sideways
         if (getKey(GLFW_KEY_LEFT_ALT) == GLFW_PRESS && getMouseButton(GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
         {
             glm::vec3 x = m_camera.getRight() * mousePoxXDelta * 0.01f;
@@ -279,6 +276,15 @@ namespace Editor
             m_camera.pitch = newPitch;
             m_camera.update();
         }
+
+        // Move forward and backwards
+        if (getKey(GLFW_KEY_LEFT_ALT) == GLFW_PRESS && getMouseButton(GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
+        {
+            glm::vec3 x = m_camera.getDir() * mousePosYDelta * 0.1f;
+            m_camera.offset += x;
+            m_camera.target += x;
+            m_camera.update();
+        }
     }
 
     RTControls::RTControls(Raytracer* raytracer, WidgetStore* widgetstore, TextureStore* textureStore) :
@@ -302,18 +308,6 @@ namespace Editor
                     viewport->setViewportTexture(m_viewportTexture);
                 }
             }
-
-            if (ImGui::Button("asd"))
-            {
-                if (Viewport* viewport = findPrimaryViewport(*m_widgetStore))
-                {
-                    m_textureStore->push_back({ "Render" , m_raytracer->getFramebuffer().data(), m_raytracer->getWidth(), m_raytracer->getHeight() });
-                    m_viewportTexture = m_textureStore->back().getTextureId();
-                    viewport->setViewportTexture(m_viewportTexture);
-                }
-
-            }
-
 
             ImGui::SameLine(62.0f);
 

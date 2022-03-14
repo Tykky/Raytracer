@@ -146,6 +146,8 @@ namespace Editor
         Camera        m_camera    = {static_cast<float>(m_resX)/static_cast<float>(m_resY),  // aspect ratio
                                      {0, 0.0, 3}, // pos
                                      {0.0, 0.0, -1}}; // target
+        float         m_prevMouseX = 0.0f;
+        float         m_prevMouseY = 0.0f;
         Framebuffer   m_framebuffer;
         Vertexbuffer  m_vertexbuffer;
         ShaderProgram m_shaderProgram;
