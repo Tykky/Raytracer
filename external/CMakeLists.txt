@@ -50,6 +50,12 @@ FetchContent_Declare(
     GIT_TAG 8dd3e9b84a0b532c46f22f402bafb2c4cf8621eb
 )
 
+FetchContent_Declare(
+    entt
+    GIT_REPOSITORY https://github.com/skypjack/entt.git
+    GIT_TAG 28aa35160de343a55e95ddd685286af68997cccd
+)
+
 FetchContent_MakeAvailable(
    #googletest
    glfw
@@ -59,6 +65,7 @@ FetchContent_MakeAvailable(
    tinyobjloader
    spdlog
    simplejson
+   entt
 )
 
 find_package(OpenGL REQUIRED)
@@ -73,6 +80,7 @@ include_directories(${imgui_SOURCE_DIR})
 include_directories(${imgui_SOURCE_DIR}/backends)
 include_directories(${spdlog_SOURCE_DIR}/include)
 include_directories(${Simplejson_SOURCE_DIR})
+include_directories(${entt_SOURCE_DIR}/single_include)
 
 set(EXTERNAL
     OpenGL::GL
