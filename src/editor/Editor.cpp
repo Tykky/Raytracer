@@ -69,10 +69,6 @@ namespace Editor
         glfwSetScrollCallback(EDITORWINDOWHANDLE, mouseScrollCallback);
     }
 
-    void cleanup()
-    {
-    }
-
     GLFWwindow* createWindow(const char* title, int width, int height, const Options& options)
     {
         glfwSetErrorCallback(windowErrorCallback);
@@ -107,6 +103,7 @@ namespace Editor
             else
             {
                 RT_LOG_MSG("GLEW initialized");
+                logVendorInfo();
             }
         }
         else
@@ -234,6 +231,14 @@ namespace Editor
         {
             MOUSESCROLL = 0.1f;
         }
+    }
+
+    void logVendorInfo()
+    {
+        RT_LOG_MSG("vendor: {}", getGPUVendor());
+        RT_LOG_MSG("renderer: {}", getRenderer());
+        RT_LOG_MSG("GL version: {}", getGLVersion());
+        RT_LOG_MSG("GLSL version: {}", getGLSLVersion());
     }
 
     float getDeltaTime()
