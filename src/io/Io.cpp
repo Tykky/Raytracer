@@ -8,7 +8,7 @@ bool readRawFile(Rawbuffer& buffer, const char* filename)
     std::ifstream file(filename, std::ios::in | std::ios::binary);
     if (file.fail())
     {
-        logError("Failed to read file " + std::string(filename));
+        RT_LOG_ERROR("Failed to read file {}", filename);
         return false;
     }
     file.ignore(std::numeric_limits<std::streamsize>::max());

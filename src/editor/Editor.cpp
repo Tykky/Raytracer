@@ -79,7 +79,7 @@ namespace Editor
         GLFWwindow* window;
         if (glfwInit())
         {
-            logMsg("GLFW initialized");
+            RT_LOG_MSG("GLFW initialized");
             if (!options.enableMainWindowBorders)
             {
                 glfwWindowHint(GLFW_DECORATED, false);
@@ -87,31 +87,31 @@ namespace Editor
 
             window = glfwCreateWindow(width, height, title, NULL, NULL);
             glfwMakeContextCurrent(window);
-            logMsg("GLFW window created");
+            RT_LOG_MSG("GLFW window created");
 
             if (!options.enableVsync)
             {
-                logMsg("Vsync disabled");
+                RT_LOG_MSG("Vsync disabled");
                 glfwSwapInterval(0);
             }
             else
             {
-                logMsg("Vsync enabled");
+                RT_LOG_MSG("Vsync enabled");
             }
 
             if (glewInit() != GLEW_OK)
             {
-                logError("Failed to initialize GLEW");
+                RT_LOG_ERROR("Failed to initialize GLEW");
                 abort();
             }
             else
             {
-                logMsg("GLEW initialized");
+                RT_LOG_MSG("GLEW initialized");
             }
         }
         else
         {
-            logError("Failed to initialize GLEW");
+            RT_LOG_ERROR("Failed to initialize GLEW");
             abort();
         }
         return window;
@@ -120,9 +120,9 @@ namespace Editor
     void destroyWindow(GLFWwindow* window)
     {
         glfwDestroyWindow(window);
-        logMsg("GLFW window destroyed");
+        RT_LOG_MSG("GLFW window destroyed");
         glfwTerminate();
-        logMsg("GLFW terminated");
+        RT_LOG_MSG("GLFW terminated");
     }
 
     void renderLoop(GLFWwindow* window)
@@ -151,7 +151,7 @@ namespace Editor
 
     void windowErrorCallback(int code, const char* description)
     {
-        logError("[GLFW CALLBACK] (" + std::to_string(code) + ") " + description);
+        RT_LOG_ERROR("[GLFW CALLBACK] ({}) {}", code, description);
     }
 
     void drawEditor(const ImGuiIO& io)

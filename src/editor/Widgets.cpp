@@ -525,7 +525,7 @@ namespace Editor
             if (Viewport* viewport = dynamic_cast<Viewport*>(widget.get()))
                 return viewport;
         }
-        logWarning("No primary viewport found!");
+        RT_LOG_ERROR("No primary viewport found!");
         return nullptr;
     }
 }

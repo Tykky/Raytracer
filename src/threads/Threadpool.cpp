@@ -34,7 +34,7 @@ void Threadpool::spawnThreads()
 {
     unsigned int n = std::thread::hardware_concurrency();
     m_threads.resize(n);
-    logMsg("Spawning " + std::to_string(n) + " RT threads");
+    RT_LOG_MSG("Spawning {} RT threads", n);
     for (unsigned int i = 0; i < n; ++i)
     {
         m_threads[i] = std::thread([this]{ executeThread(); });
@@ -50,14 +50,14 @@ void Threadpool::executeThread()
             if (!m_renderFinished)
             {
                 m_renderFinished = true;
-                logMsg("Rendering finished, task queue is empty");
+                RT_LOG_MSG("Rendering finished, task queue is empty");
                 if (renderFinishedCallback)
                 {
                     renderFinishedCallback();
                 }
                 else
                 {
-                    logWarning("Rendering finished but callback was not defined!");
+                    RT_LOG_WARNING("Rendering finished but callback was not defined!");
                 }
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(m_sleepDuration));

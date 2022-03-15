@@ -3,24 +3,18 @@
 
 #include <vector>
 #include <string>
+#include <spdlog/spdlog.h>
 
 #ifdef WIN32
 #undef ERROR
 #endif
 
-// Cursed ms macro. Needs to be undefined since ERROR is used in MessageType
-#ifdef WIN32
-#undef ERROR
-#endif // WIN32
+void initLogger(const unsigned int ringSize);
+spdlog::logger* logger();
 
-void initLogger();
-
-void logMsg(std::string&& msg);
-void logMsg(std::string& msg);
-void logWarning(std::string&& msg);
-void logWarning(std::string& msg);
-void logError(std::string&& msg);
-void logError(std::string& msg);
+#define RT_LOG_MSG(fmt, ...) logger()->info(fmt, __VA_ARGS__)
+#define RT_LOG_WARNING(fmt, ...) logger()->warn(fmt, __VA_ARGS__)
+#define RT_LOG_ERROR(fmt, ...) logger()->error(fmt, __VA_ARGS__)
 
 const std::vector<std::string> logMessages();
 

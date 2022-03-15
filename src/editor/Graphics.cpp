@@ -74,7 +74,7 @@ namespace Editor
         // TODO: construct index/element buffer
 
         glBindVertexArray(0);
-        logMsg("Vertex buffer created with " + std::to_string(size) + " vertices");
+        RT_LOG_MSG("Vertex buffer created with {} vertices", size);
     }
 
     Vertexbuffer::~Vertexbuffer()
@@ -147,7 +147,7 @@ namespace Editor
             glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
             glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + m_numColorAttachments, renderTexture.id(), 0);
             m_colorAttachments[m_numColorAttachments] = std::move(renderTexture);
-            logMsg("Color attachment " + std::to_string(m_numColorAttachments) + " added to framebuffer");
+            RT_LOG_MSG("Color attachment {} added to framebuffer", m_numColorAttachments);
             m_numColorAttachments++;
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -162,7 +162,7 @@ namespace Editor
         }
         else
         {
-            logWarning("Color attachments already full! New color attachment not added");
+            RT_LOG_WARNING("Color attachments already full! New color attachment not added");
         }
     }
 
@@ -201,7 +201,7 @@ namespace Editor
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthRenderBufferId);
             glBindRenderbuffer(GL_RENDERBUFFER, 0);
         }
-        logMsg("RenderTexture created with: size: " + std::to_string(width) + "x" + std::to_string(height) + ", depth test: " + std::to_string(depthTesting));
+        RT_LOG_MSG("Render texture created with: size {}x{}, depth test: {}", width, height, depthTesting);
     }
 
     RenderTexture::~RenderTexture()
@@ -284,7 +284,7 @@ namespace Editor
             const int size = buf.size();
             if (unsigned int shader = compileShader(&bufPtr, &size, shaderType))
             {
-                logMsg("Successfully compiled shader from path: " + std::string(path));
+                RT_LOG_MSG("Successfully conpile shader from path: {}", path);
                 switch (shaderType)
                 {
                     case ShaderType::VERTEX:
@@ -300,7 +300,7 @@ namespace Editor
             }
             else
             {
-                logError("Failed to compile shader from path: " + std::string(path));
+                RT_LOG_ERROR("Failed to compile shader from path: {}", path);
             }
         }
         return false;
@@ -319,13 +319,13 @@ namespace Editor
 
         if (checkShaderLink(m_shaderProgramId))
         {
-            logMsg("Successfully linked shaders, ready for execution");
+            RT_LOG_MSG("Successfully linked shaders, ready for execution");
             // TODO: consider calling delete on shaders when they are linked
             return true;
         }
         else
         {
-            logError("Failed to link shaders");
+            RT_LOG_MSG("Failed to link shaders");
             return false;
         }
     }
@@ -388,7 +388,7 @@ namespace Editor
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
-            logError("Failed to draw to framebuffer");
+            RT_LOG_ERROR("Failed to draw to framebuffer");
         }
     }
 
@@ -399,7 +399,7 @@ namespace Editor
 
         if (!data)
         {
-            logWarning("Failed to load texture " + std::string(filename));
+            RT_LOG_WARNING("Failed to load texture {}", filename);
             return std::nullopt;
         }
 
@@ -407,7 +407,7 @@ namespace Editor
 
         stbi_image_free(data);
 
-        logMsg("Loaded texture " + std::string(filename) + ", with size: " + std::to_string(width) + "x" + std::to_string(height));
+        RT_LOG_MSG("Loaded texture {} with size: {}x{}", filename, width, height);
 
         return tex;
     }
@@ -473,9 +473,9 @@ namespace Editor
         if (!success)
         {
             glGetShaderInfoLog(shaderId, logSize, NULL, infoLog);
-            logError("---SHADER COMPILE LOG BEGIN---");
-            logError(infoLog);
-            logError("---SHADER COMPILE LOG END---");
+            RT_LOG_ERROR("---SHADER COMPILE LOG BEGIN---");
+            RT_LOG_ERROR(infoLog);
+            RT_LOG_ERROR("---SHADER COMPILE LOG END---");
             return false;
         }
         return true;
@@ -491,9 +491,9 @@ namespace Editor
         if (!success)
         {
             glGetShaderInfoLog(shaderId, logSize, NULL, infoLog);
-            logError("---SHADER LINK LOG BEGIN---");
-            logError(infoLog);
-            logError("---SHADER LINK LOG END---");
+            RT_LOG_ERROR("---SHADER LINK LOG BEGIN---");
+            RT_LOG_ERROR(infoLog);
+            RT_LOG_ERROR("---SHADER LINK LOG END---");
             return false;
         }
         return true;

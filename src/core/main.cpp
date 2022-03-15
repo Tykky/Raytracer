@@ -5,7 +5,7 @@
 int main()
 {
     Editor::Options options;
-    initLogger();
+    initLogger(128);
 
     options.enableViewports = true;
     GLFWwindow* window = Editor::createWindow("kebab", 1920, 1080, options);
