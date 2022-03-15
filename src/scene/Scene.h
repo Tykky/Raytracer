@@ -1,0 +1,5 @@
+#ifndef RAYTRACER_SCENE_H 
+#define RAYTRACER_SCENE_H
+
+
+#endif // RAYTRACER_SCENE_H
