@@ -56,6 +56,12 @@ FetchContent_Declare(
     GIT_TAG 28aa35160de343a55e95ddd685286af68997cccd
 )
 
+FetchContent_Declare(
+    fmt
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    GIT_TAG bc654faf82e54d29f6c5fd7efcfd16a587917e82
+)
+
 FetchContent_MakeAvailable(
    #googletest
    glfw
@@ -66,6 +72,7 @@ FetchContent_MakeAvailable(
    spdlog
    simplejson
    entt
+   fmt
 )
 
 find_package(OpenGL REQUIRED)
@@ -81,6 +88,7 @@ include_directories(${imgui_SOURCE_DIR}/backends)
 include_directories(${spdlog_SOURCE_DIR}/include)
 include_directories(${Simplejson_SOURCE_DIR})
 include_directories(${entt_SOURCE_DIR}/single_include)
+include_directories(${fmt_SOURCE_DIR}/include)
 
 set(EXTERNAL
     OpenGL::GL
