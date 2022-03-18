@@ -24,7 +24,11 @@ class Triangle : public Primitive
         Triangle &operator+=(const Vector3D &rhs);
 
     private:
-        Vector3D m_vertex0 = {}, m_vertex1 = {}, m_vertex2 = {}, m_normal = {};
+        Vector3D m_vertex0   = {}, 
+                 m_vertex1   = {}, 
+                 m_vertex2   = {}, 
+                 m_normal    = {};
+
         Material* m_material = nullptr;
 
         Vector3D triangleMin() const;

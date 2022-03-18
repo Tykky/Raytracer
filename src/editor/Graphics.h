@@ -132,6 +132,7 @@ namespace Editor
     };
 
     // A texture we can use as render target
+    // TODO, refactor this. There is one texture class already
     class RenderTexture
     {
     public:

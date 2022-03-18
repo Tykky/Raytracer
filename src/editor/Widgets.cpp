@@ -522,7 +522,8 @@ namespace Editor
     {
         for (const auto& widget : widgetStore)
         {
-            if (Viewport* viewport = dynamic_cast<Viewport*>(widget.get()))
+            Viewport* viewport = dynamic_cast<Viewport*>(widget.get());
+            if (viewport && viewport->isPrimary())
                 return viewport;
         }
         RT_LOG_ERROR("No primary viewport found!");

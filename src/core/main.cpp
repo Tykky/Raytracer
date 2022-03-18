@@ -1,5 +1,6 @@
 #include "editor/Editor.h"
 #include "io/Io.h"
+#include "scene/Components.h"
 #include <iostream>
 
 int main()
