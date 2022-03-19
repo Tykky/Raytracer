@@ -9,7 +9,8 @@
 #undef ERROR
 #endif
 
-void initLogger(const unsigned int ringSize);
+// logSise is number of rows the logger can hold at once
+void initLogger(const unsigned int logSize);
 spdlog::logger* logger();
 
 #define RT_LOG_MSG(fmt, ...) logger()->info(fmt, __VA_ARGS__)

@@ -14,14 +14,14 @@ static const char* formatting = "[%D %X] [%l] %v";
 
 constexpr char* failedMsg = "Tried to use logger when it's not initialized! Call initlogger(int ringSize) first\n";
 
-void initLogger(const unsigned int ringSize)
+void initLogger(const unsigned int logSize)
 {
     spdlog::set_pattern(formatting);
     LOGGER = spdlog::stdout_color_mt("raytracer");
     LOGGER->set_level(spdlog::level::trace);
 
     // in order to display log messages inside the editor
-    RINGBUFFER_SINK = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(ringSize);
+    RINGBUFFER_SINK = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(logSize);
     RINGBUFFER_SINK->set_pattern(formatting);
 
     LOGGER->sinks().push_back(RINGBUFFER_SINK);
