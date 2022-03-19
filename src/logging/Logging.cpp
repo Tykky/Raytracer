@@ -1,16 +1,18 @@
-#include <iostream>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include "Logging.h"
 
-static std::shared_ptr<spdlog::logger> LOGGER;
-static std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> RINGBUFFER_SINK;
+static std::shared_ptr<spdlog::logger> LOGGER = nullptr;
+static std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> RINGBUFFER_SINK = nullptr;
 
 static const char* formatting = "[%D %X] [%l] %v";
 
 #ifdef WIN32
 #include <spdlog/sinks/msvc_sink.h>
+#include <windows.h>
 #endif
+
+constexpr char* failedMsg = "Tried to use logger when it's not initialized! Call initlogger(int ringSize) first\n";
 
 void initLogger(const unsigned int ringSize)
 {
@@ -33,10 +35,24 @@ void initLogger(const unsigned int ringSize)
 
 spdlog::logger* logger() 
 {
+    if (!LOGGER) 
+    {
+        fprintf(stderr, failedMsg);
+#ifdef WIN32
+        OutputDebugString(failedMsg);
+#endif
+    }
     return LOGGER.get();
 }
 
 const std::vector<std::string> logMessages()
 {
+    if (!RINGBUFFER_SINK) 
+    {
+        fprintf(stderr, failedMsg);
+#ifdef WIN32
+        OutputDebugString(failedMsg);
+#endif
+    }
     return RINGBUFFER_SINK->last_formatted();
 }

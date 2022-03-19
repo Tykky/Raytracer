@@ -1,4 +1,9 @@
 #include "Editor.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <GL/glew.h>
+#include "Widgets.h"
 #include "logging/Logging.h"
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -12,7 +17,25 @@
 
 namespace Editor
 {
-    struct EditorContex
+
+    // --------------------------------------
+    // Forward declaration of internal stuff
+    // --------------------------------------
+
+    void renderImguiDrawData();
+    void renderGui(ImGuiIO &io);
+    void drawEditor(const ImGuiIO& io);
+    void windowErrorCallback(int code, const char* description);
+    void createDefaultEditorWidgets(WidgetStore& widgetStore);
+
+    float getMouseScroll();
+    void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+
+    void logVendorInfo();
+
+    std::vector<FilePath> filesInsideDirectory();
+
+    struct EditorContext
     {
         GLFWwindow*  editorHandle = nullptr;
         float        deltaTime    = 0.0f;
@@ -21,12 +44,12 @@ namespace Editor
         TextureStore textureStore;
         Raytracer    raytracer;
     };
+       
+    static EditorContext ctx;
 
-    static EditorContex ctx;
-
-    void init(GLFWwindow* window, const Options &options)
+    void init(void* window, const Options &options)
     {
-        ctx.editorHandle = window;
+        ctx.editorHandle = reinterpret_cast<GLFWwindow*>(window);
         ImGui::CreateContext();
 
         ImGuiIO &io = ImGui::GetIO();
@@ -38,7 +61,7 @@ namespace Editor
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         execDarkTheme(); // use dark theme by default
 
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(window), true);
         ImGui_ImplOpenGL3_Init("#version 440");
 
         // ImFIleDialog needs functions for creating and freeing textures for icons
@@ -66,7 +89,7 @@ namespace Editor
         glfwSetScrollCallback(ctx.editorHandle, mouseScrollCallback);
     }
 
-    GLFWwindow* createWindow(const char* title, int width, int height, const Options& options)
+    void* createWindow(const char* title, int width, int height, const Options& options)
     {
         glfwSetErrorCallback(windowErrorCallback);
         GLFWwindow* window;
@@ -108,23 +131,24 @@ namespace Editor
             RT_LOG_ERROR("Failed to initialize GLEW");
             abort();
         }
-        return window;
+        return reinterpret_cast<void*>(window);
     }
 
-    void destroyWindow(GLFWwindow* window)
+    void destroyWindow(void* window)
     {
-        glfwDestroyWindow(window);
+        glfwDestroyWindow(reinterpret_cast<GLFWwindow*>(window));
         RT_LOG_MSG("GLFW window destroyed");
         glfwTerminate();
         RT_LOG_MSG("GLFW terminated");
     }
 
-    void renderLoop(GLFWwindow* window)
+    void renderLoop(void* window)
     {
+        GLFWwindow* glfwWindow = reinterpret_cast<GLFWwindow*>(window);
         ImGuiIO &io = ImGui::GetIO();
         double beginTime;
         double endTime = glfwGetTime();
-        while (!glfwWindowShouldClose(window))
+        while (!glfwWindowShouldClose(glfwWindow))
         {
             beginTime = glfwGetTime();
             ctx.deltaTime = static_cast<float>(beginTime - endTime);
@@ -133,7 +157,7 @@ namespace Editor
             clear();
             cleanInactiveWidgets(ctx.widgetStore);
             renderGui(io);
-            glfwSwapBuffers(window);
+            glfwSwapBuffers(glfwWindow);
             endTime = glfwGetTime();
         }
     }
