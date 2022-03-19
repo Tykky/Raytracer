@@ -36,7 +36,7 @@ namespace Editor
     void renderGui(ImGuiIO &io);
     void drawEditor(const ImGuiIO& io);
     void windowErrorCallback(int code, const char* description);
-    void createDefaultEditorWidgets();
+    void createDefaultEditorWidgets(WidgetStore& widgetStore);
 
     float getMouseScroll();
     void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);

@@ -12,24 +12,21 @@
 
 namespace Editor
 {
-    static GLFWwindow* EDITOR_WINDOW_HANDLE = nullptr;
-    static float DELTA_TIME = 0.0f;
-    static float MOUSE_SCROLL = 0.0f;
+    struct EditorContex
+    {
+        GLFWwindow*  editorHandle = nullptr;
+        float        deltaTime    = 0.0f;
+        float        mouseScroll  = 0.0f;
+        WidgetStore  widgetStore;
+        TextureStore textureStore;
+        Raytracer    raytracer;
+    };
 
-    static WidgetStore  WIDGET_STORE;
-    static TextureStore TEXTURE_STORE;
-
-    static int RTWIDTH = 1920;
-    static int RTHEIGHT = 1080;
-    static RTCamera      RT_CAMERA;
-    static RTPrimitives  RT_PRIMITIVES;
-    static RTAccelStruct RT_ACCELSTRUCT;
-    static Raytracer     RAYTRACER(nullptr, &RT_CAMERA, RTWIDTH, RTHEIGHT);
-
+    static EditorContex ctx;
 
     void init(GLFWwindow* window, const Options &options)
     {
-        EDITOR_WINDOW_HANDLE = window;
+        ctx.editorHandle = window;
         ImGui::CreateContext();
 
         ImGuiIO &io = ImGui::GetIO();
@@ -65,8 +62,8 @@ namespace Editor
         io.WantSaveIniSettings = false;
 #endif
 
-        createDefaultEditorWidgets();
-        glfwSetScrollCallback(EDITOR_WINDOW_HANDLE, mouseScrollCallback);
+        createDefaultEditorWidgets(ctx.widgetStore);
+        glfwSetScrollCallback(ctx.editorHandle, mouseScrollCallback);
     }
 
     GLFWwindow* createWindow(const char* title, int width, int height, const Options& options)
@@ -130,11 +127,11 @@ namespace Editor
         while (!glfwWindowShouldClose(window))
         {
             beginTime = glfwGetTime();
-            DELTA_TIME = static_cast<float>(beginTime - endTime);
+            ctx.deltaTime = static_cast<float>(beginTime - endTime);
 
             glfwPollEvents();
             clear();
-            cleanInactiveWidgets(WIDGET_STORE);
+            cleanInactiveWidgets(ctx.widgetStore);
             renderGui(io);
             glfwSwapBuffers(window);
             endTime = glfwGetTime();
@@ -153,12 +150,12 @@ namespace Editor
 
     void drawEditor(const ImGuiIO& io)
     {
-        drawMainMenuBar(WIDGET_STORE, TEXTURE_STORE);
+        drawMainMenuBar(ctx.widgetStore, ctx.textureStore);
         drawImFileDialogAndProcessInput();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
         drawDockspace("Main", dockspaceID, io);
 
-        for (auto& widget : WIDGET_STORE)
+        for (auto& widget : ctx.widgetStore)
         {
             widget->draw();
         }
@@ -184,15 +181,15 @@ namespace Editor
         renderImguiDrawData();
     }
 
-    void createDefaultEditorWidgets()
+    void createDefaultEditorWidgets(WidgetStore& widgetStore)
     {
-        WIDGET_STORE.push(std::make_unique<Viewport>());
-        WIDGET_STORE.push(std::make_unique<LogViewer>());
-        WIDGET_STORE.push(std::make_unique<RTControls>(&RAYTRACER, &WIDGET_STORE, &TEXTURE_STORE));
+        widgetStore.push(std::make_unique<Viewport>());
+        widgetStore.push(std::make_unique<LogViewer>());
+        widgetStore.push(std::make_unique<RTControls>(&ctx.raytracer, &ctx.widgetStore, &ctx.textureStore));
 #ifndef NDEBUG
-        WIDGET_STORE.push(std::make_unique<WidgetInspector>(&WIDGET_STORE));
-        WIDGET_STORE.push(std::make_unique<ImGuiMtericsWidget>());
-        WIDGET_STORE.push(std::make_unique<ImguiStackToolWidget>());
+        widgetStore.push(std::make_unique<WidgetInspector>(&ctx.widgetStore));
+        widgetStore.push(std::make_unique<ImGuiMtericsWidget>());
+        widgetStore.push(std::make_unique<ImguiStackToolWidget>());
 #endif
     }
 
@@ -203,12 +200,12 @@ namespace Editor
 
     int getKey(int key)
     {
-        return glfwGetKey(EDITOR_WINDOW_HANDLE, key);
+        return glfwGetKey(ctx.editorHandle, key);
     }
 
     int getMouseButton(int button)
     {
-        return glfwGetMouseButton(EDITOR_WINDOW_HANDLE, button);
+        return glfwGetMouseButton(ctx.editorHandle, button);
     }
 
     int getMouseButton()
@@ -218,18 +215,18 @@ namespace Editor
 
     float getMouseScroll()
     {
-        return MOUSE_SCROLL;
+        return ctx.mouseScroll;
     }
 
     void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     {
-        if (MOUSE_SCROLL + yoffset > 0.0f)
+        if (ctx.mouseScroll + yoffset > 0.0f)
         {
-            MOUSE_SCROLL += yoffset;
+            ctx.mouseScroll += yoffset;
         }
         else
         {
-            MOUSE_SCROLL = 0.1f;
+            ctx.mouseScroll = 0.1f;
         }
     }
 
@@ -243,11 +240,11 @@ namespace Editor
 
     float getDeltaTime()
     {
-        return DELTA_TIME;
+        return ctx.deltaTime;
     }
 
     GLFWwindow* getEditorWindowHandle()
     {
-        return EDITOR_WINDOW_HANDLE;
+        return ctx.editorHandle;
     }
 }

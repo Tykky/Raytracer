@@ -2,7 +2,6 @@ include_directories(.)
 
 set(RAYTRACER_SRC core/Ray.cpp
     core/Camera.cpp
-    core/Raytracer.cpp
     core/Vector3D.cpp
     core/utility.cpp
     primitives/Sphere.cpp

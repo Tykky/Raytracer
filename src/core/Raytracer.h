@@ -13,44 +13,14 @@
 #include "samplers/RandomMonteCarloSampler.h"
 #include "samplers/FastSampler.h"
 
-class Raytracer
+struct Raytracer
 {
-public:
-    /**
-     * @param world is data structure that returns closest
-     * hit when .hit() is called, i.e Hitlist or Bvhnode.
-     */
-    Raytracer(Primitive* world, RTCamera* camera, int width, int height);
-
-    void render(unsigned int samples);
-    void frammebufferToNetpbm(const std::string& filename);
-    RTFramebuffer& getFramebuffer();
-    void clearFramebuffer();
-    void resize(int width, int height);
-    void setBounceLimit(int bouncelimit);
-    void setCamera(RTCamera* camera);
-    void setWorld(Primitive* world);
-    bool isRendering();
-    const std::atomic<uint64_t>& getSampleCounter();
-    void resetSampleCounter();
-    void setRenderFinishedCallback(std::function<void()> callback);
-
-    inline int getWidth() { return m_width; }
-    inline int getHeight() { return m_height; }
-
-private:
-    Primitive* m_world;
-    RTFramebuffer m_framebuffer;
-    RTColorbuffer m_colorbuffer;
-    RTCamera* m_camera;
-    int m_width;
-    int m_height;
-    int m_bouncelimit;
-    std::atomic<bool> m_isRendering;
-    std::atomic<uint64_t> m_sampleCounter;
-    RandomMonteCarloSampler m_sampler;
-
-    void clearColorbuffer();
+    RTPrimitives  primitives;
+    RTAccelStruct accelStruct;
+    RTFramebuffer framebuffer;
+    RTColorbuffer colorbuffer;
+    RTCamera      camera;
+    std::unique_ptr<Sampler> sampler;
 };
 
 

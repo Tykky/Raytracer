@@ -34,6 +34,7 @@ struct CameraComponent
 
 struct MeshComponent
 {
+	Mesh mesh;
 };
 
 struct MaterialComponent

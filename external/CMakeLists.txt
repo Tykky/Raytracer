@@ -15,7 +15,7 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
-    glew-cmake
+    glew
     GIT_REPOSITORY https://github.com/Perlmint/glew-cmake.git
     GIT_TAG 7c2b7514f64234756f7df051b9316f1e46f5a6e7
 )
@@ -65,7 +65,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(
    #googletest
    glfw
-   glew-cmake
+   glew
    glm
    imgui
    tinyobjloader
@@ -82,7 +82,7 @@ include_directories(external/ImFileDialog)
 
 include_directories(${tinyobjloader_SOURCE_DIR})
 include_directories(${glm_SOURCE_DIR})
-include_directories(${glew-cmake_SOURCE_DIR}/include)
+include_directories(${glew_SOURCE_DIR}/include)
 include_directories(${imgui_SOURCE_DIR})
 include_directories(${imgui_SOURCE_DIR}/backends)
 include_directories(${spdlog_SOURCE_DIR}/include)

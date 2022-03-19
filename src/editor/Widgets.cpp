@@ -300,10 +300,10 @@ namespace Editor
 
             if (ImGui::Button("Render"))
             {
-                m_raytracer->render(m_samples);
+                //m_raytracer->render(m_samples);
                 if (Viewport* viewport = findPrimaryViewport(*m_widgetStore))
                 {
-                    m_textureStore->push_back({ "Render" , m_raytracer->getFramebuffer().data(), m_raytracer->getWidth(), m_raytracer->getHeight() });
+                    //m_textureStore->push_back({ "Render" , m_raytracer->getFramebuffer().data(), m_raytracer->getWidth(), m_raytracer->getHeight() });
                     m_viewportTexture = m_textureStore->back().getTextureId();
                     viewport->setViewportTexture(m_viewportTexture);
                 }
@@ -313,7 +313,7 @@ namespace Editor
 
             if (ImGui::Button("Stop"))
             {
-                m_raytracer->clearFramebuffer();
+                //m_raytracer->clearFramebuffer();
             }
 
 			ImGui::End();

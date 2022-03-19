@@ -142,7 +142,7 @@ namespace Editor
         unsigned int  m_resX      = 1920;
         unsigned int  m_resY      = 1080;
         ImVec2        m_offset    = {0.0f, 0.0f};
-        ImVec2        m_scale     = {m_resX, m_resY};
+        ImVec2        m_scale     = {static_cast<float>(m_resX), static_cast<float>(m_resY)};
         Camera        m_camera    = {static_cast<float>(m_resX)/static_cast<float>(m_resY),  // aspect ratio
                                      {0, 0.0, 3}, // pos
                                      {0.0, 0.0, -1}}; // target
@@ -188,8 +188,10 @@ namespace Editor
     void drawImFileDialogAndProcessInput();
     void drawTextureView(void* currentTexId, ImVec2& offset, ImVec2& scale, bool& open);
     void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture);
+
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
     void zoomTextureWhenScrolled(float& width, float& height);
+
     void cleanInactiveWidgets(WidgetStore& widgetStore);
     Viewport* findPrimaryViewport(const WidgetStore& widgetStore);
 }
