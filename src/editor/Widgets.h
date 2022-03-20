@@ -1,7 +1,6 @@
 #ifndef RAYTRACER_WIDGETS_H
 #define RAYTRACER_WIDGETS_H
 
-#include <GLFW/glfw3.h>
 #include "imgui.h"
 #include <vector>
 #include <memory>
@@ -22,10 +21,6 @@ namespace Editor
     extern int getKey(int key);
     extern int getMouseButton(int button);
     extern float getMouseScroll();
-
-    void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-
-    GLFWwindow* getEditorWindowHandle();
 
     class Widget
     {

@@ -28,18 +28,24 @@ namespace Editor
     void windowErrorCallback(int code, const char* description);
     void createDefaultEditorWidgets(WidgetStore& widgetStore);
 
-    float getMouseScroll();
     void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+    void mousePosCallback(GLFWwindow* window, double xpos, double ypos);
 
     void logVendorInfo();
 
     std::vector<FilePath> filesInsideDirectory();
+
+    //---------------
+    // Editor Context
+    //---------------
 
     struct EditorContext
     {
         GLFWwindow*  editorHandle = nullptr;
         float        deltaTime    = 0.0f;
         float        mouseScroll  = 0.0f;
+        float        mousePosX    = 0.0f;
+        float        mousePosy    = 0.0f;
         WidgetStore  widgetStore;
         TextureStore textureStore;
         Raytracer    raytracer;
@@ -252,6 +258,12 @@ namespace Editor
         {
             ctx.mouseScroll = 0.1f;
         }
+    }
+
+    void mousePosCallback(GLFWwindow* window, double xpos, double ypos)
+    {
+        ctx.mousePosX = xpos;
+        ctx.mousePosy = ypos;
     }
 
     void logVendorInfo()

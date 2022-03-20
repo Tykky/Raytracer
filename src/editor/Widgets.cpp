@@ -226,7 +226,8 @@ namespace Editor
         }
 
 		double mousePosX, mousePosY;
-		glfwGetCursorPos(getEditorWindowHandle(), &mousePosX, &mousePosY);
+        // TODO: fix this
+		//glfwGetCursorPos(getEditorWindowHandle(), &mousePosX, &mousePosY);
 
 		// This simply prevents "snapping" the camera when we process mouse input for first time.
 		// We don't want to be using the "old" values for prevMouseX an prevMouseDeltaY.
