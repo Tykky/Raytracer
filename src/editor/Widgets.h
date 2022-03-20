@@ -19,9 +19,9 @@
 namespace Editor
 {
     // wrapper around glfw input functions. The key codes directly map to GLFW
-    int getKey(int key);
-    int getMouseButton(int button);
-    float getMouseScroll();
+    extern int getKey(int key);
+    extern int getMouseButton(int button);
+    extern float getMouseScroll();
 
     void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 

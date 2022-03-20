@@ -1,6 +1,8 @@
 #ifndef RAYTRACER_EDITOR_H
 #define RAYTRACER_EDITOR_H
 
+#include "logging/Logging.h"
+
 namespace Editor
 {
     struct Options
