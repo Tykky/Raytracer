@@ -4,6 +4,25 @@
 #include "logging/Logging.h"
 #include "editor/Types.h"
 
+//-----------------------------------------------------------------------//
+// Everything related to resource managemnt for the Editor.              //
+// Contains the main functions to create and destroy the editor context. //
+//-----------------------------------------------------------------------//
+
+// Example usage:
+/*
+	Editor::Options options;
+	initLogger(128);
+
+	options.enableViewports = true;
+	void* window = Editor::createWindow("test", 1920, 1080, options);
+
+	Editor::init(window, options);
+	Editor::renderLoop(window);
+	Editor::destroyWindow(window);
+*/
+
+
 namespace Editor
 {
     //------------------------//

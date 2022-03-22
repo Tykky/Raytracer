@@ -38,11 +38,14 @@ namespace Editor
 
     protected:
         bool                m_open = true;
-        const std::string   m_name;     // name displayed
+        const std::string   m_name;
+
         // Note that ID needs to be explicitly set or otherwise it will be 0
-        unsigned int        m_id = 0;   // ID
+        unsigned int        m_id = 0;
+
         // Used to ID Dear Imgui windows
-        std::string         m_windowId; // contains string: name###ID
+		// contains string: name###ID
+        std::string         m_windowId; 
     };
 
     class TextureViewer : public Widget
@@ -193,9 +196,9 @@ namespace Editor
     void cleanInactiveWidgets(WidgetStore& widgetStore);
     Viewport* findPrimaryViewport(const WidgetStore& widgetStore);
 
-    //--------------------------------------------//
-    // Wrapper for Dear ImGui OpenGL backend impl //
-    //--------------------------------------------//
+    //------------------------------------------------------//
+    // Wrapper for Dear ImGui OpenGL backend implementation //
+    //------------------------------------------------------//
 
     void ImGuiImplInitGLFW(void* window);
     void ImGuiImplInitGL3(const char* glslVer);

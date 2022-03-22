@@ -16,14 +16,14 @@ namespace Editor
 
 	int keyCodeToGLFW(KeyCode code);
 	int mouseButtonToGLFW(MouseCode button);
-	void mousePosCallback(GLFWwindow* window, double xpos, double ypos);
 	void mouseScrollCallback(GLFWwindow* window, double xoffset, double ypos);
 
 	//-------------------------------------------------//
 	// Callbacks have access to these static variables //
 	//-------------------------------------------------//
 
-	static float MOUSE_SCROLL = 0.0f;
+	static float        MOUSE_SCROLL = 0.0f;
+	static Vec2D<float> MOUSE_POS    = { 0.0f, 0.0f };
 
 	//---------------------//
 	// User input API impl //
@@ -68,11 +68,7 @@ namespace Editor
 	{
 		return static_cast<int>(button);
 	}
-
-	void mousePosCallback(GLFWwindow* window, double xpos, double ypos)
-	{
-	}
-
+	
 	void mouseScrollCallback(GLFWwindow* window, double xoffset, double ypos)
 	{
 	}

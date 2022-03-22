@@ -8,9 +8,9 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-//---------------------------------------------------//
-// Small graphics layer/abstraction on top of OpenGL //
-//---------------------------------------------------//
+//-----------------------------------------//
+// Small graphics layer on top of OpenGL   //
+//-----------------------------------------//
 
 // Quad for testing purposes
 static constexpr float defaultRectangleData[] =
@@ -82,9 +82,9 @@ namespace Editor
 
     float getDeltaTime();
 
-    //---------------//
-    // Graphics API  //
-    //---------------//
+    //---------------------------//
+    // Graphics API declaration  //
+    //---------------------------//
 
     enum class ShaderType
     {
