@@ -1,57 +1,49 @@
 #include "Editor.h"
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <imgui.h>
-#include <GL/glew.h>
-#include "Widgets.h"
-#include "logging/Logging.h"
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-#include <imgui_internal.h>
-#include <stdexcept>
 #include <string>
-#include "editor/Styles/DarkTheme.h"
 #include <memory>
+#include "Widgets.h"
+#include "editor/Graphics.h"
+#include "editor/Styles/DarkTheme.h"
+#include "editor/Input.h"
 #include "ImFileDialog.h"
 #include "core/Raytracer.h"
 
 namespace Editor
 {
+    //------------------------------//
+    // Internal forward declaration //
+    //------------------------------//
 
-    // --------------------------------------
-    // Forward declaration of internal stuff
-    // --------------------------------------
-
-    void renderImguiDrawData();
     void renderGui(ImGuiIO &io);
     void drawEditor(const ImGuiIO& io);
     void windowErrorCallback(int code, const char* description);
     void createDefaultEditorWidgets(WidgetStore& widgetStore);
-
-    void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-    void mousePosCallback(GLFWwindow* window, double xpos, double ypos);
-
     void logVendorInfo();
-
     std::vector<FilePath> filesInsideDirectory();
+    GLFWwindow* getCurrentWindowHandle();
 
-    //---------------
-    // Editor Context
-    //---------------
+    //----------------//
+    // Editor Context //
+    //----------------//
 
-    struct EditorContext
+    struct EditorContext 
     {
         GLFWwindow*  editorHandle = nullptr;
         float        deltaTime    = 0.0f;
         float        mouseScroll  = 0.0f;
-        float        mousePosX    = 0.0f;
-        float        mousePosy    = 0.0f;
+        Vec2D<float> cursorPos    = { 0.0f, 0.0f };
         WidgetStore  widgetStore;
         TextureStore textureStore;
         Raytracer    raytracer;
     };
-       
+
+    // For now there is only one context at any given time
     static EditorContext ctx;
+
+    //---------------------------//
+    // Editor API implementation //
+    //---------------------------//
 
     void init(void* window, const Options &options)
     {
@@ -67,8 +59,8 @@ namespace Editor
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         execDarkTheme(); // use dark theme by default
 
-        ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(window), true);
-        ImGui_ImplOpenGL3_Init("#version 440");
+        ImGuiImplInitGLFW(window);
+        ImGuiImplInitGL3("#version 440");
 
         // ImFIleDialog needs functions for creating and freeing textures for icons
         ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void*
@@ -92,7 +84,7 @@ namespace Editor
 #endif
 
         createDefaultEditorWidgets(ctx.widgetStore);
-        glfwSetScrollCallback(ctx.editorHandle, mouseScrollCallback);
+        //glfwSetScrollCallback(ctx.editorHandle, mouseScrollCallback);
     }
 
     void* createWindow(const char* title, int width, int height, const Options& options)
@@ -121,9 +113,9 @@ namespace Editor
                 RT_LOG_MSG("Vsync enabled");
             }
 
-            if (glewInit() != GLEW_OK)
+            if (loadGLExtensions() != LOADGL_OK)
             {
-                RT_LOG_ERROR("Failed to initialize GLEW");
+                RT_LOG_ERROR("Failed to initialize GLEW!");
                 abort();
             }
             else
@@ -167,11 +159,10 @@ namespace Editor
             endTime = glfwGetTime();
         }
     }
-
-    void renderImguiDrawData()
-    {
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    }
+   
+    //-------------------------//
+    // Internal implementation //
+    //-------------------------//
 
     void windowErrorCallback(int code, const char* description)
     {
@@ -193,8 +184,8 @@ namespace Editor
 
     void renderGui(ImGuiIO& io)
     {
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
+        ImGuiImplGLNewFrame();
+        ImGuiImplGLFWNewFrame();
         ImGui::NewFrame();
 
         drawEditor(io);
@@ -208,7 +199,7 @@ namespace Editor
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(window);
         }
-        renderImguiDrawData();
+        ImGuiRenderDrawData();
     }
 
     void createDefaultEditorWidgets(WidgetStore& widgetStore)
@@ -228,42 +219,9 @@ namespace Editor
         return std::vector<FilePath>();
     }
 
-    int getKey(int key)
+    GLFWwindow* getWindowHandle()
     {
-        return glfwGetKey(ctx.editorHandle, key);
-    }
-
-    int getMouseButton(int button)
-    {
-        return glfwGetMouseButton(ctx.editorHandle, button);
-    }
-
-    int getMouseButton()
-    {
-        return 0;
-    }
-
-    float getMouseScroll()
-    {
-        return ctx.mouseScroll;
-    }
-
-    void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
-    {
-        if (ctx.mouseScroll + yoffset > 0.0f)
-        {
-            ctx.mouseScroll += yoffset;
-        }
-        else
-        {
-            ctx.mouseScroll = 0.1f;
-        }
-    }
-
-    void mousePosCallback(GLFWwindow* window, double xpos, double ypos)
-    {
-        ctx.mousePosX = xpos;
-        ctx.mousePosy = ypos;
+        return ctx.editorHandle;
     }
 
     void logVendorInfo()
@@ -279,7 +237,7 @@ namespace Editor
         return ctx.deltaTime;
     }
 
-    GLFWwindow* getEditorWindowHandle()
+    GLFWwindow* getCurrentWindowHandle()
     {
         return ctx.editorHandle;
     }

@@ -2,9 +2,14 @@
 #define RAYTRACER_EDITOR_H
 
 #include "logging/Logging.h"
+#include "editor/Types.h"
 
 namespace Editor
 {
+    //------------------------//
+    // Editor API declaration //
+    //------------------------//
+
     struct Options
     {
         bool enableViewports         = false; // Viewports allow moving editor windows outside the main window

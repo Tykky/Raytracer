@@ -5,22 +5,25 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <functional>
 #include "Graphics.h"
 #include "logging/Logging.h"
 #include "ImFileDialog.h"
-#include <functional>
 #include "core/Raytracer.h"
+#include "editor/Types.h"
 
-// Contains a set of widgets that can be drawn using Widget::draw().
-// Generally widgets are drawn as separate Dear ImGui windows but exceptions exist such as
-// drawing the MainMenuBar or Dockspace.
+//-------------------------------------------------------------------//
+// Handles all Dear ImGui (the GUI system used) related stuff.       //
+// Contains a set of widgets that can be drawn using Widget::draw(). //
+// Generally widgets are drawn as separate Dear ImGui windows but    //
+// exceptions exist such as drawing the MainMenuBar or Dockspace.    //
+//-------------------------------------------------------------------//
 
 namespace Editor
 {
-    // wrapper around glfw input functions. The key codes directly map to GLFW
-    extern int getKey(int key);
-    extern int getMouseButton(int button);
-    extern float getMouseScroll();
+    //------------//
+    // Widget API //
+    //------------//
 
     class Widget
     {
@@ -189,5 +192,16 @@ namespace Editor
 
     void cleanInactiveWidgets(WidgetStore& widgetStore);
     Viewport* findPrimaryViewport(const WidgetStore& widgetStore);
+
+    //--------------------------------------------//
+    // Wrapper for Dear ImGui OpenGL backend impl //
+    //--------------------------------------------//
+
+    void ImGuiImplInitGLFW(void* window);
+    void ImGuiImplInitGL3(const char* glslVer);
+    void ImGuiImplGLNewFrame();
+    void ImGuiImplGLFWNewFrame();
+    void ImGuiRenderDrawData();
+    void ImGuiRender();
 }
 #endif //RAYTRACER_WIDGETS_H

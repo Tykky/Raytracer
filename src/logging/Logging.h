@@ -9,6 +9,10 @@
 #undef ERROR
 #endif
 
+//----------------------------------------//
+// Contains everything related to logging //
+//----------------------------------------//
+
 // logSize is number of rows the logger can hold at once
 void initLogger(const unsigned int logSize);
 spdlog::logger* logger();

@@ -27,6 +27,7 @@ set(RAYTRACER_GUI
     editor/Editor.cpp
     editor/Widgets.cpp
     editor/Graphics.cpp
+    editor/Input.cpp
     ../external/ImFileDialog/ImFileDialog.cpp
     ${DEAR_IMGUI_SOURCE}
 )

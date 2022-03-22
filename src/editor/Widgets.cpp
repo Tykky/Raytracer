@@ -1,13 +1,16 @@
  #include <GL/glew.h>
 #include "Widgets.h"
 #include "imgui.h"
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_internal.h>
 #include "GLFW/glfw3.h"
 #include <iostream>
-#include "Graphics.h"
 #include <vector>
 #include "logging/Logging.h"
 #include "ImFileDialog.h"
 #include "editor/styles/DarkTheme.h"
+#include "editor/Input.h"
 
 namespace Editor
 {
@@ -219,32 +222,30 @@ namespace Editor
     void Viewport::processInput()
     {
         float scroll = getMouseScroll();
-        if (m_camera.distance != scroll)
+        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && m_camera.distance != scroll)
         {
             m_camera.distance = scroll * 0.5f;
             m_camera.update();
         }
 
-		double mousePosX, mousePosY;
-        // TODO: fix this
-		//glfwGetCursorPos(getEditorWindowHandle(), &mousePosX, &mousePosY);
+		auto cPos = getCursorPos();
 
 		// This simply prevents "snapping" the camera when we process mouse input for first time.
 		// We don't want to be using the "old" values for prevMouseX an prevMouseDeltaY.
-        if (getKey(GLFW_KEY_LEFT_ALT) == GLFW_RELEASE && getMouseButton(GLFW_MOUSE_BUTTON_1) == GLFW_RELEASE)
+        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::RELEASE && getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
 		{
-			m_prevMouseX = mousePosX;
-			m_prevMouseY = mousePosY;
+			m_prevMouseX = cPos.x;
+			m_prevMouseY = cPos.y;
 		}
 
-		float mousePoxXDelta = static_cast<float>(mousePosX) - m_prevMouseX;
-		float mousePosYDelta = static_cast<float>(mousePosY) - m_prevMouseY;
+		float mousePoxXDelta = static_cast<float>(cPos.x) - m_prevMouseX;
+		float mousePosYDelta = static_cast<float>(cPos.y) - m_prevMouseY;
 
-		m_prevMouseX = mousePosX;
-		m_prevMouseY = mousePosY;
+		m_prevMouseX = cPos.x;
+		m_prevMouseY = cPos.y;
 
         // Move sideways
-        if (getKey(GLFW_KEY_LEFT_ALT) == GLFW_PRESS && getMouseButton(GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
+        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && getMouseButton(MouseCode::MOUSE_BUTTON_3) == StatusCode::PRESS)
         {
             glm::vec3 x = m_camera.getRight() * mousePoxXDelta * 0.01f;
             glm::vec3 y = m_camera.getUp() * mousePosYDelta * 0.01f;
@@ -256,7 +257,7 @@ namespace Editor
 		}
 
         // Rotation
-        if (getKey(GLFW_KEY_LEFT_ALT) == GLFW_PRESS && getMouseButton(GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
+        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS)
         {
             float newYaw = m_camera.yaw += mousePoxXDelta * m_camera.speed;
             float newPitch = m_camera.pitch -= mousePosYDelta * m_camera.speed;
@@ -279,7 +280,7 @@ namespace Editor
         }
 
         // Move forward and backwards
-        if (getKey(GLFW_KEY_LEFT_ALT) == GLFW_PRESS && getMouseButton(GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
+        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && getMouseButton(MouseCode::MOUSE_BUTTON_2) == StatusCode::PRESS)
         {
             glm::vec3 x = m_camera.getDir() * mousePosYDelta * 0.1f;
             m_camera.offset += x;
@@ -529,5 +530,35 @@ namespace Editor
         }
         RT_LOG_ERROR("No primary viewport found!");
         return nullptr;
+    }
+
+    void ImGuiImplInitGLFW(void* window)
+    {
+        ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(window), true);
+    }
+
+    void ImGuiImplInitGL3(const char* glslVer)
+    {
+        ImGui_ImplOpenGL3_Init(glslVer);
+    }
+
+    void ImGuiImplGLNewFrame()
+    {
+        ImGui_ImplOpenGL3_NewFrame();
+    }
+
+    void ImGuiImplGLFWNewFrame()
+    {
+        ImGui_ImplGlfw_NewFrame();
+    }
+
+    void ImGuiRenderDrawData()
+    {
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    void ImGuiRender()
+    {
+        ImGui::Render();
     }
 }

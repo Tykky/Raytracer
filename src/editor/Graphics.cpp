@@ -1,16 +1,30 @@
-#include "Graphics.h"
-#include "logging/Logging.h"
-
 // this needs to be defined once, so STB_IMAGE implementation gets placed in only one of the translation units
 #define STB_IMAGE_IMPLEMENTATION
 
+#include "Graphics.h"
+#include "logging/Logging.h"
 #include <stb_image.h>
 #include <GL/glew.h>
-#include <stdexcept>
 #include <string>
 
 namespace Editor
 {
+    int shaderTypeToGLEnum(ShaderType shaderType)
+    {
+        switch(shaderType)
+        {
+        case ShaderType::VERTEX:
+            return GL_VERTEX_SHADER;
+			break;
+        case ShaderType::FRAGMENT:
+            return GL_FRAGMENT_SHADER;
+            break;
+        case ShaderType::COMPUTE:
+            return GL_COMPUTE_SHADER;
+			break;
+        }
+    }
+
     Texture::Texture(std::string name, unsigned char* data, int width, int height) :
         m_name(name), m_width(width), m_height(height)
     {
@@ -73,7 +87,7 @@ namespace Editor
 
         // TODO: construct index/element buffer
         glBindVertexArray(0);
-        RT_LOG_MSG("Vertex buffer created with {} vertices", size);
+        RT_LOG_MSG("Vertex buffer created with {} indices", size);
     }
 
     Vertexbuffer::~Vertexbuffer()
@@ -336,7 +350,7 @@ namespace Editor
 
     unsigned int compileShader(const char** data, const int* size, ShaderType shaderType)
     {
-        unsigned int shader = glCreateShader(static_cast<unsigned int>(shaderType));
+        unsigned int shader = glCreateShader(shaderTypeToGLEnum(shaderType));
         glShaderSource(shader, 1, data, size);
         glCompileShader(shader);
         if (checkShaderCompilation(shader))
@@ -501,6 +515,11 @@ namespace Editor
     void blitTexture(unsigned int target, int width, int height, const void* data)
     {
         glTexSubImage2D(target, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+    }
+
+    int loadGLExtensions()
+    {
+        return glewInit();
     }
 
     std::string getGPUVendor()

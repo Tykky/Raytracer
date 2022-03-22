@@ -1,9 +1,6 @@
 #ifndef RAYTRACER_GRAPHICS_H
 #define RAYTRACER_GRAPHICS_H
 
-#include "GL/glew.h"
-#include <vector>
-#include <unordered_map>
 #include <optional>
 #include <string>
 #include "io/Io.h"
@@ -11,8 +8,11 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-// Quad for testing purposes
+//---------------------------------------------------//
+// Small graphics layer/abstraction on top of OpenGL //
+//---------------------------------------------------//
 
+// Quad for testing purposes
 static constexpr float defaultRectangleData[] =
 {
 //       Vertices
@@ -75,15 +75,23 @@ static constexpr float defaultCubeData[] =
 
 namespace Editor
 {
-    // Measures time in between frames
+    //---------------------------------------------------------//
+    // Forward declaration of functions defined in Editor.cpp  //
+    // This prevents circular dependency                       //
+    //---------------------------------------------------------//
+
     float getDeltaTime();
+
+    //---------------//
+    // Graphics API  //
+    //---------------//
 
     enum class ShaderType
     {
-        VERTEX   = GL_VERTEX_SHADER,
-        FRAGMENT = GL_FRAGMENT_SHADER,
-        COMPUTE  = GL_COMPUTE_SHADER
-    };
+        VERTEX,
+		FRAGMENT,
+        COMPUTE
+	};
 
     class Texture
     {
@@ -109,7 +117,7 @@ namespace Editor
         unsigned int m_textureID;
     };
 
-    // We clump OpenGls vertex buffer, vertex array and element
+    // Clump OpenGls vertex buffer, vertex array and element
     // buffer into one object
     class Vertexbuffer
     {
@@ -274,6 +282,11 @@ namespace Editor
     bool checkShaderLink(unsigned int shaderId);
 
     void blitTexture(unsigned int target, int width, int height, const void* data);
+
+#define LOADGL_OK 0
+
+    // Returns 0 when loading extensions is successful
+    int loadGLExtensions();
 
     std::string getGPUVendor();
     std::string getRenderer();
