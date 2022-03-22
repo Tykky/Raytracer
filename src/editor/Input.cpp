@@ -1,6 +1,7 @@
 #include "Input.h"
 #include <GLFW/glfw3.h>
 #include <cassert>
+#include "logging/Logging.h"
 
 namespace Editor
 {
@@ -16,14 +17,13 @@ namespace Editor
 
 	int keyCodeToGLFW(KeyCode code);
 	int mouseButtonToGLFW(MouseCode button);
-	void mouseScrollCallback(GLFWwindow* window, double xoffset, double ypos);
+	void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 	//-------------------------------------------------//
 	// Callbacks have access to these static variables //
 	//-------------------------------------------------//
 
-	static float        MOUSE_SCROLL = 0.0f;
-	static Vec2D<float> MOUSE_POS    = { 0.0f, 0.0f };
+	static float MOUSE_SCROLL = 0.0f;
 
 	//---------------------//
 	// User input API impl //
@@ -55,9 +55,14 @@ namespace Editor
 		return v;
 	}
 
-	//---------------//
-	// Internal impl //
-	//---------------//
+	void setMouseScrollCallback()
+	{
+		glfwSetScrollCallback(getCurrentWindowHandle(), mouseScrollCallback);
+	}
+
+	//-------------------------//
+	// Internal implementation //
+	//-------------------------//
 
 	int keyCodeToGLFW(KeyCode code)
 	{
@@ -69,7 +74,15 @@ namespace Editor
 		return static_cast<int>(button);
 	}
 	
-	void mouseScrollCallback(GLFWwindow* window, double xoffset, double ypos)
+	void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 	{
+		if (MOUSE_SCROLL + yoffset < 0.1f)
+		{
+			MOUSE_SCROLL = 0.0f;
+		}
+		else
+		{
+			MOUSE_SCROLL += yoffset;
+		}
 	}
 }

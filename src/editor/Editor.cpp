@@ -84,7 +84,7 @@ namespace Editor
 #endif
 
         createDefaultEditorWidgets(ctx.widgetStore);
-        //glfwSetScrollCallback(ctx.editorHandle, mouseScrollCallback);
+        setMouseScrollCallback();
     }
 
     void* createWindow(const char* title, int width, int height, const Options& options)

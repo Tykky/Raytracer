@@ -159,14 +159,15 @@ namespace Editor
 		REPEAT = 2
 	};
 
-	//-----------------//
-	// User input API  //
-	//-----------------//
+	//-----------------------------//
+	// User input API declaration  //
+	//-----------------------------//
 
     StatusCode getKey(KeyCode code);
     StatusCode getMouseButton(MouseCode button);
     float getMouseScroll();
     Vec2D<double> getCursorPos();
+	void setMouseScrollCallback();
 }
 
 #endif //RAYTRACER_EDITOR_INPUT_H
