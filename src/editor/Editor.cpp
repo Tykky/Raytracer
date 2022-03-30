@@ -52,10 +52,12 @@ namespace Editor
 
         ImGuiIO &io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
         if (options.enableViewports)
         {
             io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         }
+
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         execDarkTheme(); // use dark theme by default
 
@@ -85,6 +87,7 @@ namespace Editor
 
         createDefaultEditorWidgets(ctx.widgetStore);
         setMouseScrollCallback();
+        ctx.initialized = true;
     }
 
     void createWindow(const char* title, int width, int height, const Options& options)
@@ -163,6 +166,7 @@ namespace Editor
         if(!ctx.initialized)
         {
             RT_LOG_WARNING("Tried to enter renderloop when the editor is not initialized!");
+            return;
         }
 
         GLFWwindow* glfwWindow = reinterpret_cast<GLFWwindow*>(ctx.window);

@@ -39,7 +39,6 @@ public:
         updateSample(xyToIdx(x, y, 3, m_width), m_colorbuffer, m_framebuffer, color, sampleCount);
     }
 
-
 protected:
     Primitive*     m_world;
     RTCamera*      m_camera;
