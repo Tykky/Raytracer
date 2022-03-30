@@ -38,14 +38,14 @@ namespace Editor
     };
 
     // Creates GLFW window and loads OpenGL extensions
-    void* createWindow(const char* title, int width, int height, const Options& options);
-    void destroyWindow(void* window);
+    void createWindow(const char* title, int width, int height, const Options& options);
+    void destroyWindow();
 
     // Creates editor context (Dear Imgui) and initializes it with options
-    void init(void* window, const Options& options);
+    void init(const Options& options);
 
     // Begins executing draw/input loop
-    void renderLoop(void* window);
+    void renderLoop();
 }
 
 #endif //RAYTRACER_EDITOR_H

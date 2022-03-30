@@ -29,13 +29,14 @@ namespace Editor
 
     struct EditorContext 
     {
-        GLFWwindow*  editorHandle = nullptr;
+        GLFWwindow*  window       = nullptr;
         float        deltaTime    = 0.0f;
         float        mouseScroll  = 0.0f;
         Vec2D<float> cursorPos    = { 0.0f, 0.0f };
         WidgetStore  widgetStore;
         TextureStore textureStore;
         Raytracer    raytracer;
+        bool         initialized  = false;
     };
 
     // For now there is only one context at any given time
@@ -45,9 +46,8 @@ namespace Editor
     // Editor API implementation //
     //---------------------------//
 
-    void init(void* window, const Options &options)
+    void init(const Options &options)
     {
-        ctx.editorHandle = reinterpret_cast<GLFWwindow*>(window);
         ImGui::CreateContext();
 
         ImGuiIO &io = ImGui::GetIO();
@@ -59,7 +59,7 @@ namespace Editor
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         execDarkTheme(); // use dark theme by default
 
-        ImGuiImplInitGLFW(window);
+        ImGuiImplInitGLFW(ctx.window);
         ImGuiImplInitGL3("#version 440");
 
         // ImFIleDialog needs functions for creating and freeing textures for icons
@@ -87,8 +87,14 @@ namespace Editor
         setMouseScrollCallback();
     }
 
-    void* createWindow(const char* title, int width, int height, const Options& options)
+    void createWindow(const char* title, int width, int height, const Options& options)
     {
+        if (ctx.window)
+        {
+            RT_LOG_WARNING("Tried to create a window when there is already one!");
+            return;
+        }
+
         glfwSetErrorCallback(windowErrorCallback);
         GLFWwindow* window;
         if (glfwInit())
@@ -129,20 +135,37 @@ namespace Editor
             RT_LOG_ERROR("Failed to initialize GLEW");
             abort();
         }
-        return reinterpret_cast<void*>(window);
+		ctx.window = window;
     }
 
-    void destroyWindow(void* window)
+    void destroyWindow()
     {
-        glfwDestroyWindow(reinterpret_cast<GLFWwindow*>(window));
+        if(!ctx.window)
+        {
+            RT_LOG_WARNING("Tried to destroy window when one hasn't been created yet!");
+            return;
+        }
+
+        glfwDestroyWindow(reinterpret_cast<GLFWwindow*>(ctx.window));
         RT_LOG_MSG("GLFW window destroyed");
         glfwTerminate();
         RT_LOG_MSG("GLFW terminated");
     }
 
-    void renderLoop(void* window)
+    void renderLoop()
     {
-        GLFWwindow* glfwWindow = reinterpret_cast<GLFWwindow*>(window);
+        if(!ctx.window)
+        {
+            RT_LOG_WARNING("Tried to enter renderloop when there is no valid window yet!");
+            return;
+        }
+
+        if(!ctx.initialized)
+        {
+            RT_LOG_WARNING("Tried to enter renderloop when the editor is not initialized!");
+        }
+
+        GLFWwindow* glfwWindow = reinterpret_cast<GLFWwindow*>(ctx.window);
         ImGuiIO &io = ImGui::GetIO();
         double beginTime;
         double endTime = glfwGetTime();
@@ -221,7 +244,7 @@ namespace Editor
 
     GLFWwindow* getWindowHandle()
     {
-        return ctx.editorHandle;
+        return ctx.window;
     }
 
     void logVendorInfo()
@@ -239,6 +262,6 @@ namespace Editor
 
     GLFWwindow* getCurrentWindowHandle()
     {
-        return ctx.editorHandle;
+        return ctx.window;
     }
 }
