@@ -34,7 +34,7 @@ namespace Editor
         bool enableViewports         = false; // Viewports allow moving editor windows outside the main window
         bool enableVsync             = true;
         bool enableMainWindowBorders = true;  // Enables OS window title bar and borders
-        const char* defaultTheme     = "dark";
+        std::string defaultTheme     = "dark";
     };
 
     // Creates GLFW window and loads OpenGL extensions
