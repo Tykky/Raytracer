@@ -166,7 +166,7 @@ namespace Editor
     StatusCode getKey(KeyCode code);
     StatusCode getMouseButton(MouseCode button);
     float getMouseScroll();
-    Vec2D<double> getCursorPos();
+    Vec2<double> getCursorPos();
 	void setMouseScrollCallback();
 }
 

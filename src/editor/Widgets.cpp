@@ -1,4 +1,4 @@
- #include <GL/glew.h>
+#include <GL/glew.h>
 #include "Widgets.h"
 #include "imgui.h"
 #include <imgui_impl_glfw.h>
@@ -7,6 +7,7 @@
 #include "GLFW/glfw3.h"
 #include <iostream>
 #include <vector>
+#include <functional>
 #include "logging/Logging.h"
 #include "ImFileDialog.h"
 #include "editor/styles/DarkTheme.h"
@@ -14,333 +15,182 @@
 
 namespace Editor
 {
-    Widget::Widget(const char* name) :
-        m_name(name)  {}
+    //---------------------------------------//
+    // Forward declaration of internal stuff //
+    //---------------------------------------//
 
-    TextureViewer::TextureViewer(TextureStore* textureStore) :
-        Widget("Texture viewer"), m_textStore(textureStore) {}
+    void processInput(ViewportContext& ctx);
 
-    void TextureViewer::draw()
+    template<typename Context>
+    struct ImGuiScopedBegin
     {
-        ImGui::Begin(m_windowId.data(), &m_open);
-        void* currentTexId = m_currentTexture ? (void*)m_currentTexture->getTextureId() : nullptr;
-        const char* preview = m_currentTexture ? m_currentTexture->getName().data() : "";
-        drawTextureView(currentTexId, m_offset, m_scale, m_open);
-        drawTexturePickerComboBox(preview, m_textStore, m_currentTexture);
-        ImGui::End();
-    }
-
-    LogViewer::LogViewer() :
-            Widget("Logs") {}
-
-    void LogViewer::draw()
-    {
-        if (m_open)
+        ImGuiScopedBegin(WidgetStore* wStore, const Context& ctx, ImGuiWindowFlags flags = 0) :
+            m_wStore(wStore)
         {
-            ImGui::SetNextWindowSize({800,300});
-            ImGui::Begin(m_windowId.data(), &m_open);
-            ImGui::Checkbox("Scroll to bottom", &m_srollToBottom);
+            bool open = true;
+            ImGui::Begin(ctx.wCtx.windowId.data(), &open, flags);
 
-            ImGui::BeginChild("Logtext###ID");
-
-            if (m_srollToBottom)
-                ImGui::SetScrollY(ImGui::GetScrollMaxY());
-
-            for (auto& msg : logMessages())
+            if (!open) // when close window button is pressed
             {
-                ImGui::Text(msg.data());
+                m_signalDelete = true;
+                m_removeIdx = ctx.wCtx.id;
             }
+         }
 
+        ~ImGuiScopedBegin()
+        {
+            ImGui::End();
+            if (m_signalDelete)
+            {
+            }
+        }
+
+    private:
+        bool         m_signalDelete = false;
+        unsigned int m_removeIdx;
+        WidgetStore* m_wStore;
+    };
+
+    struct ImGuiScopedBeginChild
+    {
+        ImGuiScopedBeginChild(const char* id)
+        {
+            ImGui::BeginChild(id);
+        }
+
+        ~ImGuiScopedBeginChild()
+        {
             ImGui::EndChild();
-            ImGui::End();
         }
-    }
+    };
 
-    unsigned int WidgetStore::size() const
+    void drawWidget(WidgetStore* wStore, TextureViewerContext& ctx)
     {
-        return m_widgets.size();
-    }
+        ImGuiScopedBegin(wStore, ctx);
+        void* currentTexId = nullptr;
+        const char* preview = nullptr;
 
-    Widget* WidgetStore::operator[](int idx) const
-    {
-        assert(idx < m_widgets.size());
-        return m_widgets[idx].get();
-    }
-
-    void WidgetStore::push(std::unique_ptr<Widget>&& widget)
-    {
-        widget->setId(m_currentUniqueIdx++);
-        widget->setWindowId(widget->getName() + "###" + std::to_string(widget->getId()));
-        m_widgets.push_back(std::move(widget));
-    }
-
-    void WidgetStore::erase(int idx)
-    {
-        assert(idx < m_widgets.size());
-        m_widgets.erase(m_widgets.begin() + idx);
-    }
-
-    std::vector<std::unique_ptr<Widget>>::iterator WidgetStore::begin()
-    {
-        return m_widgets.begin();
-    }
-
-    std::vector<std::unique_ptr<Widget>>::iterator WidgetStore::end()
-    {
-        return m_widgets.end();
-    }
-
-    std::vector<std::unique_ptr<Widget>>::const_iterator WidgetStore::begin() const
-    {
-        return m_widgets.begin();
-    }
-
-    std::vector<std::unique_ptr<Widget>>::const_iterator WidgetStore::end() const
-    {
-        return m_widgets.end();
-    }
-
-#ifndef NDEBUG
-    WidgetInspector::WidgetInspector(WidgetStore* widgetStore) :
-            Widget("Widget Inspector"), m_widgetStore(widgetStore) {}
-
-    void WidgetInspector::draw()
-    {
-        if (m_open)
+        if (ctx.currentTexture)
         {
-            ImGui::Begin(m_windowId.data(), &m_open);
-            for (auto& widget : *m_widgetStore)
-            {
-                std::string label = widget->getName() + " id: " + std::to_string(widget->getId());
-                ImGui::Text(label.data());
-            }
-            ImGui::End();
-        }
-    }
-#endif
-
-    SettingsWidget::SettingsWidget() :
-            Widget("Settings") {}
-
-    void SettingsWidget::draw()
-    {
-        static const char* preview = "Dark";
-        if (m_open)
-        {
-            ImGui::SetNextWindowSize({300, 200});
-            ImGui::Begin(m_windowId.data(), &m_open);
-            if (ImGui::BeginCombo("Theme", preview))
-            {
-                if (ImGui::Selectable("Dark"))
-                {
-                    execDarkTheme();
-                    preview = "Dark";
-                }
-                if (ImGui::Selectable("Light"))
-                {
-                    ImGui::StyleColorsLight();
-                    preview = "Light";
-                }
-                if (ImGui::Selectable("classic"))
-                {
-                    ImGui::StyleColorsClassic();
-                    preview = "Classic";
-                }
-                ImGui::EndCombo();
-            }
-
-            static float scale = 1.0f;
-            float tmp = scale;
-
-            if (ImGui::InputFloat("Font scale", &tmp) && tmp <= 3 && tmp >= 0.5)
-            {
-                scale = tmp;
-                ImGui::GetIO().FontGlobalScale = scale;
-            }
-            ImGui::End();
-        }
-    }
-
-    Viewport::Viewport() :
-            Widget("Viewport"), m_vertexbuffer(static_cast<const float*>(defaultCubeData), sizeof(defaultCubeData))
-    {
-        // Create default color attachment with depth buffer (color attachment 0)
-        m_framebuffer.addColorAttachment({m_resX, m_resY, true});
-        setViewportTextureToColorAttachment(0);
-        m_shaderProgram.addShader("data/shaders/vert.glsl", ShaderType::VERTEX);
-        m_shaderProgram.addShader("data/shaders/frag.glsl", ShaderType::FRAGMENT);
-        m_shaderProgram.link();
-    }
-
-    void Viewport::draw()
-    {
-        if (m_open)
-        {
-            // TODO: consider moving the rendering of the viewport over to camera.
-            // Right now we don't have much stuff in here but at some point the "renderer" will become more complex
-            processInput();
-            ImGui::Begin(m_windowId.data());
-
-            setUniform(m_shaderProgram.getProgramId(), "view", m_camera.getViewMatrix());
-            setUniform(m_shaderProgram.getProgramId(), "projection", m_camera.getProjectionMatrix());
-
-            drawToTexture(m_vertexbuffer, m_shaderProgram, m_framebuffer);
-            drawTextureView(m_viewportTexture, m_offset, m_scale, m_open);
-
-            if (ImGui::Button("Toggle wireframe"))
-            {
-                m_wireframe ^= 1;
-                if (m_wireframe)
-                {
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                }
-                else
-                {
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                }
-            }
-            ImGui::End();
-        }
-    }
-
-    void Viewport::setViewportTexture(const RenderTexture& renderTexture)
-    {
-        m_viewportTexture = reinterpret_cast<void*>(renderTexture.id());
-    }
-
-    void Viewport::setViewportTexture(unsigned int texID)
-    {
-        m_viewportTexture = reinterpret_cast<void*>(texID);
-    }
-
-    void Viewport::setViewportTextureToColorAttachment(unsigned int attachment)
-    {
-        assert(attachment < m_framebuffer.getNumColorAttachments());
-        m_viewportTexture = reinterpret_cast<void*>(m_framebuffer.getColorAttachments()[attachment].id());
-    }
-
-    void Viewport::processInput()
-    {
-        float scroll = getMouseScroll();
-        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && m_camera.distance != scroll)
-        {
-            m_camera.distance = scroll * 0.5f;
-            m_camera.update();
+            currentTexId = reinterpret_cast<void*>(ctx.currentTexture->getTextureId());
+            preview = ctx.currentTexture->getName().data();
         }
 
-		auto cPos = getCursorPos();
+        drawTextureView(currentTexId, ctx.offset, ctx.scale);
+        drawTexturePickerComboBox(preview, ctx.textureStore, ctx.currentTexture);
+    }
 
-		// This simply prevents "snapping" the camera when we process mouse input for first time.
-		// We don't want to be using the "old" values for prevMouseX an prevMouseDeltaY.
-        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::RELEASE && getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
+    void drawWidget(WidgetStore* wStore, LogViewerContext& ctx)
+    {
+		ImGui::SetNextWindowSize({800,300});
+        ImGuiScopedBegin(wStore, ctx);
+		ImGui::Checkbox("Scroll to bottom", &ctx.srollToBottom);
+        ImGuiScopedBeginChild("Logtext###ID");
+
+		if (ctx.srollToBottom)
+			ImGui::SetScrollY(ImGui::GetScrollMaxY());
+
+		for (auto& msg : logMessages())
 		{
-			m_prevMouseX = cPos.x;
-			m_prevMouseY = cPos.y;
+			ImGui::Text(msg.data());
 		}
-
-		float mousePoxXDelta = static_cast<float>(cPos.x) - m_prevMouseX;
-		float mousePosYDelta = static_cast<float>(cPos.y) - m_prevMouseY;
-
-		m_prevMouseX = cPos.x;
-		m_prevMouseY = cPos.y;
-
-        // Move sideways
-        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && getMouseButton(MouseCode::MOUSE_BUTTON_3) == StatusCode::PRESS)
-        {
-            glm::vec3 x = m_camera.getRight() * mousePoxXDelta * 0.01f;
-            glm::vec3 y = m_camera.getUp() * mousePosYDelta * 0.01f;
-            m_camera.offset += x;
-            m_camera.offset -= y;
-            m_camera.target += x;
-            m_camera.target -= y;
-            m_camera.update();
-		}
-
-        // Rotation
-        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS)
-        {
-            float newYaw = m_camera.yaw += mousePoxXDelta * m_camera.speed;
-            float newPitch = m_camera.pitch -= mousePosYDelta * m_camera.speed;
-
-            if (newYaw < 0.1f && newYaw >= 0.0f)
-                newYaw = 0.1f;
-
-            if (newYaw > -0.1f && newYaw <= 0.0f)
-                newYaw = -0.1f;
-
-            if (newPitch > 89.9f)
-                newPitch = 89.9f;
-
-            if (newPitch < -89.9f)
-                newPitch = -89.9f;
-
-            m_camera.yaw = newYaw;
-            m_camera.pitch = newPitch;
-            m_camera.update();
-        }
-
-        // Move forward and backwards
-        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && getMouseButton(MouseCode::MOUSE_BUTTON_2) == StatusCode::PRESS)
-        {
-            glm::vec3 x = m_camera.getDir() * mousePosYDelta * 0.1f;
-            m_camera.offset += x;
-            m_camera.target += x;
-            m_camera.update();
-        }
     }
 
-    RTControls::RTControls(Raytracer* raytracer, WidgetStore* widgetstore, TextureStore* textureStore) :
-        Widget("RTControls"), m_raytracer(raytracer), m_widgetStore(widgetstore), m_textureStore(textureStore)
-    {}
-
-    void RTControls::draw()
+    void drawWidget(WidgetStore* wStore, ViewportContext& ctx)
     {
-        if (m_open)
-        {
-            ImGui::Begin(m_windowId.data());
-            ImGui::InputInt("Samples", &m_samples);
+		// TODO: consider moving the rendering of the viewport over to camera.
+		// Right now we don't have much stuff in here but at some point the "renderer" will become more complex
+		processInput(ctx);
+        ImGuiScopedBegin(wStore, ctx);
 
-            if (ImGui::Button("Render"))
-            {
-                //m_raytracer->render(m_samples);
-                if (Viewport* viewport = findPrimaryViewport(*m_widgetStore))
-                {
-                    //m_textureStore->push_back({ "Render" , m_raytracer->getFramebuffer().data(), m_raytracer->getWidth(), m_raytracer->getHeight() });
-                    m_viewportTexture = m_textureStore->back().getTextureId();
-                    viewport->setViewportTexture(m_viewportTexture);
-                }
-            }
+		setUniform(ctx.shaderProgram.getProgramId(), "view", ctx.camera.getViewMatrix());
+		setUniform(ctx.shaderProgram.getProgramId(), "projection", ctx.camera.getProjectionMatrix());
 
-            ImGui::SameLine(62.0f);
+		drawToTexture(ctx.vertexbuffer, ctx.shaderProgram, ctx.framebuffer);
+		//drawTextureView(ctx.m_viewportTexture, ctx.offset, ctx.scale, true);
 
-            if (ImGui::Button("Stop"))
-            {
-                //m_raytracer->clearFramebuffer();
-            }
-
-			ImGui::End();
-        }
+		if (ImGui::Button("Toggle wireframe"))
+		{
+			ctx.wireframe ^= 1;
+			if (ctx.wireframe)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
+			else
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
+		}
     }
 
-    SystemInfo::SystemInfo() :
-        Widget("SystemInfo"), m_GPUVendor(getGPUVendor()), m_renderer(getRenderer()),
-        m_GLVersion(getGLVersion()), m_GLSLVersion(getGLSLVersion())
-    {}
-
-    void SystemInfo::draw()
+    void drawWidget(WidgetStore* wStore, SettingsWidgetContext& ctx) 
     {
-        if (m_open)
-        {
-            ImGui::SetNextWindowSize({500, 300});
-            ImGui::Begin(m_windowId.data(), &m_open);
-            ImGui::Text("GPU vendor: %s", m_GPUVendor.data());
-            ImGui::Text("Renderer: %s", m_renderer.data());
-            ImGui::Text("GL version: %s", m_GLVersion.data());
-            ImGui::Text("GLSL version: %s", m_GLSLVersion.data());
-            ImGui::Text("Framerate: %f fps", ImGui::GetIO().Framerate);
-            ImGui::Text("Delta time: %f ms", getDeltaTime() * 1000000.0f);
-            ImGui::End();
-        }
+        ImGuiScopedBegin(wStore, ctx);
+    }
+
+    void drawWidget(WidgetStore* wStore, WidgetInspectorContext& ctx)
+    {
+        ImGuiScopedBegin(wStore, ctx);
+    }
+
+    void drawWidget(WidgetStore* wStore, ImGuiMetricsWidgetContext& ctx)
+    {
+        ImGui::ShowMetricsWindow();
+    }
+
+    void drawWidget(WidgetStore* wStore, ImGuiStackToolWidgetContext& ctx)
+    {
+        ImGui::ShowStackToolWindow();
+    }
+
+    void drawWidget(WidgetStore* wStore, RTControlsContext& ctx)
+    {
+        ImGuiScopedBegin(wStore, ctx);
+		ImGui::InputInt("Samples", &ctx.samples);
+
+		if (ImGui::Button("Render"))
+		{
+            /*
+			//m_raytracer->render(m_samples);
+			if (Viewport* viewport = findPrimaryViewport(*ctx.widgetStore))
+			{
+				//m_textureStore->push_back({ "Render" , m_raytracer->getFramebuffer().data(), m_raytracer->getWidth(), m_raytracer->getHeight() });
+				ctx.viewportTexture = ctx.textureStore->back().getTextureId();
+				viewport->setViewportTexture(ctx.viewportTexture);
+			}
+            */
+		}
+
+		ImGui::SameLine(62.0f);
+
+		if (ImGui::Button("Stop"))
+		{
+			//m_raytracer->clearFramebuffer();
+		}
+    }
+
+    void drawWidget(WidgetStore* wStore, SystemInfoContext& ctx)
+    {
+		ImGui::SetNextWindowSize({500, 300});
+        ImGuiScopedBegin(wStore, ctx);
+		ImGui::Text("GPU vendor: %s", ctx.GPUVendor.data());
+		ImGui::Text("Renderer: %s", ctx.renderer.data());
+		ImGui::Text("GL version: %s", ctx.GLVersion.data());
+		ImGui::Text("GLSL version: %s", ctx.GLSLVersion.data());
+		ImGui::Text("Framerate: %f fps", ImGui::GetIO().Framerate);
+		ImGui::Text("Delta time: %f ms", getDeltaTime() * 1000000.0f);
+    }
+
+    void drawAllWidgets(WidgetStore* wStore)
+    {
+        std::apply
+        (
+            [wStore](auto&... wArrays)
+            {
+                (drawWidgetArray(wStore, wArrays), ...);
+            },
+            *wStore
+		);
     }
 
     void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore)
@@ -356,22 +206,24 @@ namespace Editor
             if (ImGui::BeginMenu("Edit"))
             {
                 if (ImGui::MenuItem("Settings"))
-                    widgetStore.push(std::make_unique<SettingsWidget>());
+                    insertWidgetArray<SettingsWidgetContext>(widgetStore, "settings");
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("New widget"))
             {
                 if (ImGui::MenuItem("Texture viewer"))
-                    widgetStore.push(std::make_unique<TextureViewer>(&textureStore));
+                {
+                    // Call TextureViewer
+                }
                 if (ImGui::MenuItem("Log viewer"))
-                    widgetStore.push(std::make_unique<LogViewer>());
+                    //widgetStore.push(std::make_unique<LogViewer>());
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Help"))
             {
                 if (ImGui::MenuItem("System info"))
                 {
-                    widgetStore.push(std::make_unique<SystemInfo>());
+                    //widgetStore.push(std::make_unique<SystemInfo>());
                 }
                 ImGui::EndMenu();
             }
@@ -380,10 +232,10 @@ namespace Editor
             if (ImGui::BeginMenu("Debug"))
             {
                 if (ImGui::MenuItem("Widget Inspector"))
-                    widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
+                    //widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
 
                 if (ImGui::MenuItem("ImGui Metrics"))
-                    widgetStore.push(std::make_unique<ImGuiMtericsWidget>());
+                    //widgetStore.push(std::make_unique<ImGuiMtericsWidget>());
                 ImGui::EndMenu();
             }
 #endif
@@ -425,7 +277,6 @@ namespace Editor
                 ImGui::PopStyleVar(3);
                 const auto dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
 
-                // Make this window as a dockspace
                 ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
                 ImGui::End();
             }
@@ -444,34 +295,31 @@ namespace Editor
         }
     }
 
-    void drawTextureView(void* texId, ImVec2& offset, ImVec2& scale, bool& open)
+    void drawTextureView(void* texId, Vec2f& offset, Vec2f& scale)
     {
         constexpr int flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
-        if (open)
-        {
-            ImVec2 size = ImGui::GetWindowSize();
+		ImVec2 size = ImGui::GetWindowSize();
 
-            constexpr const int comboBoxGap = 100;
+		constexpr const int comboBoxGap = 100;
 
-            ImGui::BeginChild("TextureViewer", {size.x, size.y - comboBoxGap}, false, flags);
+		ImGui::BeginChild("TextureViewer", {size.x, size.y - comboBoxGap}, false, flags);
 
-            if (ImGui::IsWindowHovered() && ImGui::IsKeyDown(ImGuiKey_LeftCtrl))
-            {
-                zoomTextureWhenScrolled(scale.x, scale.y);
-                moveTextureWhenDragged(offset.x, offset.y);
-            }
+		if (ImGui::IsWindowHovered() && ImGui::IsKeyDown(ImGuiKey_LeftCtrl))
+		{
+			zoomTextureWhenScrolled(scale.x, scale.y);
+			moveTextureWhenDragged(offset.x, offset.y);
+		}
 
-            // Dear Imgui draws textures upper left corner on current cursor position.
-            // When we zoom the texture we want to keep it centered. We do this by
-            // computing correct upper left corner so that the center of the texture is in the middle of the window.
-            ImVec2 center = {(size.x - scale.x) * 0.5f + offset.x, (size.y - scale.y) * 0.5f + offset.y};
+		// Dear Imgui draws textures upper left corner on current cursor position.
+		// When we zoom the texture we want to keep it centered. We do this by
+		// computing correct upper left corner so that the center of the texture is in the middle of the window.
+		ImVec2 center = {(size.x - scale.x) * 0.5f + offset.x, (size.y - scale.y) * 0.5f + offset.y};
 
-            // By moving the cursor position we can move the texture.
-            ImGui::SetCursorPos(center);
-            ImGui::Image(texId, ImVec2(scale.x, scale.y));
-            ImGui::EndChild();
-        }
+		// By moving the cursor position we can move the texture.
+		ImGui::SetCursorPos(center);
+		ImGui::Image(texId, ImVec2(scale.x, scale.y));
+		ImGui::EndChild();
     }
 
     void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture)
@@ -511,27 +359,6 @@ namespace Editor
         }
     }
 
-    void cleanInactiveWidgets(WidgetStore& widgetStore)
-    {
-        for (int i = 0; i < widgetStore.size(); ++i)
-        {
-            if (!widgetStore[i]->isOpen())
-                widgetStore.erase(i);
-        }
-    }
-
-    Viewport* findPrimaryViewport(const WidgetStore& widgetStore)
-    {
-        for (const auto& widget : widgetStore)
-        {
-            Viewport* viewport = dynamic_cast<Viewport*>(widget.get());
-            if (viewport && viewport->isPrimary())
-                return viewport;
-        }
-        RT_LOG_ERROR("No primary viewport found!");
-        return nullptr;
-    }
-
     void ImGuiImplInitGLFW(void* window)
     {
         ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(window), true);
@@ -560,5 +387,79 @@ namespace Editor
     void ImGuiRender()
     {
         ImGui::Render();
+    }
+
+    //-------------------------//
+    // Internal implementation //
+    //-------------------------//
+    
+    void processInput(ViewportContext& ctx)
+    {
+      float scroll = getMouseScroll();
+        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && ctx.camera.distance != scroll)
+        {
+            ctx.camera.distance = scroll * 0.5f;
+            ctx.camera.update();
+        }
+
+		auto cPos = getCursorPos();
+
+		// This simply prevents "snapping" the camera when we process mouse input for first time.
+		// We don't want to be using the "old" values for prevMouseX an prevMouseDeltaY.
+        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::RELEASE && getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
+		{
+			ctx.prevMousePos.x = cPos.x;
+			ctx.prevMousePos.y = cPos.y;
+		}
+
+		float mousePoxXDelta = static_cast<float>(cPos.x) - ctx.prevMousePos.x;
+		float mousePosYDelta = static_cast<float>(cPos.y) - ctx.prevMousePos.y;
+
+		ctx.prevMousePos.x = cPos.x;
+		ctx.prevMousePos.y = cPos.y;
+
+        // Move sideways
+        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && getMouseButton(MouseCode::MOUSE_BUTTON_3) == StatusCode::PRESS)
+        {
+            glm::vec3 x = ctx.camera.getRight() * mousePoxXDelta * 0.01f;
+            glm::vec3 y = ctx.camera.getUp() * mousePosYDelta * 0.01f;
+            ctx.camera.offset += x;
+            ctx.camera.offset -= y;
+            ctx.camera.target += x;
+            ctx.camera.target -= y;
+            ctx.camera.update();
+		}
+
+        // Rotation
+        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS)
+        {
+            float newYaw = ctx.camera.yaw += mousePoxXDelta * ctx.camera.speed;
+            float newPitch = ctx.camera.pitch -= mousePosYDelta * ctx.camera.speed;
+
+            if (newYaw < 0.1f && newYaw >= 0.0f)
+                newYaw = 0.1f;
+
+            if (newYaw > -0.1f && newYaw <= 0.0f)
+                newYaw = -0.1f;
+
+            if (newPitch > 89.9f)
+                newPitch = 89.9f;
+
+            if (newPitch < -89.9f)
+                newPitch = -89.9f;
+
+            ctx.camera.yaw = newYaw;
+            ctx.camera.pitch = newPitch;
+            ctx.camera.update();
+        }
+
+        // Move forward and backwards
+        if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && getMouseButton(MouseCode::MOUSE_BUTTON_2) == StatusCode::PRESS)
+        {
+            glm::vec3 x = ctx.camera.getDir() * mousePosYDelta * 0.1f;
+            ctx.camera.offset += x;
+            ctx.camera.target += x;
+            ctx.camera.update();
+        }
     }
 }

@@ -11,190 +11,199 @@
 #include "ImFileDialog.h"
 #include "core/Raytracer.h"
 #include "editor/Types.h"
+#include <tuple>
 
-//-------------------------------------------------------------------//
-// Handles all Dear ImGui (the GUI system used) related stuff.       //
-// Contains a set of widgets that can be drawn using Widget::draw(). //
-// Generally widgets are drawn as separate Dear ImGui windows but    //
-// exceptions exist such as drawing the MainMenuBar or Dockspace.    //
-//-------------------------------------------------------------------//
+//------------------------------------------------//
+// Contains the GUI implementation for the editor //
+//------------------------------------------------//
 
 namespace Editor
 {
-    //------------//
-    // Widget API //
-    //------------//
+    // Array of widget contexts
+    template<typename WidgetContext>
+    using WidgetArray = std::vector<WidgetContext>;
 
-    class Widget
+    // tuple of array of widget contexts
+    template<typename... WidgetContexts>
+    using WidgetArrayTuple = std::tuple<WidgetArray<WidgetContexts>...>;
+
+    //----------------------------------------//
+    // Forward declaration of widget contexts //
+    //----------------------------------------//
+
+    struct TextureViewerContext;
+    struct LogViewerContext;
+	struct ViewportContext;
+    struct SettingsWidgetContext;
+    struct WidgetInspectorContext;
+    struct ImGuiMetricsWidgetContext;
+    struct ImGuiStackToolWidgetContext;
+    struct RTControlsContext;
+    struct SystemInfoContext;
+
+    // Each widget type has it's own array to allow multiple instances
+    typedef WidgetArrayTuple
+	<
+        TextureViewerContext,
+		LogViewerContext,
+		ViewportContext,
+		SettingsWidgetContext,
+		WidgetInspectorContext,
+		ImGuiMetricsWidgetContext,
+	    ImGuiStackToolWidgetContext,
+		RTControlsContext,
+		SystemInfoContext
+	>
+	WidgetStore;
+
+    template<typename Context>
+    WidgetArray<Context>& getWidgetArray(WidgetStore& wStore)
     {
-    public:
-        Widget(const char* name);
-        inline  bool isOpen() { return m_open; }
-        inline  void setId(unsigned int id) { m_id = id; }
-        inline  void setWindowId(std::string&& windowId) { m_windowId = std::move(windowId); }
-        inline  unsigned int getId() const { return m_id; }
-        inline  const std::string& getName() const { return m_name; }
-        virtual void draw() = 0;
+        return std::get<WidgetArray<Context>>(wStore);
+    }
 
-    protected:
-        bool                m_open = true;
-        const std::string   m_name;
+    template<typename Context>
+    void insertWidgetArray(WidgetStore& wStore, std::string name)
+    {
+        auto& wArray = getWidgetArray<Context>(wStore);
+        unsigned int idx = static_cast<unsigned int>(wArray.size());
+        wArray.push_back({
+            name,                                  // name
+            idx,                                   // id
+            {name + "###" + std::to_string(idx)}   // windowId
+		});
+    }
 
-        // Note that ID needs to be explicitly set or otherwise it will be 0
-        unsigned int        m_id = 0;
+    template<typename Context>
+    void eraseWidgetArrayElement(WidgetStore& wStore, unsigned int idx)
+    {
+        auto& wArray = getWidgetArray<Context>(wStore);
+        assert(idx < wArray.size());
+        wArray.erase(wArray.begin() + idx);
+    }
 
-        // Used to ID Dear Imgui windows
-		// contains string: name###ID
-        std::string         m_windowId; 
+    //-----------------//
+    // Widget Contexts //
+    //-----------------//
+
+    // Common context for all of the widgets
+    struct WidgetContext
+    {
+        std::string  name;
+        unsigned int id = 0;
+        std::string  windowId; 
     };
 
-    class TextureViewer : public Widget
+    struct TextureViewerContext
     {
-    public:
-        TextureViewer(TextureStore* textureStore);
-        void draw() override;
-
-    private:
-        TextureStore*   m_textStore      = nullptr;
-        ImVec2          m_offset         = {0.0f, 0.0f};
-        ImVec2          m_scale          = {600.0f, 600.0f};
-        Texture*        m_currentTexture = nullptr;
+        WidgetContext wCtx;
+        Vec2f         offset         = {0.0f, 0.0f};
+        Vec2f         scale          = {600.0f, 600.0f};
+		TextureStore* textureStore   = nullptr;
+        Texture*      currentTexture = nullptr;
     };
 
-    class LogViewer : public Widget
+    struct LogViewerContext
     {
-    public:
-        LogViewer();
-        void draw() override;
-    private:
-        bool m_srollToBottom = true;
+        WidgetContext   wCtx;
+        bool srollToBottom = true;
     };
 
-    class WidgetStore
+    struct ViewportContext
     {
-    public:
-        unsigned int size() const;
-        Widget* operator[](int idx) const;
-        void push(std::unique_ptr<Widget>&& widget);
-        void erase(int idx);
-        std::vector<std::unique_ptr<Widget>>::iterator begin();
-        std::vector<std::unique_ptr<Widget>>::iterator end();
-        std::vector<std::unique_ptr<Widget>>::const_iterator begin() const;
-        std::vector<std::unique_ptr<Widget>>::const_iterator end() const;
-
-    private:
-        std::vector<std::unique_ptr<Widget>> m_widgets;
-        unsigned int m_currentUniqueIdx = 0; // Used to create unique ids for new widgets
-    };
-
-#ifndef NDEBUG
-    class WidgetInspector : public Widget
-    {
-    public:
-        WidgetInspector(WidgetStore* widgetStore);
-        void draw() override;
-    private:
-        WidgetStore* m_widgetStore;
-    };
-#endif
-
-    class SettingsWidget : public Widget
-    {
-    public:
-        SettingsWidget();
-        void draw() override;
-    };
-
-#ifndef NDEBUG
-    // Small wrapper for Dear Imgui metrics command.
-    // Used only for debugging
-    struct ImGuiMtericsWidget : public Widget
-    {
-        inline ImGuiMtericsWidget() : Widget("Dear Imgui Metrics") {}
-        inline void draw() override { ImGui::ShowMetricsWindow(&m_open); }
-    };
-
-    // Small wrapper for Dear ImGui stack tool
-    // Used only for debugging
-    struct ImguiStackToolWidget : public Widget
-    {
-        inline ImguiStackToolWidget() : Widget("Dear Imgui Stack tool") {}
-        inline void draw() override { ImGui::ShowStackToolWindow(); }
-    };
-#endif
-
-    class Viewport : public Widget
-    {
-    public:
-        Viewport();
-        void draw() override;
-
-        void setViewportTexture(const RenderTexture& renderTexture);
-        void setViewportTexture(unsigned int texID);
-        void setViewportTextureToColorAttachment(unsigned int);
-
-        inline bool isPrimary() const { return m_isPrimary; }
-
-    private:
-        void processInput();
-
-        bool          m_isPrimary = false;
-        bool          m_wireframe = false;
-        unsigned int  m_resX      = 1920;
-        unsigned int  m_resY      = 1080;
-        ImVec2        m_offset    = {0.0f, 0.0f};
-        ImVec2        m_scale     = {static_cast<float>(m_resX), static_cast<float>(m_resY)};
-        Camera        m_camera    = {static_cast<float>(m_resX)/static_cast<float>(m_resY),  // aspect ratio
+        WidgetContext wCtx;
+	    bool          isPrimary    = false;
+        bool          wireframe    = false;
+        Vec2i         resolution   = { 1920, 1080 };
+        Vec2f         offset       = { 0.0f, 0.0f };
+        Vec2f         scale        = { 1920, 1080 };
+        Camera        camera       = {static_cast<float>(resolution.x)/static_cast<float>(resolution.y),  // aspect ratio
                                      {0, 0.0, 3}, // pos
                                      {0.0, 0.0, -1}}; // target
-        float         m_prevMouseX = 0.0f;
-        float         m_prevMouseY = 0.0f;
-        Framebuffer   m_framebuffer;
-        Vertexbuffer  m_vertexbuffer;
-        ShaderProgram m_shaderProgram;
+        Vec2f         prevMousePos = { 0.0f, 0.0f };
+        Framebuffer   framebuffer;
+        Vertexbuffer  vertexbuffer;
+        ShaderProgram shaderProgram;
 
         // Viewport shows this texture
         void* m_viewportTexture = nullptr;
     };
 
-    class RTControls : public Widget
+    struct SettingsWidgetContext 
     {
-    public:
-        RTControls(Raytracer* raytracer, WidgetStore* widgetStore, TextureStore* textureStore);
-        void draw() override;
-    private:
-        Raytracer*    m_raytracer;
-        int           m_samples = 100;
-        WidgetStore*  m_widgetStore;
-        TextureStore* m_textureStore;
-        unsigned int  m_viewportTexture = 0;
+        WidgetContext wCtx;
     };
 
-    class SystemInfo : public Widget
+    struct WidgetInspectorContext
     {
-    public:
-        SystemInfo();
-        void draw() override;
-    private:
-        std::string m_GPUVendor;
-        std::string m_renderer;
-        std::string m_GLVersion;
-        std::string m_GLSLVersion;
+        WidgetContext wCtx;
+        WidgetStore*  widgetStore;
     };
+
+    struct ImGuiMetricsWidgetContext 
+    {
+        WidgetContext wCtx;
+    };
+
+    struct ImGuiStackToolWidgetContext 
+    {
+        WidgetContext wCtx;
+    };
+
+    struct RTControlsContext
+    {
+        WidgetContext wCtx;
+        Raytracer*    raytracer;
+        int           samples = 100;
+        WidgetStore*  widgetStore;
+        TextureStore* textureStore;
+        unsigned int  viewportTexture = 0;
+    };
+
+    struct SystemInfoContext
+    {
+        WidgetContext wCtx;
+        std::string   GPUVendor;
+        std::string   renderer;
+        std::string   GLVersion;
+        std::string   GLSLVersion;
+    };
+
+    //-----------------------//
+    // Draw widget functions //
+    //-----------------------//
+
+    void drawWidget(WidgetStore* wStore, TextureViewerContext& ctx);
+    void drawWidget(WidgetStore* wStore, LogViewerContext& ctx);
+    void drawWidget(WidgetStore* wStore, ViewportContext& ctx);
+    void drawWidget(WidgetStore* wStore, SettingsWidgetContext& ctx);
+    void drawWidget(WidgetStore* wStore, WidgetInspectorContext& ctx);
+    void drawWidget(WidgetStore* wStore, ImGuiMetricsWidgetContext& ctx);
+    void drawWidget(WidgetStore* wStore, ImGuiStackToolWidgetContext& ctx);
+    void drawWidget(WidgetStore* wStore, RTControlsContext& ctx);
+    void drawWidget(WidgetStore* wStore, SystemInfoContext& ctx);
+
+    template<typename Context>
+    void drawWidgetArray(WidgetStore* wStore, WidgetArray<Context>& wArray)
+    {
+        for (auto& wCtx : wArray)
+        {
+            drawWidget(wStore, wCtx);
+        }
+    }
+
+    void drawAllWidgets(WidgetStore* wStore);
 
     // Shows the main menubar at the top of the main window
     void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore);
     // Dockspace simply allows windows to be docked to the main window
     void drawDockspace(const char* name, ImGuiID dockspaceID, const ImGuiIO& io);
     void drawImFileDialogAndProcessInput();
-    void drawTextureView(void* currentTexId, ImVec2& offset, ImVec2& scale, bool& open);
+    void drawTextureView(void* currentTexId, Vec2f& offset, Vec2f& scale);
     void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture);
 
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
     void zoomTextureWhenScrolled(float& width, float& height);
-
-    void cleanInactiveWidgets(WidgetStore& widgetStore);
-    Viewport* findPrimaryViewport(const WidgetStore& widgetStore);
 
     //------------------------------------------------------//
     // Wrapper for Dear ImGui OpenGL backend implementation //

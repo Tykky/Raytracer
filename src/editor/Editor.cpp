@@ -18,7 +18,7 @@ namespace Editor
     void renderGui(ImGuiIO &io);
     void drawEditor(const ImGuiIO& io);
     void windowErrorCallback(int code, const char* description);
-    void createDefaultEditorWidgets(WidgetStore& widgetStore);
+    //void createDefaultEditorWidgets(WidgetStore& widgetStore);
     void logVendorInfo();
     std::vector<FilePath> filesInsideDirectory();
     GLFWwindow* getCurrentWindowHandle();
@@ -32,7 +32,7 @@ namespace Editor
         GLFWwindow*  window       = nullptr;
         float        deltaTime    = 0.0f;
         float        mouseScroll  = 0.0f;
-        Vec2D<float> cursorPos    = { 0.0f, 0.0f };
+        Vec2f        cursorPos    = { 0.0f, 0.0f };
         WidgetStore  widgetStore;
         TextureStore textureStore;
         Raytracer    raytracer;
@@ -85,7 +85,7 @@ namespace Editor
         io.WantSaveIniSettings = false;
 #endif
 
-        createDefaultEditorWidgets(ctx.widgetStore);
+        // createDefaultEditorWidgets(ctx.widgetStore);
         setMouseScrollCallback();
         ctx.initialized = true;
     }
@@ -180,7 +180,6 @@ namespace Editor
 
             glfwPollEvents();
             clear();
-            cleanInactiveWidgets(ctx.widgetStore);
             renderGui(io);
             glfwSwapBuffers(glfwWindow);
             endTime = glfwGetTime();
@@ -202,11 +201,7 @@ namespace Editor
         drawImFileDialogAndProcessInput();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
         drawDockspace("Main", dockspaceID, io);
-
-        for (auto& widget : ctx.widgetStore)
-        {
-            widget->draw();
-        }
+        drawAllWidgets(&ctx.widgetStore);
     }
 
     void renderGui(ImGuiIO& io)
@@ -229,17 +224,19 @@ namespace Editor
         ImGuiRenderDrawData();
     }
 
+    /*
     void createDefaultEditorWidgets(WidgetStore& widgetStore)
     {
-        widgetStore.push(std::make_unique<Viewport>());
-        widgetStore.push(std::make_unique<LogViewer>());
-        widgetStore.push(std::make_unique<RTControls>(&ctx.raytracer, &ctx.widgetStore, &ctx.textureStore));
+        //widgetStore.push(std::make_unique<Viewport>());
+        //widgetStore.push(std::make_unique<LogViewer>());
+        //widgetStore.push(std::make_unique<RTControls>(&ctx.raytracer, &ctx.widgetStore, &ctx.textureStore));
 #ifndef NDEBUG
-        widgetStore.push(std::make_unique<WidgetInspector>(&ctx.widgetStore));
-        widgetStore.push(std::make_unique<ImGuiMtericsWidget>());
-        widgetStore.push(std::make_unique<ImguiStackToolWidget>());
+        //widgetStore.push(std::make_unique<WidgetInspector>(&ctx.widgetStore));
+        //widgetStore.push(std::make_unique<ImGuiMtericsWidget>());
+        //widgetStore.push(std::make_unique<ImguiStackToolWidget>());
 #endif
     }
+    */
 
     std::vector<FilePath> filesInsideDirectory()
     {

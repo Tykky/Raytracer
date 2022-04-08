@@ -417,11 +417,8 @@ namespace Editor
         }
 
         std::optional<Texture> tex(std::in_place, filename, data, width, height);
-
         stbi_image_free(data);
-
         RT_LOG_MSG("Loaded texture {} with size: {}x{}", filename, width, height);
-
         return tex;
     }
 
