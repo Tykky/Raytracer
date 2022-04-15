@@ -24,31 +24,19 @@ namespace Editor
     template<typename Context>
     struct ImGuiScopedBegin
     {
-        ImGuiScopedBegin(WidgetStore* wStore, const Context& ctx, ImGuiWindowFlags flags = 0) :
-            m_wStore(wStore)
+        ImGuiScopedBegin(WidgetStore* wStore, const Context& ctx, ImGuiWindowFlags flags = 0)
         {
             bool open = true;
             ImGui::Begin(ctx.wCtx.windowId.data(), &open, flags);
-
             if (!open) // when close window button is pressed
             {
-                m_signalDelete = true;
-                m_removeIdx = ctx.wCtx.id;
             }
          }
 
         ~ImGuiScopedBegin()
         {
             ImGui::End();
-            if (m_signalDelete)
-            {
-            }
         }
-
-    private:
-        bool         m_signalDelete = false;
-        unsigned int m_removeIdx;
-        WidgetStore* m_wStore;
     };
 
     struct ImGuiScopedBeginChild
