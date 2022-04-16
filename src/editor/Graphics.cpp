@@ -433,13 +433,13 @@ namespace Editor
         glUniform3f(loc, v[0], v[1], v[2]);
     }
 
-    void Editor::setUniform(unsigned int shader, const char* name, glm::vec4 v)
+    void setUniform(unsigned int shader, const char* name, glm::vec4 v)
     {
         int loc = glGetUniformLocation(shader, name);
         glUniform4f(loc, v[0], v[1], v[2], v[3]);
     }
 
-    void Editor::setUniform(unsigned int shader, const char* name, glm::mat4 m)
+    void setUniform(unsigned int shader, const char* name, glm::mat4 m)
     {
         int loc = glGetUniformLocation(shader, name);
         glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(m));
@@ -469,7 +469,7 @@ namespace Editor
 
     void deleteTexture(void* tex)
     {
-        GLuint texID = (GLuint)tex;
+        GLuint texID = (long)(tex);
         glDeleteTextures(1, &texID);
     }
 

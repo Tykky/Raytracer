@@ -4,7 +4,7 @@
 #include <memory>
 #include "Widgets.h"
 #include "editor/Graphics.h"
-#include "editor/Styles/DarkTheme.h"
+#include "editor/styles/DarkTheme.h"
 #include "editor/Input.h"
 #include "ImFileDialog.h"
 #include "core/Raytracer.h"
