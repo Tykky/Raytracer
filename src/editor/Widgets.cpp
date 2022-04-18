@@ -15,29 +15,24 @@
 
 namespace Editor
 {
-    //------------------------------//
-    // Widget helper implementation //
-    //------------------------------//
+    // Widget helper implementation
 
-    void deleteMarkedWidgets(WidgetStore& wStore)
+    void deleteAllMarkedWidgets(WidgetStore& wStore)
     {
         std::apply(
             [](auto&... wArrays)
             {
+                (deleteMarkedWidgetsFromArray(wArrays), ...);
             },
             wStore
         );
     }
 
-    //---------------------------------------//
-    // Forward declaration of internal stuff //
-    //---------------------------------------//
+    // Forward declaration of internal stuff
 
     void processInput(ViewportContext& ctx);
 
-    //----------//
-    // Internal //
-    //----------//
+    // Internal
 
     template<typename Context>
     struct ImGuiScopedBegin
@@ -71,9 +66,7 @@ namespace Editor
         }
     };
 
-    //---------------------------//
-    // drawWidget implementation //
-    //---------------------------//
+    // drawWidget implementation
 
     void drawWidget(WidgetStore* wStore, TextureViewerContext& ctx)
     {
@@ -214,27 +207,28 @@ namespace Editor
                     ifd::FileDialog::Instance().Open("Dialog", "Open a file", "");
                 ImGui::EndMenu();
             }
+
             if (ImGui::BeginMenu("Edit"))
             {
                 if (ImGui::MenuItem("Settings"))
                     insertWidgetArray<SettingsWidgetContext>(widgetStore, "settings");
                 ImGui::EndMenu();
             }
+
             if (ImGui::BeginMenu("New widget"))
             {
                 if (ImGui::MenuItem("Texture viewer"))
-                {
-                    // Call TextureViewer
-                }
+                    insertWidgetArray<TextureViewerContext>(widgetStore, "Texture viewr");
                 if (ImGui::MenuItem("Log viewer"))
-                    //widgetStore.push(std::make_unique<LogViewer>());
+                    insertWidgetArray<LogViewerContext>(widgetStore, "Log viewer");
                 ImGui::EndMenu();
             }
+
             if (ImGui::BeginMenu("Help"))
             {
                 if (ImGui::MenuItem("System info"))
                 {
-                    //widgetStore.push(std::make_unique<SystemInfo>());
+                    insertWidgetArray<SystemInfoContext>(widgetStore, "System info");
                 }
                 ImGui::EndMenu();
             }
@@ -243,10 +237,11 @@ namespace Editor
             if (ImGui::BeginMenu("Debug"))
             {
                 if (ImGui::MenuItem("Widget Inspector"))
-                    //widgetStore.push(std::make_unique<WidgetInspector>(&widgetStore));
+                    insertWidgetArray<WidgetInspectorContext>(widgetStore, "Widget inspector");
 
                 if (ImGui::MenuItem("ImGui Metrics"))
-                    //widgetStore.push(std::make_unique<ImGuiMtericsWidget>());
+                    insertWidgetArray<ImGuiMetricsWidgetContext>(widgetStore, "Imgui Metrics");
+
                 ImGui::EndMenu();
             }
 #endif
@@ -400,9 +395,7 @@ namespace Editor
         ImGui::Render();
     }
 
-    //-------------------------//
-    // Internal implementation //
-    //-------------------------//
+    // Internal implementation
     
     void processInput(ViewportContext& ctx)
     {

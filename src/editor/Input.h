@@ -3,16 +3,12 @@
 
 #include "editor/Types.h"
 
-//--------------------------------------------//
-// Everything that has to do with user input, //
-// key strokes, mouse input etc..             //
-//--------------------------------------------//
+// Everything that has to do with user input,
+// key strokes, mouse input etc..
 
 namespace Editor
 {
-	//-------------//
-	// Input enums //
-	//-------------//
+	// Input enums
 
 	// these keycodes directly match with #defines used in GLFW
 	enum class KeyCode 
@@ -159,9 +155,7 @@ namespace Editor
 		REPEAT = 2
 	};
 
-	//-----------------------------//
-	// User input API declaration  //
-	//-----------------------------//
+	// User input API declaration
 
     StatusCode getKey(KeyCode code);
     StatusCode getMouseButton(MouseCode button);

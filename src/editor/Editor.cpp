@@ -11,9 +11,7 @@
 
 namespace Editor
 {
-    //------------------------------//
-    // Internal forward declaration //
-    //------------------------------//
+    // Internal forward declaration
 
     void renderGui(ImGuiIO &io);
     void drawEditor(const ImGuiIO& io);
@@ -23,9 +21,7 @@ namespace Editor
     std::vector<FilePath> filesInsideDirectory();
     GLFWwindow* getCurrentWindowHandle();
 
-    //----------------//
-    // Editor Context //
-    //----------------//
+    // Editor Context
 
     struct EditorContext 
     {
@@ -42,9 +38,7 @@ namespace Editor
     // For now there is only one context at any given time
     static EditorContext ctx;
 
-    //---------------------------//
-    // Editor API implementation //
-    //---------------------------//
+    // Editor API implementation
 
     void init(const Options &options)
     {
@@ -186,9 +180,7 @@ namespace Editor
         }
     }
    
-    //-------------------------//
-    // Internal implementation //
-    //-------------------------//
+    // Internal implementation
 
     void windowErrorCallback(int code, const char* description)
     {
@@ -202,6 +194,7 @@ namespace Editor
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
         drawDockspace("Main", dockspaceID, io);
         drawAllWidgets(&ctx.widgetStore);
+        deleteAllMarkedWidgets(ctx.widgetStore);
     }
 
     void renderGui(ImGuiIO& io)

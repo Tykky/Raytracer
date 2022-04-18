@@ -1,9 +1,7 @@
 #ifndef RAYTRACER_EDITOR_TYPES_H
 #define RAYTRACER_EDITOR_TYPES_H
 
-//----------------------------------//
-// Custom types used by the Editor  //
-//----------------------------------//
+// Custom types used by the Editor
 
 template<typename T>
 struct Vec2

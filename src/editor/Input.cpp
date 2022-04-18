@@ -5,29 +5,21 @@
 
 namespace Editor
 {
-    //---------------------------------------------------------//
-    // Forward declaration of functions defined in Editor.cpp  //
-    //---------------------------------------------------------//
+    // Forward declaration of functions defined in Editor.cpp
 
     GLFWwindow* getCurrentWindowHandle();
 
-	//---------------------------------------//
-	// Forward declaration of internal stuff //
-	//---------------------------------------//
+	// Forward declaration of internal stuff
 
 	int keyCodeToGLFW(KeyCode code);
 	int mouseButtonToGLFW(MouseCode button);
 	void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
-	//-------------------------------------------------//
-	// Callbacks have access to these static variables //
-	//-------------------------------------------------//
+	// Callbacks have access to these static variables
 
 	static float MOUSE_SCROLL = 0.0f;
 
-	//---------------------//
-	// User input API impl //
-	//---------------------//
+	// User input API impl
 
 	StatusCode getKey(KeyCode code)
 	{
@@ -60,9 +52,7 @@ namespace Editor
 		glfwSetScrollCallback(getCurrentWindowHandle(), mouseScrollCallback);
 	}
 
-	//-------------------------//
-	// Internal implementation //
-	//-------------------------//
+	// Internal implementation
 
 	int keyCodeToGLFW(KeyCode code)
 	{

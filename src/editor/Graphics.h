@@ -8,9 +8,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-//-----------------------------------------//
-// Small graphics layer on top of OpenGL   //
-//-----------------------------------------//
+// Small graphics layer on top of OpenGL
 
 // Quad for testing purposes
 static constexpr float defaultRectangleData[] =
@@ -75,16 +73,12 @@ static constexpr float defaultCubeData[] =
 
 namespace Editor
 {
-    //---------------------------------------------------------//
-    // Forward declaration of functions defined in Editor.cpp  //
-    // This prevents circular dependency                       //
-    //---------------------------------------------------------//
+    // Forward declaration of functions defined in Editor.cpp
+    // This prevents circular dependency
 
     float getDeltaTime();
 
-    //---------------------------//
-    // Graphics API declaration  //
-    //---------------------------//
+    // Graphics API declaration
 
     enum class ShaderType
     {

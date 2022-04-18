@@ -13,9 +13,7 @@
 #include "editor/Types.h"
 #include <tuple>
 
-//------------------------------------------------//
-// Contains the GUI implementation for the editor //
-//------------------------------------------------//
+// Contains the GUI implementation for the editor
 
 namespace Editor
 {
@@ -27,9 +25,7 @@ namespace Editor
     template<typename... WidgetContexts>
     using WidgetArrayTuple = std::tuple<WidgetArray<WidgetContexts>...>;
 
-    //----------------------------------------//
-    // Forward declaration of widget contexts //
-    //----------------------------------------//
+    // Forward declaration of widget contexts
 
     struct TextureViewerContext;
     struct LogViewerContext;
@@ -41,7 +37,7 @@ namespace Editor
     struct RTControlsContext;
     struct SystemInfoContext;
 
-    // Each widget type has it's own array to allow multiple instances
+    // Each widget type has its own array to allow multiple instances
     typedef WidgetArrayTuple
 	<
         TextureViewerContext,
@@ -56,9 +52,7 @@ namespace Editor
 	>
 	WidgetStore;
 
-    //------------------------------//
-    // WidgetStore helper functions //
-    //------------------------------//
+    // WidgetStore helper functions
 
     template<typename Context>
     WidgetArray<Context>& getWidgetArray(WidgetStore& wStore)
@@ -79,17 +73,24 @@ namespace Editor
     }
 
     template<typename Context>
-    void deleteMarkedFromArray(Context& widget)
+    void deleteMarkedWidgetsFromArray(WidgetArray<Context>& wArray)
     {
+        auto isMarkedForDelete = [](Context& widget) 
+        {
+            return widget.wCtx.markForDelete;
+        };
+
+		wArray.erase(
+			std::remove_if(wArray.begin(), wArray.end(), isMarkedForDelete),
+			wArray.end()
+		);
     }
 
-    void deleteMarkedWidgets(WidgetStore& wStore);
+    void deleteAllMarkedWidgets(WidgetStore& wStore);
 
-    //-----------------//
-    // Widget Contexts //
-    //-----------------//
+    // Widget Contexts
 
-    // Common context for all the widgets
+    // Common context for all widgets
     struct WidgetContext
     {
         std::string  name;
@@ -173,9 +174,7 @@ namespace Editor
         std::string   GLSLVersion;
     };
 
-    //-----------------------//
-    // Draw widget functions //
-    //-----------------------//
+    // Draw widget functions
 
     void drawWidget(WidgetStore* wStore, TextureViewerContext& ctx);
     void drawWidget(WidgetStore* wStore, LogViewerContext& ctx);
@@ -209,9 +208,7 @@ namespace Editor
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
     void zoomTextureWhenScrolled(float& width, float& height);
 
-    //------------------------------------------------------//
-    // Wrapper for Dear ImGui OpenGL backend implementation //
-    //------------------------------------------------------//
+    // Wrapper for Dear ImGui OpenGL backend implementation
 
     void ImGuiImplInitGLFW(void* window);
     void ImGuiImplInitGL3(const char* glslVer);
