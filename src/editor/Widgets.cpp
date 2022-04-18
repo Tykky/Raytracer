@@ -15,21 +15,40 @@
 
 namespace Editor
 {
+    //------------------------------//
+    // Widget helper implementation //
+    //------------------------------//
+
+    void deleteMarkedWidgets(WidgetStore& wStore)
+    {
+        std::apply(
+            [](auto&... wArrays)
+            {
+            },
+            wStore
+        );
+    }
+
     //---------------------------------------//
     // Forward declaration of internal stuff //
     //---------------------------------------//
 
     void processInput(ViewportContext& ctx);
 
+    //----------//
+    // Internal //
+    //----------//
+
     template<typename Context>
     struct ImGuiScopedBegin
     {
-        ImGuiScopedBegin(WidgetStore* wStore, const Context& ctx, ImGuiWindowFlags flags = 0)
+        ImGuiScopedBegin(WidgetStore* wStore, Context& ctx, ImGuiWindowFlags flags = 0)
         {
             bool open = true;
             ImGui::Begin(ctx.wCtx.windowId.data(), &open, flags);
             if (!open) // when close window button is pressed
             {
+                ctx.wCtx.markForDelete = true;
             }
          }
 
@@ -51,6 +70,10 @@ namespace Editor
             ImGui::EndChild();
         }
     };
+
+    //---------------------------//
+    // drawWidget implementation //
+    //---------------------------//
 
     void drawWidget(WidgetStore* wStore, TextureViewerContext& ctx)
     {

@@ -56,6 +56,10 @@ namespace Editor
 	>
 	WidgetStore;
 
+    //------------------------------//
+    // WidgetStore helper functions //
+    //------------------------------//
+
     template<typename Context>
     WidgetArray<Context>& getWidgetArray(WidgetStore& wStore)
     {
@@ -66,32 +70,32 @@ namespace Editor
     void insertWidgetArray(WidgetStore& wStore, std::string name)
     {
         auto& wArray = getWidgetArray<Context>(wStore);
-        unsigned int idx = static_cast<unsigned int>(wArray.size());
+        static unsigned int idx = 0;
         wArray.push_back({
-            name,                                  // name
-            idx,                                   // id
-            {name + "###" + std::to_string(idx)}   // windowId
+            name,
+            idx,
+            {name + "###" + std::to_string(idx++)}
 		});
     }
 
     template<typename Context>
-    void eraseWidgetArrayElement(WidgetStore& wStore, unsigned int idx)
+    void deleteMarkedFromArray(Context& widget)
     {
-        auto& wArray = getWidgetArray<Context>(wStore);
-        assert(idx < wArray.size());
-        wArray.erase(wArray.begin() + idx);
     }
+
+    void deleteMarkedWidgets(WidgetStore& wStore);
 
     //-----------------//
     // Widget Contexts //
     //-----------------//
 
-    // Common context for all of the widgets
+    // Common context for all the widgets
     struct WidgetContext
     {
         std::string  name;
         unsigned int id = 0;
-        std::string  windowId; 
+        std::string  windowId;
+        bool         markForDelete = false;
     };
 
     struct TextureViewerContext
