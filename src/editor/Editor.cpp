@@ -189,6 +189,7 @@ namespace Editor
 
     void drawEditor(const ImGuiIO& io)
     {
+        bool open = true;
         drawMainMenuBar(ctx.widgetStore, ctx.textureStore);
         drawImFileDialogAndProcessInput();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");

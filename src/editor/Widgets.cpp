@@ -256,7 +256,7 @@ namespace Editor
             const auto viewport = ImGui::GetMainViewport();
 
             // We need to leave some room at top to fit the main menu bar
-            static const int mainMenuGap = 22;
+            static const int mainMenuGap = 19;
 
             ImVec2 pos = viewport->Pos;
             pos = {pos.x, pos.y + mainMenuGap};
@@ -342,6 +342,11 @@ namespace Editor
             ImGui::EndCombo();
         }
         ImGui::EndChild();
+    }
+
+    void dragWindowFromEdges() 
+    {
+        constexpr unsigned int dragArea = 20; //pixels
     }
 
     void moveTextureWhenDragged(float& offsetX, float& offsetY)

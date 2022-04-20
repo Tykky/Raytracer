@@ -205,6 +205,9 @@ namespace Editor
     void drawTextureView(void* currentTexId, Vec2f& offset, Vec2f& scale);
     void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture);
 
+    // When window frame is not drawn by OS
+    void dragWindowFromEdges();
+
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
     void zoomTextureWhenScrolled(float& width, float& height);
 
