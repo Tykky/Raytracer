@@ -344,11 +344,6 @@ namespace Editor
         ImGui::EndChild();
     }
 
-    void dragWindowFromEdges() 
-    {
-        constexpr unsigned int dragArea = 20; //pixels
-    }
-
     void moveTextureWhenDragged(float& offsetX, float& offsetY)
     {
         if (ImGui::IsMouseDragging(0))

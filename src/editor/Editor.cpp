@@ -16,6 +16,10 @@ namespace Editor
     void renderGui(ImGuiIO &io);
     void drawEditor(const ImGuiIO& io);
     void windowErrorCallback(int code, const char* description);
+    void dragAndResizeFromEdges();
+
+    void updateCursorPosAndDelta();
+
     //void createDefaultEditorWidgets(WidgetStore& widgetStore);
     void logVendorInfo();
     std::vector<FilePath> filesInsideDirectory();
@@ -28,7 +32,8 @@ namespace Editor
         GLFWwindow*  window       = nullptr;
         float        deltaTime    = 0.0f;
         float        mouseScroll  = 0.0f;
-        Vec2f        cursorPos    = { 0.0f, 0.0f };
+        Vec2d        cursorPos    = { 0.0f, 0.0f };
+        Vec2d        cursorDelta  = { 0.0f, 0.0f };
         WidgetStore  widgetStore;
         TextureStore textureStore;
         Raytracer    raytracer;
@@ -189,7 +194,9 @@ namespace Editor
 
     void drawEditor(const ImGuiIO& io)
     {
+        updateCursorPosAndDelta();
         bool open = true;
+        dragAndResizeFromEdges();
         drawMainMenuBar(ctx.widgetStore, ctx.textureStore);
         drawImFileDialogAndProcessInput();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
@@ -216,6 +223,80 @@ namespace Editor
             glfwMakeContextCurrent(window);
         }
         ImGuiRenderDrawData();
+    }
+
+    void dragAndResizeFromEdges()
+    {
+        const double moveAreaSize = 20.0f; // pixels
+        const double resizeAreaSize = 5.0f;
+        GLFWwindow* win = getCurrentWindowHandle();
+        static GLFWcursor* resizeHorisontalCursor = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+        static GLFWcursor* resizeVerticalCursor = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+
+        // Assume there is only one window
+        static bool dragMode     = false;
+        static bool resizeRight  = false;
+        static bool resizeLeft   = false;
+
+        int w, h;
+        glfwGetWindowSize(win, &w, &h);
+
+		int x, y;
+		glfwGetWindowPos(win, &x, &y);
+
+
+        // Drag from top
+        // TODO; use absolute screen coordinates instead
+        if (dragMode || ctx.cursorPos.y < moveAreaSize && ctx.cursorPos.y > resizeAreaSize)
+        {
+            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS) 
+            {
+                dragMode = true;
+                glfwSetWindowPos(win, x + ctx.cursorDelta.x, y + ctx.cursorDelta.y);
+				RT_LOG_MSG("{},{}", ctx.cursorDelta.x, ctx.cursorDelta.y);
+            }
+
+            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
+                dragMode = false;
+
+        }
+
+        // resize from bottom 
+        if (resizeRight || ctx.cursorPos.y > static_cast<double>(h) - resizeAreaSize)
+        {
+            glfwSetCursor(win, resizeVerticalCursor);
+            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS) 
+            {
+                resizeRight = true;
+                glfwSetWindowSize(win, w, h + ctx.cursorDelta.y);
+            }
+
+            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
+                resizeRight = false;
+        }
+
+        // resize from right
+        if (resizeLeft || ctx.cursorPos.x > static_cast<double>(w) - resizeAreaSize)
+        {
+            glfwSetCursor(win, resizeHorisontalCursor);
+            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS) 
+            {
+                resizeLeft = true;
+                glfwSetWindowSize(win, w + ctx.cursorDelta.x, h);
+            }
+
+            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
+                resizeLeft = false;
+        }
+    }
+
+    void updateCursorPosAndDelta()
+    {
+        double x, y;
+        glfwGetCursorPos(ctx.window, &x, &y);
+        ctx.cursorDelta.x = x - ctx.cursorPos.x;
+        ctx.cursorDelta.y = y - ctx.cursorPos.y;
+        ctx.cursorPos = { x, y };
     }
 
     /*

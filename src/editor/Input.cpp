@@ -40,9 +40,9 @@ namespace Editor
 		return MOUSE_SCROLL;
 	}
 
-	Vec2<double> getCursorPos()
+	Vec2d getCursorPos()
 	{
-		Vec2<double> v;
+		Vec2d v;
 		glfwGetCursorPos(getCurrentWindowHandle(), &v.x, &v.y);
 		return v;
 	}
