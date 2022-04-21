@@ -234,19 +234,16 @@ namespace Editor
         static GLFWcursor* resizeVerticalCursor = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
 
         // Assume there is only one window
-        static bool dragMode     = false;
-        static bool resizeRight  = false;
-        static bool resizeLeft   = false;
+        static bool dragMode    = false;
+        static bool resizeRight = false;
+        static bool resizeLeft  = false;
 
-        int w, h;
+        int x, y, w, h;
         glfwGetWindowSize(win, &w, &h);
-
-		int x, y;
 		glfwGetWindowPos(win, &x, &y);
 
 
         // Drag from top
-        // TODO; use absolute screen coordinates instead
         if (dragMode || ctx.cursorPos.y < moveAreaSize && ctx.cursorPos.y > resizeAreaSize)
         {
             if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS) 
