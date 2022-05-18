@@ -122,8 +122,9 @@ namespace Editor
         Vec2i         resolution   = { 1920, 1080 };
         Vec2f         offset       = { 0.0f, 0.0f };
         Vec2f         scale        = { 1920, 1080 };
-        Camera        camera       = {static_cast<float>(resolution.x)/static_cast<float>(resolution.y),  // aspect ratio
-                                     {0, 0.0, 3}, // pos
+        Camera        camera       = {static_cast<float>(resolution.x)/
+                                      static_cast<float>(resolution.y),  // aspect ratio
+                                     {0, 0.0, 3},     // pos
                                      {0.0, 0.0, -1}}; // target
         Vec2f         prevMousePos = { 0.0f, 0.0f };
         Framebuffer   framebuffer;

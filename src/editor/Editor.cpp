@@ -9,16 +9,17 @@
 #include "ImFileDialog.h"
 #include "core/Raytracer.h"
 
-namespace Editor
+namespace Editor 
 {
     // Internal forward declaration
 
-    void renderGui(ImGuiIO &io);
+    void renderGui(ImGuiIO& io);
     void drawEditor(const ImGuiIO& io);
     void windowErrorCallback(int code, const char* description);
     void dragAndResizeFromEdges();
 
     void updateCursorPosAndDelta();
+    void updateFps();
 
     //void createDefaultEditorWidgets(WidgetStore& widgetStore);
     void logVendorInfo();
@@ -29,15 +30,17 @@ namespace Editor
 
     struct EditorContext 
     {
-        GLFWwindow*  window       = nullptr;
-        float        deltaTime    = 0.0f;
-        float        mouseScroll  = 0.0f;
-        Vec2d        cursorPos    = { 0.0f, 0.0f };
-        Vec2d        cursorDelta  = { 0.0f, 0.0f };
+        GLFWwindow*  window             = nullptr;
+        float        deltaTime          = 0.0f;
+        float        fps                = 0.0f;
+        float        mouseScroll        = 0.0f;
+        Vec2d        cursorPos          = { 0.0f, 0.0f }; // Screen coordinates
+        Vec2d        cursorRelativePos  = { 0.0f, 0.0f }; // Relative to window position
+        Vec2d        cursorDelta        = { 0.0f, 0.0f };
         WidgetStore  widgetStore;
         TextureStore textureStore;
         Raytracer    raytracer;
-        bool         initialized  = false;
+        bool         initialized        = false;
     };
 
     // For now there is only one context at any given time
@@ -45,14 +48,14 @@ namespace Editor
 
     // Editor API implementation
 
-    void init(const Options &options)
+    void init(const Options& options) 
     {
         ImGui::CreateContext();
 
-        ImGuiIO &io = ImGui::GetIO();
+        ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-        if (options.enableViewports)
+        if (options.enableViewports) 
         {
             io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         }
@@ -64,12 +67,12 @@ namespace Editor
         ImGuiImplInitGL3("#version 440");
 
         // ImFIleDialog needs functions for creating and freeing textures for icons
-        ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void*
+        ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void* 
         {
             return createTexture(data, w, h, fmt);
         };
 
-        ifd::FileDialog::Instance().DeleteTexture = [](void* tex)
+        ifd::FileDialog::Instance().DeleteTexture = [](void* tex) 
         {
             deleteTexture(tex);
         };
@@ -89,20 +92,19 @@ namespace Editor
         ctx.initialized = true;
     }
 
-    void createWindow(const char* title, int width, int height, const Options& options)
+    void createWindow(const char* title, int width, int height, const Options& options) 
     {
-        if (ctx.window)
-        {
+        if (ctx.window) {
             RT_LOG_WARNING("Tried to create a window when there is already one!");
             return;
         }
 
         glfwSetErrorCallback(windowErrorCallback);
         GLFWwindow* window;
-        if (glfwInit())
+        if (glfwInit()) 
         {
             RT_LOG_MSG("GLFW initialized");
-            if (!options.enableMainWindowBorders)
+            if (!options.enableMainWindowBorders) 
             {
                 glfwWindowHint(GLFW_DECORATED, false);
             }
@@ -111,38 +113,38 @@ namespace Editor
             glfwMakeContextCurrent(window);
             RT_LOG_MSG("GLFW window created");
 
-            if (!options.enableVsync)
+            if (!options.enableVsync) 
             {
                 RT_LOG_MSG("Vsync disabled");
                 glfwSwapInterval(0);
-            }
-            else
+            } 
+            else 
             {
                 RT_LOG_MSG("Vsync enabled");
             }
 
-            if (loadGLExtensions() != LOADGL_OK)
+            if (loadGLExtensions() != LOADGL_OK) 
             {
                 RT_LOG_ERROR("Failed to initialize GLEW!");
                 abort();
             }
-            else
+            else 
             {
                 RT_LOG_MSG("GLEW initialized");
                 logVendorInfo();
             }
         }
-        else
+        else 
         {
             RT_LOG_ERROR("Failed to initialize GLEW");
             abort();
         }
-		ctx.window = window;
+        ctx.window = window;
     }
 
-    void destroyWindow()
+    void destroyWindow() 
     {
-        if(!ctx.window)
+        if (!ctx.window) 
         {
             RT_LOG_WARNING("Tried to destroy window when one hasn't been created yet!");
             return;
@@ -154,25 +156,25 @@ namespace Editor
         RT_LOG_MSG("GLFW terminated");
     }
 
-    void renderLoop()
+    void renderLoop() 
     {
-        if(!ctx.window)
+        if (!ctx.window) 
         {
             RT_LOG_WARNING("Tried to enter renderloop when there is no valid window yet!");
             return;
         }
 
-        if(!ctx.initialized)
+        if (!ctx.initialized) 
         {
             RT_LOG_WARNING("Tried to enter renderloop when the editor is not initialized!");
             return;
         }
 
         GLFWwindow* glfwWindow = reinterpret_cast<GLFWwindow*>(ctx.window);
-        ImGuiIO &io = ImGui::GetIO();
+        ImGuiIO& io = ImGui::GetIO();
         double beginTime;
         double endTime = glfwGetTime();
-        while (!glfwWindowShouldClose(glfwWindow))
+        while (!glfwWindowShouldClose(glfwWindow)) 
         {
             beginTime = glfwGetTime();
             ctx.deltaTime = static_cast<float>(beginTime - endTime);
@@ -184,7 +186,7 @@ namespace Editor
             endTime = glfwGetTime();
         }
     }
-   
+
     // Internal implementation
 
     void windowErrorCallback(int code, const char* description)
@@ -192,8 +194,9 @@ namespace Editor
         RT_LOG_ERROR("[GLFW CALLBACK] ({}) {}", code, description);
     }
 
-    void drawEditor(const ImGuiIO& io)
+    void drawEditor(const ImGuiIO& io) 
     {
+        updateFps();
         updateCursorPosAndDelta();
         bool open = true;
         dragAndResizeFromEdges();
@@ -205,7 +208,7 @@ namespace Editor
         deleteAllMarkedWidgets(ctx.widgetStore);
     }
 
-    void renderGui(ImGuiIO& io)
+    void renderGui(ImGuiIO& io) 
     {
         ImGuiImplGLNewFrame();
         ImGuiImplGLFWNewFrame();
@@ -215,7 +218,7 @@ namespace Editor
 
         ImGui::Render(); // calls Imgui::EndFrame()
 
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) 
         {
             GLFWwindow* window = glfwGetCurrentContext();
             ImGui::UpdatePlatformWindows();
@@ -227,13 +230,13 @@ namespace Editor
 
     void dragAndResizeFromEdges()
     {
-        const double moveAreaSize = 20.0f; // pixels
-        const double resizeAreaSize = 5.0f;
+        constexpr double moveAreaSize = 20.0f; // pixels
+        constexpr double resizeAreaSize = 5.0f;
         GLFWwindow* win = getCurrentWindowHandle();
         static GLFWcursor* resizeHorisontalCursor = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
-        static GLFWcursor* resizeVerticalCursor = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+        static GLFWcursor* resizeVerticalCursor   = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
 
-        // Assume there is only one window
+        // There is only one main window
         static bool dragMode    = false;
         static bool resizeRight = false;
         static bool resizeLeft  = false;
@@ -242,24 +245,21 @@ namespace Editor
         glfwGetWindowSize(win, &w, &h);
 		glfwGetWindowPos(win, &x, &y);
 
-
         // Drag from top
-        if (dragMode || ctx.cursorPos.y < moveAreaSize && ctx.cursorPos.y > resizeAreaSize)
+        if (dragMode || ctx.cursorRelativePos.y < moveAreaSize && ctx.cursorRelativePos.y > resizeAreaSize)
         {
             if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS) 
             {
-                dragMode = true;
+				dragMode = true;
                 glfwSetWindowPos(win, x + ctx.cursorDelta.x, y + ctx.cursorDelta.y);
-				RT_LOG_MSG("{},{}", ctx.cursorDelta.x, ctx.cursorDelta.y);
             }
 
             if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
                 dragMode = false;
-
         }
 
         // resize from bottom 
-        if (resizeRight || ctx.cursorPos.y > static_cast<double>(h) - resizeAreaSize)
+        if (resizeRight || ctx.cursorRelativePos.y > static_cast<double>(h) - resizeAreaSize)
         {
             glfwSetCursor(win, resizeVerticalCursor);
             if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS) 
@@ -273,7 +273,7 @@ namespace Editor
         }
 
         // resize from right
-        if (resizeLeft || ctx.cursorPos.x > static_cast<double>(w) - resizeAreaSize)
+        if (resizeLeft || ctx.cursorRelativePos.x > static_cast<double>(w) - resizeAreaSize)
         {
             glfwSetCursor(win, resizeHorisontalCursor);
             if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS) 
@@ -287,13 +287,28 @@ namespace Editor
         }
     }
 
+    void updateFps()
+    {
+        ctx.fps = 1.0f / ctx.deltaTime;
+    }
+
     void updateCursorPosAndDelta()
     {
-        double x, y;
-        glfwGetCursorPos(ctx.window, &x, &y);
-        ctx.cursorDelta.x = x - ctx.cursorPos.x;
-        ctx.cursorDelta.y = y - ctx.cursorPos.y;
-        ctx.cursorPos = { x, y };
+        double mx, my; // mouse position
+        int wx, wy;    // Window position
+        glfwGetCursorPos(ctx.window, &mx, &my);
+        glfwGetWindowPos(ctx.window, &wx, &wy);
+        double wxd = static_cast<double>(wx);
+        double wyd = static_cast<double>(wy);
+
+        ctx.cursorDelta.x = mx + wxd - ctx.cursorPos.x;
+        ctx.cursorDelta.y = my + wyd - ctx.cursorPos.y;
+
+        // Relative to screen
+        ctx.cursorPos = { mx + wxd, my + wyd};
+
+        // Relative to window position
+        ctx.cursorRelativePos = { mx, my };
     }
 
     /*
@@ -331,6 +346,11 @@ namespace Editor
     float getDeltaTime()
     {
         return ctx.deltaTime;
+    }
+
+    float getFps()
+    {
+        return ctx.fps;
     }
 
     GLFWwindow* getCurrentWindowHandle()
