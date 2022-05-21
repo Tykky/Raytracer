@@ -14,7 +14,7 @@ namespace Editor
     struct Options
     {
         bool enableViewports         = false; // Viewports allow moving editor windows outside the main window
-        bool enableVsync             = false;
+        bool enableVsync             = true;
         bool enableMainWindowBorders = true;  // Enables OS window title bar and borders
         std::string defaultTheme     = "dark";
     };

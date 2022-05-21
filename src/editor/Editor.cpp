@@ -8,6 +8,7 @@
 #include "editor/Input.h"
 #include "ImFileDialog.h"
 #include "core/Raytracer.h"
+#include <map>
 
 namespace Editor 
 {
@@ -17,9 +18,13 @@ namespace Editor
     void drawEditor(const ImGuiIO& io);
     void windowErrorCallback(int code, const char* description);
     void dragAndResizeFromEdges();
+    void updateEditorContext();
+    int checkCursorEdge(Vec2d relPos, Vec2i windowSize, float resizeAreaSize, float dragAreaSize);
+    void changeCursorOnEdge(GLFWwindow* win, int flag);
 
     void updateCursorPosAndDelta();
     void updateFps();
+    void updateWindowSize();
 
     //void createDefaultEditorWidgets(WidgetStore& widgetStore);
     void logVendorInfo();
@@ -37,6 +42,7 @@ namespace Editor
         Vec2d        cursorPos          = { 0.0f, 0.0f }; // Screen coordinates
         Vec2d        cursorRelativePos  = { 0.0f, 0.0f }; // Relative to window position
         Vec2d        cursorDelta        = { 0.0f, 0.0f };
+        Vec2i        windowSize         = { 0, 0 };
         WidgetStore  widgetStore;
         TextureStore textureStore;
         Raytracer    raytracer;
@@ -194,12 +200,16 @@ namespace Editor
         RT_LOG_ERROR("[GLFW CALLBACK] ({}) {}", code, description);
     }
 
+    void updateEditorContext()
+    {
+		updateFps();
+        updateCursorPosAndDelta();
+        updateWindowSize();
+        dragAndResizeFromEdges();
+    }
+
     void drawEditor(const ImGuiIO& io) 
     {
-        updateFps();
-        updateCursorPosAndDelta();
-        bool open = true;
-        dragAndResizeFromEdges();
         drawMainMenuBar(ctx.widgetStore, ctx.textureStore);
         drawImFileDialogAndProcessInput();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
@@ -214,6 +224,7 @@ namespace Editor
         ImGuiImplGLFWNewFrame();
         ImGui::NewFrame();
 
+        updateEditorContext();
         drawEditor(io);
 
         ImGui::Render(); // calls Imgui::EndFrame()
@@ -228,63 +239,87 @@ namespace Editor
         ImGuiRenderDrawData();
     }
 
-    void dragAndResizeFromEdges()
+    constexpr int
+        NONE          = 0,
+        DRAG_TOP      = 1 << 0,
+        RESIZE_TOP    = 1 << 1,
+        RESIZE_RIGHT  = 1 << 2,
+        RESIZE_BOTTOM = 1 << 3,
+        RESIZE_LEFT   = 1 << 4;
+
+    int checkCursorEdge(Vec2d relPos, Vec2i windowSize, float resizeAreaSize, float dragAreaSize)
     {
-        constexpr double moveAreaSize = 20.0f; // pixels
-        constexpr double resizeAreaSize = 5.0f;
-        GLFWwindow* win = getCurrentWindowHandle();
+        int flag = NONE;
+
+        if (relPos.y < resizeAreaSize)
+            flag |= RESIZE_TOP;
+
+        if (relPos.y >= resizeAreaSize && relPos.y < dragAreaSize)
+            flag |= DRAG_TOP;
+
+        if (relPos.x > windowSize.x - resizeAreaSize)
+            flag |= RESIZE_RIGHT;
+
+        if (relPos.y > windowSize.y - resizeAreaSize)
+            flag |= RESIZE_BOTTOM;
+
+        if (relPos.x < resizeAreaSize)
+            flag |= RESIZE_LEFT;
+
+        return flag;
+    }
+
+    void changeCursorOnEdge(GLFWwindow* win, int flag)
+    {
         static GLFWcursor* resizeHorisontalCursor = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
         static GLFWcursor* resizeVerticalCursor   = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+        static GLFWcursor* resizeNESWCursor       = glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR);
+        static GLFWcursor* resizeNWSECursor       = glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR);
 
-        // There is only one main window
-        static bool dragMode    = false;
-        static bool resizeRight = false;
-        static bool resizeLeft  = false;
+        int vertFlag = RESIZE_TOP   | RESIZE_BOTTOM;
+        int horFlag  = RESIZE_LEFT  | RESIZE_RIGHT;
+        int NEFlag   = RESIZE_RIGHT | RESIZE_TOP;
+        int NWFlag   = RESIZE_LEFT  | RESIZE_TOP;
+        int SEFlag   = RESIZE_RIGHT | RESIZE_BOTTOM;
+        int SWFlag   = RESIZE_LEFT  | RESIZE_BOTTOM;
 
-        int x, y, w, h;
-        glfwGetWindowSize(win, &w, &h);
-		glfwGetWindowPos(win, &x, &y);
+		if (flag == NEFlag || flag == SWFlag)
+            glfwSetCursor(win, resizeNESWCursor);
 
-        // Drag from top
-        if (dragMode || ctx.cursorRelativePos.y < moveAreaSize && ctx.cursorRelativePos.y > resizeAreaSize)
-        {
-            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS) 
-            {
-				dragMode = true;
-                glfwSetWindowPos(win, x + ctx.cursorDelta.x, y + ctx.cursorDelta.y);
-            }
+        else if (flag == NWFlag || flag == SEFlag)
+            glfwSetCursor(win, resizeNWSECursor);
 
-            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
-                dragMode = false;
-        }
-
-        // resize from bottom 
-        if (resizeRight || ctx.cursorRelativePos.y > static_cast<double>(h) - resizeAreaSize)
-        {
-            glfwSetCursor(win, resizeVerticalCursor);
-            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS) 
-            {
-                resizeRight = true;
-                glfwSetWindowSize(win, w, h + ctx.cursorDelta.y);
-            }
-
-            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
-                resizeRight = false;
-        }
-
-        // resize from right
-        if (resizeLeft || ctx.cursorRelativePos.x > static_cast<double>(w) - resizeAreaSize)
-        {
+        else if (flag & horFlag)
             glfwSetCursor(win, resizeHorisontalCursor);
-            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS) 
-            {
-                resizeLeft = true;
-                glfwSetWindowSize(win, w + ctx.cursorDelta.x, h);
-            }
 
-            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
-                resizeLeft = false;
+        else if (flag & vertFlag)
+            glfwSetCursor(win, resizeVerticalCursor);
+    }
+
+	void dragAndResizeFromEdges()
+    {
+        // Boht in pixels
+        constexpr double dragAreaSize   = 20.0f;
+        constexpr double resizeAreaSize = 5.0f;
+
+        GLFWwindow* win = getCurrentWindowHandle();
+
+        int flag = checkCursorEdge(ctx.cursorRelativePos, ctx.windowSize, resizeAreaSize, dragAreaSize);
+        int hold = NONE; // to allow dragging/scaling when mouse goes slightly over the edge
+
+        changeCursorOnEdge(win, flag);
+
+        if ((hold & DRAG_TOP) || (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS && flag & DRAG_TOP))
+        {
+            hold |=
         }
+	}
+
+    void updateWindowSize()
+    {
+        int w, h;
+        glfwGetWindowSize(ctx.window, &w, &h);
+        ctx.windowSize = { w, h };
     }
 
     void updateFps()
