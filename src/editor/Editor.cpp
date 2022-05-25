@@ -19,12 +19,13 @@ namespace Editor
     void windowErrorCallback(int code, const char* description);
     void dragAndResizeFromEdges();
     void updateEditorContext();
-    int checkCursorEdge(Vec2d relPos, Vec2i windowSize, float resizeAreaSize, float dragAreaSize);
+    int  checkCursorEdge(Vec2d relPos, Vec2i windowSize, float resizeAreaSize, float dragAreaSize);
     void changeCursorOnEdge(GLFWwindow* win, int flag);
 
     void updateCursorPosAndDelta();
     void updateFps();
     void updateWindowSize();
+    void updateWindowPos();
 
     //void createDefaultEditorWidgets(WidgetStore& widgetStore);
     void logVendorInfo();
@@ -43,6 +44,7 @@ namespace Editor
         Vec2d        cursorRelativePos  = { 0.0f, 0.0f }; // Relative to window position
         Vec2d        cursorDelta        = { 0.0f, 0.0f };
         Vec2i        windowSize         = { 0, 0 };
+        Vec2i        windowPos          = {0, 0};
         WidgetStore  widgetStore;
         TextureStore textureStore;
         Raytracer    raytracer;
@@ -183,7 +185,7 @@ namespace Editor
         while (!glfwWindowShouldClose(glfwWindow)) 
         {
             beginTime = glfwGetTime();
-            ctx.deltaTime = static_cast<float>(beginTime - endTime);
+            ctx.deltaTime = beginTime - endTime;
 
             glfwPollEvents();
             clear();
@@ -205,6 +207,7 @@ namespace Editor
 		updateFps();
         updateCursorPosAndDelta();
         updateWindowSize();
+        updateWindowPos();
         dragAndResizeFromEdges();
     }
 
@@ -239,13 +242,16 @@ namespace Editor
         ImGuiRenderDrawData();
     }
 
-    constexpr int
+    typedef int ResizeFlag;
+
+    constexpr ResizeFlag
         NONE          = 0,
         DRAG_TOP      = 1 << 0,
         RESIZE_TOP    = 1 << 1,
         RESIZE_RIGHT  = 1 << 2,
         RESIZE_BOTTOM = 1 << 3,
         RESIZE_LEFT   = 1 << 4;
+
 
     int checkCursorEdge(Vec2d relPos, Vec2i windowSize, float resizeAreaSize, float dragAreaSize)
     {
@@ -296,23 +302,49 @@ namespace Editor
             glfwSetCursor(win, resizeVerticalCursor);
     }
 
+    // Hold contains positions where the mouse was clicked and held pressed
+    // Flag contains all positions where the mouse is currently hovered
+    // Check contains the positions to be checked for e.g RESIZE_TOP, RESIZE_LEFT etc..., check definition of ResizeFlag
+    void executeWhileMouse1Pressed(void (*exec)(GLFWwindow* win), GLFWwindow* win, ResizeFlag& hold, const ResizeFlag flag, const ResizeFlag check)
+    {
+        if ((hold & check) || (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS && flag & check))
+        {
+            hold |= check;
+            exec(win);
+            if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
+                hold &= ~check;
+        }
+    }
+
 	void dragAndResizeFromEdges()
     {
-        // Boht in pixels
+        // both in pixels
         constexpr double dragAreaSize   = 20.0f;
         constexpr double resizeAreaSize = 5.0f;
 
         GLFWwindow* win = getCurrentWindowHandle();
 
         int flag = checkCursorEdge(ctx.cursorRelativePos, ctx.windowSize, resizeAreaSize, dragAreaSize);
-        int hold = NONE; // to allow dragging/scaling when mouse goes slightly over the edge
+        static int hold = NONE; // to allow dragging/scaling when mouse goes slightly over the edge
 
         changeCursorOnEdge(win, flag);
 
-        if ((hold & DRAG_TOP) || (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS && flag & DRAG_TOP))
+        auto dragFromTop = [](GLFWwindow* win) -> void
         {
-            hold |=
-        }
+            glfwSetWindowPos(win, ctx.windowPos.x + ctx.cursorDelta.x, ctx.windowPos.y + ctx.cursorDelta.y);
+        };
+
+        auto resizeTop = [](GLFWwindow* win) -> void
+        {
+            glfwSetWindowSize(win, ctx.windowSize.x, ctx.windowSize.y - ctx.cursorDelta.y);
+            glfwSetWindowPos(win, ctx.windowPos.x, ctx.windowPos.y + ctx.cursorDelta.y);
+        };
+
+        if (!(hold & RESIZE_TOP))
+            executeWhileMouse1Pressed(dragFromTop, win, hold, flag, DRAG_TOP);
+
+        if (!(hold & DRAG_TOP))
+            executeWhileMouse1Pressed(resizeTop, win, hold, flag, RESIZE_TOP);
 	}
 
     void updateWindowSize()
@@ -320,6 +352,13 @@ namespace Editor
         int w, h;
         glfwGetWindowSize(ctx.window, &w, &h);
         ctx.windowSize = { w, h };
+    }
+
+    void updateWindowPos()
+    {
+        int w, h;
+        glfwGetWindowPos(ctx.window, &w, &h);
+        ctx.windowPos = {w, h};
     }
 
     void updateFps()
