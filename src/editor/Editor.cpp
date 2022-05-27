@@ -52,7 +52,13 @@ namespace Editor
     };
 
     // For now there is only one context at any given time
-    static EditorContext ctx;
+    static EditorContext dtx;
+
+    // get editorContext
+    EditorContext* ctx()
+    {
+        return &dtx;
+    }
 
     // Editor API implementation
 
@@ -71,7 +77,7 @@ namespace Editor
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         execDarkTheme(); // use dark theme by default
 
-        ImGuiImplInitGLFW(ctx.window);
+        ImGuiImplInitGLFW(ctx()->window);
         ImGuiImplInitGL3("#version 440");
 
         // ImFIleDialog needs functions for creating and freeing textures for icons
@@ -97,12 +103,12 @@ namespace Editor
 
         // createDefaultEditorWidgets(ctx.widgetStore);
         setMouseScrollCallback();
-        ctx.initialized = true;
+        ctx()->initialized = true;
     }
 
     void createWindow(const char* title, int width, int height, const Options& options) 
     {
-        if (ctx.window) {
+        if (ctx()->window) {
             RT_LOG_WARNING("Tried to create a window when there is already one!");
             return;
         }
@@ -147,18 +153,18 @@ namespace Editor
             RT_LOG_ERROR("Failed to initialize GLEW");
             abort();
         }
-        ctx.window = window;
+        ctx()->window = window;
     }
 
     void destroyWindow() 
     {
-        if (!ctx.window) 
+        if (!ctx()->window)
         {
             RT_LOG_WARNING("Tried to destroy window when one hasn't been created yet!");
             return;
         }
 
-        glfwDestroyWindow(reinterpret_cast<GLFWwindow*>(ctx.window));
+        glfwDestroyWindow(reinterpret_cast<GLFWwindow*>(ctx()->window));
         RT_LOG_MSG("GLFW window destroyed");
         glfwTerminate();
         RT_LOG_MSG("GLFW terminated");
@@ -166,26 +172,26 @@ namespace Editor
 
     void renderLoop() 
     {
-        if (!ctx.window) 
+        if (!ctx()->window)
         {
             RT_LOG_WARNING("Tried to enter renderloop when there is no valid window yet!");
             return;
         }
 
-        if (!ctx.initialized) 
+        if (!ctx()->initialized)
         {
             RT_LOG_WARNING("Tried to enter renderloop when the editor is not initialized!");
             return;
         }
 
-        GLFWwindow* glfwWindow = reinterpret_cast<GLFWwindow*>(ctx.window);
+        GLFWwindow* glfwWindow = reinterpret_cast<GLFWwindow*>(ctx()->window);
         ImGuiIO& io = ImGui::GetIO();
         double beginTime;
         double endTime = glfwGetTime();
         while (!glfwWindowShouldClose(glfwWindow)) 
         {
             beginTime = glfwGetTime();
-            ctx.deltaTime = beginTime - endTime;
+            ctx()->deltaTime = beginTime - endTime;
 
             glfwPollEvents();
             clear();
@@ -213,12 +219,12 @@ namespace Editor
 
     void drawEditor(const ImGuiIO& io) 
     {
-        drawMainMenuBar(ctx.widgetStore, ctx.textureStore);
+        drawMainMenuBar(ctx()->widgetStore, ctx()->textureStore);
         drawImFileDialogAndProcessInput();
         auto dockspaceID = ImGui::GetID("MainDockspace###ID");
         drawDockspace("Main", dockspaceID, io);
-        drawAllWidgets(&ctx.widgetStore);
-        deleteAllMarkedWidgets(ctx.widgetStore);
+        drawAllWidgets(&ctx()->widgetStore);
+        deleteAllMarkedWidgets(ctx()->widgetStore);
     }
 
     void renderGui(ImGuiIO& io) 
@@ -302,10 +308,10 @@ namespace Editor
             glfwSetCursor(win, resizeVerticalCursor);
     }
 
-    // Hold contains positions where the mouse was clicked and held pressed
-    // Flag contains all positions where the mouse is currently hovered
-    // Check contains the positions to be checked for e.g RESIZE_TOP, RESIZE_LEFT etc..., check definition of ResizeFlag
-    void executeWhileMouse1Pressed(void (*exec)(GLFWwindow* win), GLFWwindow* win, ResizeFlag& hold, const ResizeFlag flag, const ResizeFlag check)
+    // Hold contains positions where the mouse was clicked first time
+    // Flag contains position where the mouse is hovered
+    // Check contains the positions to be checked for e.g RESIZE_TOP, RESIZE_LEFT etc..., see definition of ResizeFlag
+    void executeWhileMouse1Pressed(GLFWwindow* win, ResizeFlag& hold, const ResizeFlag flag, const ResizeFlag check, void (*exec)(GLFWwindow* win))
     {
         if ((hold & check) || (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS && flag & check))
         {
@@ -324,65 +330,70 @@ namespace Editor
 
         GLFWwindow* win = getCurrentWindowHandle();
 
-        int flag = checkCursorEdge(ctx.cursorRelativePos, ctx.windowSize, resizeAreaSize, dragAreaSize);
+        int flag = checkCursorEdge(ctx()->cursorRelativePos, ctx()->windowSize, resizeAreaSize, dragAreaSize);
         static int hold = NONE; // to allow dragging/scaling when mouse goes slightly over the edge
 
         changeCursorOnEdge(win, flag);
 
-        auto dragFromTop = [](GLFWwindow* win) -> void
-        {
-            glfwSetWindowPos(win, ctx.windowPos.x + ctx.cursorDelta.x, ctx.windowPos.y + ctx.cursorDelta.y);
-        };
+        if (!(hold & RESIZE_TOP)) // do not resize when window is dragged
+            executeWhileMouse1Pressed(win, hold, flag, DRAG_TOP, [](GLFWwindow* win)
+            {
+                    glfwSetWindowPos(
+                            win,
+                            ctx()->windowPos.x + ctx()->cursorDelta.x,
+                            ctx()->windowPos.y + ctx()->cursorDelta.y);
+            });
 
-        auto resizeTop = [](GLFWwindow* win) -> void
-        {
-            glfwSetWindowSize(win, ctx.windowSize.x, ctx.windowSize.y - ctx.cursorDelta.y);
-            glfwSetWindowPos(win, ctx.windowPos.x, ctx.windowPos.y + ctx.cursorDelta.y);
-        };
-
-        if (!(hold & RESIZE_TOP))
-            executeWhileMouse1Pressed(dragFromTop, win, hold, flag, DRAG_TOP);
-
-        if (!(hold & DRAG_TOP))
-            executeWhileMouse1Pressed(resizeTop, win, hold, flag, RESIZE_TOP);
+        if (!(hold & DRAG_TOP)) // do not drag when window is resized from top
+            executeWhileMouse1Pressed(win, hold, flag, RESIZE_TOP, [](GLFWwindow* win)
+            {
+                glfwSetWindowSize(
+                        win,
+                        ctx()->windowSize.x,
+                        ctx()->windowSize.y - ctx()->cursorDelta.y);
+                glfwSetWindowPos(
+                        win,
+                        ctx()->windowPos.x,
+                        ctx()->windowPos.y + ctx()->cursorDelta.y);
+            });
 	}
 
     void updateWindowSize()
     {
         int w, h;
-        glfwGetWindowSize(ctx.window, &w, &h);
-        ctx.windowSize = { w, h };
+        glfwGetWindowSize(ctx()->window, &w, &h);
+        ctx()->windowSize = { w, h };
     }
 
     void updateWindowPos()
     {
         int w, h;
-        glfwGetWindowPos(ctx.window, &w, &h);
-        ctx.windowPos = {w, h};
+        glfwGetWindowPos(ctx()->window, &w, &h);
+        ctx()->windowPos = {w, h};
     }
 
     void updateFps()
     {
-        ctx.fps = 1.0f / ctx.deltaTime;
+        ctx()->fps = 1.0f / ctx()->deltaTime;
     }
 
     void updateCursorPosAndDelta()
     {
         double mx, my; // mouse position
         int wx, wy;    // Window position
-        glfwGetCursorPos(ctx.window, &mx, &my);
-        glfwGetWindowPos(ctx.window, &wx, &wy);
+        glfwGetCursorPos(ctx()->window, &mx, &my);
+        glfwGetWindowPos(ctx()->window, &wx, &wy);
         double wxd = static_cast<double>(wx);
         double wyd = static_cast<double>(wy);
 
-        ctx.cursorDelta.x = mx + wxd - ctx.cursorPos.x;
-        ctx.cursorDelta.y = my + wyd - ctx.cursorPos.y;
+        ctx()->cursorDelta.x = mx + wxd - ctx()->cursorPos.x;
+        ctx()->cursorDelta.y = my + wyd - ctx()->cursorPos.y;
 
         // Relative to screen
-        ctx.cursorPos = { mx + wxd, my + wyd};
+        ctx()->cursorPos = { mx + wxd, my + wyd};
 
         // Relative to window position
-        ctx.cursorRelativePos = { mx, my };
+        ctx()->cursorRelativePos = { mx, my };
     }
 
     /*
@@ -406,7 +417,7 @@ namespace Editor
 
     GLFWwindow* getWindowHandle()
     {
-        return ctx.window;
+        return ctx()->window;
     }
 
     void logVendorInfo()
@@ -419,16 +430,16 @@ namespace Editor
 
     float getDeltaTime()
     {
-        return ctx.deltaTime;
+        return ctx()->deltaTime;
     }
 
     float getFps()
     {
-        return ctx.fps;
+        return ctx()->fps;
     }
 
     GLFWwindow* getCurrentWindowHandle()
     {
-        return ctx.window;
+        return ctx()->window;
     }
 }
