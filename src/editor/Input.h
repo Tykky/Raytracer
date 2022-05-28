@@ -157,11 +157,11 @@ namespace Editor
 
 	// User input API declaration
 
-    StatusCode getKey(KeyCode code);
-    StatusCode getMouseButton(MouseCode button);
-    float getMouseScroll();
-    Vec2d getCursorPos();
-	void setMouseScrollCallback();
+    StatusCode getKey                 (KeyCode code);
+    StatusCode getMouseButton         (MouseCode button);
+    float      getMouseScroll         ();
+    Vec2d      getCursorPos           ();
+	void       setMouseScrollCallback ();
 }
 
 #endif //RAYTRACER_EDITOR_INPUT_H

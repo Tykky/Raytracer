@@ -218,7 +218,7 @@ namespace Editor
             if (ImGui::BeginMenu("New widget"))
             {
                 if (ImGui::MenuItem("Texture viewer"))
-                    insertWidgetArray<TextureViewerContext>(widgetStore, "Texture viewr");
+                    insertWidgetArray<TextureViewerContext>(widgetStore, "Texture viewer");
                 if (ImGui::MenuItem("Log viewer"))
                     insertWidgetArray<LogViewerContext>(widgetStore, "Log viewer");
                 ImGui::EndMenu();
@@ -408,7 +408,7 @@ namespace Editor
 
 		auto cPos = getCursorPos();
 
-		// This simply prevents "snapping" the camera when we process mouse input for first time.
+		// This simply prevents "snapping" the camera when we process mouse input for the first time.
 		// We don't want to be using the "old" values for prevMouseX an prevMouseDeltaY.
         if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::RELEASE && getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
 		{

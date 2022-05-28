@@ -4,7 +4,7 @@
 #include "logging/Logging.h"
 #include "editor/Types.h"
 
-// Everything related to resource managemnt for the Editor.
+// Everything related to resource management for the Editor.
 // Contains the main functions to create and destroy the editor context.
 
 namespace Editor

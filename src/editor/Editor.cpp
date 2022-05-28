@@ -51,13 +51,12 @@ namespace Editor
         bool         initialized        = false;
     };
 
-    // For now there is only one context at any given time
-    static EditorContext dtx;
+    // For now there is only one context
+    static EditorContext context;
 
-    // get editorContext
     EditorContext* ctx()
     {
-        return &dtx;
+        return &context;
     }
 
     // Editor API implementation
@@ -108,7 +107,8 @@ namespace Editor
 
     void createWindow(const char* title, int width, int height, const Options& options) 
     {
-        if (ctx()->window) {
+        if (ctx()->window)
+        {
             RT_LOG_WARNING("Tried to create a window when there is already one!");
             return;
         }
@@ -139,12 +139,12 @@ namespace Editor
 
             if (loadGLExtensions() != LOADGL_OK) 
             {
-                RT_LOG_ERROR("Failed to initialize GLEW!");
+                RT_LOG_ERROR("Failed to load GL extensions!");
                 abort();
             }
             else 
             {
-                RT_LOG_MSG("GLEW initialized");
+                RT_LOG_MSG("GL extensions loaded");
                 logVendorInfo();
             }
         }
@@ -308,9 +308,9 @@ namespace Editor
             glfwSetCursor(win, resizeVerticalCursor);
     }
 
-    // Hold contains positions where the mouse was clicked first time
-    // Flag contains position where the mouse is hovered
-    // Check contains the positions to be checked for e.g RESIZE_TOP, RESIZE_LEFT etc..., see definition of ResizeFlag
+    // hold contains positions where the mouse was clicked first time
+    // flag contains position where the mouse is hovered
+    // check contains the positions to be checked for e.g RESIZE_TOP, RESIZE_LEFT etc..., see definition of ResizeFlag
     void executeWhileMouse1Pressed(GLFWwindow* win, ResizeFlag& hold, const ResizeFlag flag, const ResizeFlag check, void (*exec)(GLFWwindow* win))
     {
         if ((hold & check) || (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS && flag & check))
@@ -335,6 +335,7 @@ namespace Editor
 
         changeCursorOnEdge(win, flag);
 
+        // Drag from top
         if (!(hold & RESIZE_TOP)) // do not resize when window is dragged
             executeWhileMouse1Pressed(win, hold, flag, DRAG_TOP, [](GLFWwindow* win)
             {
@@ -344,7 +345,8 @@ namespace Editor
                             ctx()->windowPos.y + ctx()->cursorDelta.y);
             });
 
-        if (!(hold & DRAG_TOP)) // do not drag when window is resized from top
+        // Resize from top
+        if (!(hold & DRAG_TOP)) // do not drag when window is being resized from top
             executeWhileMouse1Pressed(win, hold, flag, RESIZE_TOP, [](GLFWwindow* win)
             {
                 glfwSetWindowSize(
@@ -356,10 +358,38 @@ namespace Editor
                         ctx()->windowPos.x,
                         ctx()->windowPos.y + ctx()->cursorDelta.y);
             });
+
+        executeWhileMouse1Pressed(win, hold ,flag, RESIZE_LEFT, [](GLFWwindow* win)
+        {
+            glfwSetWindowSize(
+                    win,
+                    ctx()->windowSize.x - ctx()->cursorDelta.x,
+                    ctx()->windowSize.y);
+            glfwSetWindowPos(
+                    win,
+                    ctx()->windowPos.x + ctx()->cursorDelta.x,
+                    ctx()->windowPos.y);
+        });
+
+        executeWhileMouse1Pressed(win, hold, flag, RESIZE_RIGHT, [](GLFWwindow* win)
+        {
+            glfwSetWindowSize(
+                    win,
+                    ctx()->windowSize.x + ctx()->cursorDelta.x,
+                    ctx()->windowSize.y);
+        });
+
+        executeWhileMouse1Pressed(win, hold, flag, RESIZE_BOTTOM, [](GLFWwindow* win)
+        {
+            glfwSetWindowSize(
+                    win,
+                    ctx()->windowSize.x,
+                    ctx()->windowSize.y + ctx()->cursorDelta.y);
+        });
 	}
 
     void updateWindowSize()
-    {
+   {
         int w, h;
         glfwGetWindowSize(ctx()->window, &w, &h);
         ctx()->windowSize = { w, h };
@@ -383,14 +413,12 @@ namespace Editor
         int wx, wy;    // Window position
         glfwGetCursorPos(ctx()->window, &mx, &my);
         glfwGetWindowPos(ctx()->window, &wx, &wy);
-        double wxd = static_cast<double>(wx);
-        double wyd = static_cast<double>(wy);
 
-        ctx()->cursorDelta.x = mx + wxd - ctx()->cursorPos.x;
-        ctx()->cursorDelta.y = my + wyd - ctx()->cursorPos.y;
+        ctx()->cursorDelta.x = mx + wx - ctx()->cursorPos.x;
+        ctx()->cursorDelta.y = my + wy - ctx()->cursorPos.y;
 
         // Relative to screen
-        ctx()->cursorPos = { mx + wxd, my + wyd};
+        ctx()->cursorPos = { mx + wx, my + wy};
 
         // Relative to window position
         ctx()->cursorRelativePos = { mx, my };
