@@ -19,9 +19,6 @@ namespace Editor
         std::string defaultTheme     = "dark";
     };
 
-    float getFps();
-    float getDeltaTime();
-
     // Creates GLFW window and loads OpenGL extensions
     void createWindow(const char* title, int width, int height, const Options& options);
     void destroyWindow();

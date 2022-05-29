@@ -19,6 +19,9 @@ namespace Editor
     int  checkCursorEdge(Vec2d relPos, Vec2i windowSize, float resizeAreaSize, float dragAreaSize);
     void changeCursorOnEdge(GLFWwindow* win, int flag);
 
+    void setWindowSize(GLFWwindow* window, int width, int height);
+    void setWindowPos(GLFWwindow* window, int x, int y);
+
     void updateCursorPosAndDelta();
     void updateFps();
     void updateWindowSize();
@@ -182,18 +185,18 @@ namespace Editor
 
         GLFWwindow* glfwWindow = reinterpret_cast<GLFWwindow*>(ctx()->window);
         ImGuiIO& io = ImGui::GetIO();
-        double beginTime;
-        double endTime = glfwGetTime();
+        double current = glfwGetTime();
+        double last;
         while (!glfwWindowShouldClose(glfwWindow)) 
         {
-            beginTime = glfwGetTime();
-            ctx()->deltaTime = beginTime - endTime;
+            last = current;
+            current = glfwGetTime();
+            ctx()->deltaTime = current - last;
 
             glfwPollEvents();
             clear();
             renderGui(io);
             glfwSwapBuffers(glfwWindow);
-            endTime = glfwGetTime();
         }
     }
 
@@ -303,6 +306,18 @@ namespace Editor
             glfwSetCursor(win, resizeVerticalCursor);
     }
 
+    void setWindowSize(GLFWwindow* window, Vec2i size)
+    {
+        glfwSetWindowSize(window, size.x, size.y);
+        ctx()->windowSize = size;
+    }
+
+    void setWindowPos(GLFWwindow* window, Vec2i pos)
+    {
+        glfwSetWindowPos(window, pos.x, pos.y);
+        ctx()->windowPos = pos;
+    }
+
     // hold contains positions where the mouse was clicked first time
     // flag contains position where the mouse is hovered
     // check contains the positions to be checked for e.g RESIZE_TOP, RESIZE_LEFT etc..., see definition of ResizeFlag
@@ -335,62 +350,55 @@ namespace Editor
         if (!(hold & RESIZE_TOP)) // do not resize when window is dragged
             executeWhileMouse1Pressed(win, hold, flag, DRAG_TOP, [](GLFWwindow *win)
             {
-                glfwSetWindowPos(
-                        win,
-                        ctx()->windowPos.x + ctx()->cursorDelta.x,
-                        ctx()->windowPos.y + ctx()->cursorDelta.y);
-                updateWindowPos();
+                setWindowPos(
+                        win,{
+                        ctx()->windowPos.x + static_cast<int>(ctx()->cursorDelta.x),
+                        ctx()->windowPos.y + static_cast<int>(ctx()->cursorDelta.y)});
             });
 
         // Resize from top
         if (!(hold & DRAG_TOP)) // do not drag when window is being resized from top
             executeWhileMouse1Pressed(win, hold, flag, RESIZE_TOP, [](GLFWwindow *win)
             {
-                glfwSetWindowSize(
-                        win,
+                setWindowSize(
+                        win, {
                         ctx()->windowSize.x,
-                        ctx()->windowSize.y - ctx()->cursorDelta.y);
-                glfwSetWindowPos(
-                        win,
+                        ctx()->windowSize.y - static_cast<int>(ctx()->cursorDelta.y)});
+                setWindowPos(
+                        win, {
                         ctx()->windowPos.x,
-                        ctx()->windowPos.y + ctx()->cursorDelta.y);
-                updateWindowPos();
-                updateWindowSize();
+                        ctx()->windowPos.y + static_cast<int>(ctx()->cursorDelta.y)});
             });
 
         // Resize from left
         executeWhileMouse1Pressed(win, hold ,flag, RESIZE_LEFT, [](GLFWwindow* win)
         {
-            glfwSetWindowSize(
-                    win,
-                    ctx()->windowSize.x - ctx()->cursorDelta.x,
-                    ctx()->windowSize.y);
-            glfwSetWindowPos(
-                    win,
-                    ctx()->windowPos.x + ctx()->cursorDelta.x,
-                    ctx()->windowPos.y);
-            updateWindowPos();
-            updateWindowSize();
+            setWindowSize(
+                    win, {
+                    ctx()->windowSize.x - static_cast<int>(ctx()->cursorDelta.x),
+                    ctx()->windowSize.y});
+            setWindowPos(
+                    win, {
+                    ctx()->windowPos.x + static_cast<int>(ctx()->cursorDelta.x),
+                    ctx()->windowPos.y});
         });
 
         // Resize from right
         executeWhileMouse1Pressed(win, hold, flag, RESIZE_RIGHT, [](GLFWwindow* win)
         {
-            glfwSetWindowSize(
-                    win,
-                    ctx()->windowSize.x + ctx()->cursorDelta.x,
-                    ctx()->windowSize.y);
-            updateWindowSize();
+            setWindowSize(
+                    win, {
+                    ctx()->windowSize.x + static_cast<int>(ctx()->cursorDelta.x),
+                    ctx()->windowSize.y});
         });
 
         // Resize from bottom
         executeWhileMouse1Pressed(win, hold, flag, RESIZE_BOTTOM, [](GLFWwindow* win)
         {
-            glfwSetWindowSize(
-                    win,
+            setWindowSize(
+                    win, {
                     ctx()->windowSize.x,
-                    ctx()->windowSize.y + ctx()->cursorDelta.y);
-            updateWindowSize();
+                    ctx()->windowSize.y + static_cast<int>(ctx()->cursorDelta.y)});
         });
 	}
 

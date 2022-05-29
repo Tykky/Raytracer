@@ -14,6 +14,10 @@
 
 namespace Editor
 {
+    // Forward declaration of functions in Editor.cpp
+    float getFps();
+    float getDeltaTime();
+
     // Widget helper implementation
 
     void deleteAllMarkedWidgets(WidgetStore& wStore)
@@ -244,6 +248,9 @@ namespace Editor
                 ImGui::EndMenu();
             }
 #endif
+            std::string str = std::to_string(getFps());
+            if (ImGui::BeginMenu(str.c_str()))
+                ImGui::EndMenu();
             ImGui::EndMainMenuBar();
         }
     }
