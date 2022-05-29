@@ -4,7 +4,7 @@
 #include "editor/Types.h"
 
 // Everything that has to do with user input,
-// key strokes, mouse input etc..
+// keystrokes, mouse input etc..
 
 namespace Editor
 {

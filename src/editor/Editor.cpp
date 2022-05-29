@@ -1,12 +1,9 @@
 #include "Editor.h"
 #include <GLFW/glfw3.h>
-#include <string>
-#include <memory>
 #include "Widgets.h"
 #include "editor/Graphics.h"
 #include "editor/styles/DarkTheme.h"
 #include "editor/Input.h"
-#include "ImFileDialog.h"
 #include "core/Raytracer.h"
 #include <map>
 
@@ -180,7 +177,7 @@ namespace Editor
 
         if (!ctx()->initialized)
         {
-            RT_LOG_WARNING("Tried to enter renderloop when the editor is not initialized!");
+            RT_LOG_WARNING("Tried to enter render loop when the editor is not initialized!");
             return;
         }
 
@@ -221,8 +218,7 @@ namespace Editor
     {
         drawMainMenuBar(ctx()->widgetStore, ctx()->textureStore);
         drawImFileDialogAndProcessInput();
-        auto dockspaceID = ImGui::GetID("MainDockspace###ID");
-        drawDockspace("Main", dockspaceID, io);
+        drawDockspace("Main");
         drawAllWidgets(&ctx()->widgetStore);
         deleteAllMarkedWidgets(ctx()->widgetStore);
     }
@@ -311,6 +307,7 @@ namespace Editor
     // hold contains positions where the mouse was clicked first time
     // flag contains position where the mouse is hovered
     // check contains the positions to be checked for e.g RESIZE_TOP, RESIZE_LEFT etc..., see definition of ResizeFlag
+    // TODO: come up with better name for this
     void executeWhileMouse1Pressed(GLFWwindow* win, ResizeFlag& hold, const ResizeFlag flag, const ResizeFlag check, void (*exec)(GLFWwindow* win))
     {
         if ((hold & check) || (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS && flag & check))
@@ -337,17 +334,18 @@ namespace Editor
 
         // Drag from top
         if (!(hold & RESIZE_TOP)) // do not resize when window is dragged
-            executeWhileMouse1Pressed(win, hold, flag, DRAG_TOP, [](GLFWwindow* win)
+            executeWhileMouse1Pressed(win, hold, flag, DRAG_TOP, [](GLFWwindow *win)
             {
-                    glfwSetWindowPos(
-                            win,
-                            ctx()->windowPos.x + ctx()->cursorDelta.x,
-                            ctx()->windowPos.y + ctx()->cursorDelta.y);
+                glfwSetWindowPos(
+                        win,
+                        ctx()->windowPos.x + ctx()->cursorDelta.x,
+                        ctx()->windowPos.y + ctx()->cursorDelta.y);
+                updateWindowPos();
             });
 
         // Resize from top
         if (!(hold & DRAG_TOP)) // do not drag when window is being resized from top
-            executeWhileMouse1Pressed(win, hold, flag, RESIZE_TOP, [](GLFWwindow* win)
+            executeWhileMouse1Pressed(win, hold, flag, RESIZE_TOP, [](GLFWwindow *win)
             {
                 glfwSetWindowSize(
                         win,
@@ -357,8 +355,11 @@ namespace Editor
                         win,
                         ctx()->windowPos.x,
                         ctx()->windowPos.y + ctx()->cursorDelta.y);
+                updateWindowPos();
+                updateWindowSize();
             });
 
+        // Resize from left
         executeWhileMouse1Pressed(win, hold ,flag, RESIZE_LEFT, [](GLFWwindow* win)
         {
             glfwSetWindowSize(
@@ -369,22 +370,28 @@ namespace Editor
                     win,
                     ctx()->windowPos.x + ctx()->cursorDelta.x,
                     ctx()->windowPos.y);
+            updateWindowPos();
+            updateWindowSize();
         });
 
+        // Resize from right
         executeWhileMouse1Pressed(win, hold, flag, RESIZE_RIGHT, [](GLFWwindow* win)
         {
             glfwSetWindowSize(
                     win,
                     ctx()->windowSize.x + ctx()->cursorDelta.x,
                     ctx()->windowSize.y);
+            updateWindowSize();
         });
 
+        // Resize from bottom
         executeWhileMouse1Pressed(win, hold, flag, RESIZE_BOTTOM, [](GLFWwindow* win)
         {
             glfwSetWindowSize(
                     win,
                     ctx()->windowSize.x,
                     ctx()->windowSize.y + ctx()->cursorDelta.y);
+            updateWindowSize();
         });
 	}
 

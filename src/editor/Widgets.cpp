@@ -4,7 +4,6 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_internal.h>
-#include "GLFW/glfw3.h"
 #include <iostream>
 #include <vector>
 #include <functional>
@@ -249,8 +248,10 @@ namespace Editor
         }
     }
 
-    void drawDockspace(const char* name, ImGuiID dockspaceID, const ImGuiIO& io)
+    void drawDockspace(const char* name)
     {
+        auto dockspaceID = ImGui::GetID("MainDockspace###ID");
+        auto io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
         {
             const auto viewport = ImGui::GetMainViewport();

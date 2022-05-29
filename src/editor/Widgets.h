@@ -1,7 +1,6 @@
 #ifndef RAYTRACER_WIDGETS_H
 #define RAYTRACER_WIDGETS_H
 
-#include "imgui.h"
 #include <vector>
 #include <memory>
 #include <string>
@@ -201,7 +200,7 @@ namespace Editor
     // Shows the main menubar at the top of the main window
     void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore);
     // Dockspace simply allows windows to be docked to the main window
-    void drawDockspace(const char* name, ImGuiID dockspaceID, const ImGuiIO& io);
+    void drawDockspace(const char* name);
     void drawImFileDialogAndProcessInput();
     void drawTextureView(void* currentTexId, Vec2f& offset, Vec2f& scale);
     void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture);
