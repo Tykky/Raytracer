@@ -27,7 +27,6 @@ namespace Editor
     //void createDefaultEditorWidgets(WidgetStore& widgetStore);
     void logVendorInfo();
     std::vector<FilePath> filesInsideDirectory();
-    GLFWwindow* getCurrentWindowHandle();
 
     // Editor Context
 
@@ -325,7 +324,7 @@ namespace Editor
         constexpr double dragAreaSize   = 20.0f;
         constexpr double resizeAreaSize = 5.0f;
 
-        GLFWwindow* win = getCurrentWindowHandle();
+        GLFWwindow* win = glfwGetCurrentContext();
 
         int flag = checkCursorEdge(ctx()->cursorRelativePos, ctx()->windowSize, resizeAreaSize, dragAreaSize);
         static int hold = NONE; // to allow dragging/scaling when mouse goes slightly over the edge
@@ -450,7 +449,7 @@ namespace Editor
         return std::vector<FilePath>();
     }
 
-    GLFWwindow* getWindowHandle()
+    void* getWindowHandle()
     {
         return ctx()->window;
     }
