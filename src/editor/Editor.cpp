@@ -364,6 +364,7 @@ namespace Editor
                         win, {
                         ctx()->windowSize.x,
                         ctx()->windowSize.y - static_cast<int>(ctx()->cursorDelta.y)});
+
                 setWindowPos(
                         win, {
                         ctx()->windowPos.x,
@@ -377,6 +378,7 @@ namespace Editor
                     win, {
                     ctx()->windowSize.x - static_cast<int>(ctx()->cursorDelta.x),
                     ctx()->windowSize.y});
+
             setWindowPos(
                     win, {
                     ctx()->windowPos.x + static_cast<int>(ctx()->cursorDelta.x),
