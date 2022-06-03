@@ -27,6 +27,14 @@ namespace Editor
     void updateWindowSize();
     void updateWindowPos();
 
+    float getDeltaTime();
+    float getFps();
+    GLFWwindow* getCurrentWindowHandle();
+    Vec2i getWindowSize();
+
+    void maximizeWindow();
+    void minimizeWindow();
+
     void createDefaultEditorWidgets(WidgetStore& widgetStore);
     void logVendorInfo();
     std::vector<FilePath> filesInsideDirectory();
@@ -484,4 +492,31 @@ namespace Editor
     {
         return ctx()->window;
     }
+
+    Vec2i getWindowSize()
+    {
+        return ctx()->windowSize;
+    }
+
+    void maximizeWindow()
+    {
+        static bool maximized = false;
+        if (!maximized)
+        {
+            RT_LOG_MSG("Window maximized");
+            glfwMaximizeWindow(ctx()->window);
+        }
+        else
+        {
+            RT_LOG_MSG("Window restored");
+            glfwRestoreWindow(ctx()->window);
+        }
+        maximized ^= 1;
+    }
+
+    void minimizeWindow()
+    {
+        glfwIconifyWindow(ctx()->window);
+    }
+
 }

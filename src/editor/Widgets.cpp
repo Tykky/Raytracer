@@ -15,8 +15,12 @@
 namespace Editor
 {
     // Forward declaration of functions in Editor.cpp
+
     float getFps();
     float getDeltaTime();
+    Vec2i getWindowSize();
+    void maximizeWindow();
+    void minimizeWindow();
 
     // Widget helper implementation
 
@@ -248,6 +252,20 @@ namespace Editor
                 ImGui::EndMenu();
             }
 #endif
+            // To align buttons to the right
+            auto ws = getWindowSize();
+            constexpr int width = 80.0f;
+            ImGui::SameLine(ws.x - width);
+
+            if (ImGui::Button("-"))
+                minimizeWindow();
+
+            if (ImGui::Button("O"))
+                maximizeWindow();
+
+            if (ImGui::Button("X"))
+                exit(0);
+
             ImGui::EndMainMenuBar();
         }
     }
