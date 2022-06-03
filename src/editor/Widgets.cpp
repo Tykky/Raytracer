@@ -43,10 +43,10 @@ namespace Editor
         ImGuiScopedBegin(WidgetStore* wStore, Context& ctx, ImGuiWindowFlags flags = 0)
         {
             bool open = true;
-            ImGui::Begin(ctx.wCtx.windowId.data(), &open, flags);
+            ImGui::Begin(ctx.windowId.data(), &open, flags);
             if (!open) // when close window button is pressed
             {
-                ctx.wCtx.markForDelete = true;
+                ctx.markForDelete = true;
             }
          }
 
@@ -58,7 +58,7 @@ namespace Editor
 
     struct ImGuiScopedBeginChild
     {
-        ImGuiScopedBeginChild(const char* id)
+        explicit ImGuiScopedBeginChild(const char* id)
         {
             ImGui::BeginChild(id);
         }
@@ -73,7 +73,7 @@ namespace Editor
 
     void drawWidget(WidgetStore* wStore, TextureViewerContext& ctx)
     {
-        ImGuiScopedBegin(wStore, ctx);
+        auto begin = ImGuiScopedBegin(wStore, ctx);
         void* currentTexId = nullptr;
         const char* preview = nullptr;
 
@@ -90,9 +90,9 @@ namespace Editor
     void drawWidget(WidgetStore* wStore, LogViewerContext& ctx)
     {
 		ImGui::SetNextWindowSize({800,300});
-        ImGuiScopedBegin(wStore, ctx);
+        auto begin = ImGuiScopedBegin(wStore, ctx);
 		ImGui::Checkbox("Scroll to bottom", &ctx.srollToBottom);
-        ImGuiScopedBeginChild("Logtext###ID");
+        auto child = ImGuiScopedBeginChild("Logtext###ID");
 
 		if (ctx.srollToBottom)
 			ImGui::SetScrollY(ImGui::GetScrollMaxY());
@@ -108,7 +108,7 @@ namespace Editor
 		// TODO: consider moving the rendering of the viewport over to camera.
 		// Right now we don't have much stuff in here but at some point the "renderer" will become more complex
 		processInput(ctx);
-        ImGuiScopedBegin(wStore, ctx);
+        auto begin = ImGuiScopedBegin(wStore, ctx);
 
 		setUniform(ctx.shaderProgram.getProgramId(), "view", ctx.camera.getViewMatrix());
 		setUniform(ctx.shaderProgram.getProgramId(), "projection", ctx.camera.getProjectionMatrix());
@@ -132,12 +132,12 @@ namespace Editor
 
     void drawWidget(WidgetStore* wStore, SettingsWidgetContext& ctx) 
     {
-        ImGuiScopedBegin(wStore, ctx);
+        auto begin = ImGuiScopedBegin(wStore, ctx);
     }
 
     void drawWidget(WidgetStore* wStore, WidgetInspectorContext& ctx)
     {
-        ImGuiScopedBegin(wStore, ctx);
+        auto begin = ImGuiScopedBegin(wStore, ctx);
     }
 
     void drawWidget(WidgetStore* wStore, ImGuiMetricsWidgetContext& ctx)
@@ -152,7 +152,7 @@ namespace Editor
 
     void drawWidget(WidgetStore* wStore, RTControlsContext& ctx)
     {
-        ImGuiScopedBegin(wStore, ctx);
+        auto begin = ImGuiScopedBegin(wStore, ctx);
 		ImGui::InputInt("Samples", &ctx.samples);
 
 		if (ImGui::Button("Render"))
@@ -179,7 +179,7 @@ namespace Editor
     void drawWidget(WidgetStore* wStore, SystemInfoContext& ctx)
     {
 		ImGui::SetNextWindowSize({500, 300});
-        ImGuiScopedBegin(wStore, ctx);
+        auto begin = ImGuiScopedBegin(wStore, ctx);
 		ImGui::Text("GPU vendor: %s", ctx.GPUVendor.data());
 		ImGui::Text("Renderer: %s", ctx.renderer.data());
 		ImGui::Text("GL version: %s", ctx.GLVersion.data());
@@ -248,9 +248,6 @@ namespace Editor
                 ImGui::EndMenu();
             }
 #endif
-            std::string str = std::to_string(getFps());
-            if (ImGui::BeginMenu(str.c_str()))
-                ImGui::EndMenu();
             ImGui::EndMainMenuBar();
         }
     }

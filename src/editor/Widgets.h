@@ -25,7 +25,6 @@ namespace Editor
     using WidgetArrayTuple = std::tuple<WidgetArray<WidgetContexts>...>;
 
     // Forward declaration of widget contexts
-
     struct TextureViewerContext;
     struct LogViewerContext;
 	struct ViewportContext;
@@ -63,12 +62,12 @@ namespace Editor
     void insertWidgetArray(WidgetStore& wStore, std::string name)
     {
         auto& wArray = getWidgetArray<Context>(wStore);
-        static unsigned int idx = 0;
-        wArray.push_back({
+        static unsigned long idx = 0;
+        wArray.emplace_back(
             name,
             idx,
-            {name + "###" + std::to_string(idx++)}
-		});
+            name + "###" + std::to_string(idx++)
+		);
     }
 
     template<typename Context>
@@ -76,7 +75,7 @@ namespace Editor
     {
         auto isMarkedForDelete = [](Context& widget) 
         {
-            return widget.wCtx.markForDelete;
+            return widget.markForDelete;
         };
 
 		wArray.erase(
@@ -89,89 +88,97 @@ namespace Editor
 
     // Widget Contexts
 
-    // Common context for all widgets
+    // Common context for all the widgets
     struct WidgetContext
     {
+        WidgetContext(const std::string& name, unsigned int id, const std::string& windowId) :
+            name(name), id(id), windowId(name) {}
+
         std::string  name;
         unsigned int id = 0;
         std::string  windowId;
         bool         markForDelete = false;
     };
 
-    struct TextureViewerContext
+    struct TextureViewerContext : public WidgetContext
     {
-        WidgetContext wCtx;
+        using WidgetContext::WidgetContext;
+
         Vec2f         offset         = {0.0f, 0.0f};
         Vec2f         scale          = {600.0f, 600.0f};
 		TextureStore* textureStore   = nullptr;
         Texture*      currentTexture = nullptr;
     };
 
-    struct LogViewerContext
+    struct LogViewerContext : public WidgetContext
     {
-        WidgetContext   wCtx;
+        using WidgetContext::WidgetContext;
+
         bool srollToBottom = true;
     };
 
-    struct ViewportContext
+    struct ViewportContext : public WidgetContext
     {
-        WidgetContext wCtx;
+        using WidgetContext::WidgetContext;
+
 	    bool          isPrimary    = false;
         bool          wireframe    = false;
         Vec2i         resolution   = { 1920, 1080 };
         Vec2f         offset       = { 0.0f, 0.0f };
         Vec2f         scale        = { 1920, 1080 };
-        Camera        camera       = {static_cast<float>(resolution.x)/
-                                      static_cast<float>(resolution.y),  // aspect ratio
+        Camera        camera       = {static_cast<float>(resolution.x)/static_cast<float>(resolution.y),  // aspect ratio
                                      {0, 0.0, 3},     // pos
                                      {0.0, 0.0, -1}}; // target
-        Vec2f         prevMousePos = { 0.0f, 0.0f };
-        Framebuffer   framebuffer;
-        Vertexbuffer  vertexbuffer;
-        ShaderProgram shaderProgram;
+        Vec2f           prevMousePos = { 0.0f, 0.0f };
+        Framebuffer     framebuffer;
+        Vertexbuffer    vertexbuffer = {nullptr, 0};
+        ShaderProgram   shaderProgram;
 
         // Viewport shows this texture
         void* m_viewportTexture = nullptr;
     };
 
-    struct SettingsWidgetContext 
+    struct SettingsWidgetContext : public WidgetContext
     {
-        WidgetContext wCtx;
+        using WidgetContext::WidgetContext;
     };
 
-    struct WidgetInspectorContext
+    struct WidgetInspectorContext : public WidgetContext
     {
-        WidgetContext wCtx;
-        WidgetStore*  widgetStore;
+        using WidgetContext::WidgetContext;
+
+        WidgetStore*  widgetStore = nullptr;
     };
 
-    struct ImGuiMetricsWidgetContext 
+    struct ImGuiMetricsWidgetContext : public WidgetContext
     {
-        WidgetContext wCtx;
+        using WidgetContext::WidgetContext;
     };
 
-    struct ImGuiStackToolWidgetContext 
+    struct ImGuiStackToolWidgetContext : public WidgetContext
     {
-        WidgetContext wCtx;
+        using WidgetContext::WidgetContext;
     };
 
-    struct RTControlsContext
+    struct RTControlsContext : public WidgetContext
     {
-        WidgetContext wCtx;
-        Raytracer*    raytracer;
-        int           samples = 100;
-        WidgetStore*  widgetStore;
-        TextureStore* textureStore;
+        using WidgetContext::WidgetContext;
+
+        Raytracer*    raytracer       = nullptr;
+        int           samples         = 100;
+        WidgetStore*  widgetStore     = nullptr;
+        TextureStore* textureStore    = nullptr;
         unsigned int  viewportTexture = 0;
     };
 
-    struct SystemInfoContext
+    struct SystemInfoContext : public WidgetContext
     {
-        WidgetContext wCtx;
-        std::string   GPUVendor;
-        std::string   renderer;
-        std::string   GLVersion;
-        std::string   GLSLVersion;
+        using WidgetContext::WidgetContext;
+
+        std::string GPUVendor;
+        std::string renderer;
+        std::string GLVersion;
+        std::string GLSLVersion;
     };
 
     // Draw widget functions

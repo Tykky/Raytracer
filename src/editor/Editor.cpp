@@ -19,15 +19,15 @@ namespace Editor
     int  checkCursorEdge(Vec2d relPos, Vec2i windowSize, float resizeAreaSize, float dragAreaSize);
     void changeCursorOnEdge(GLFWwindow* win, int flag);
 
-    void setWindowSize(GLFWwindow* window, int width, int height);
-    void setWindowPos(GLFWwindow* window, int x, int y);
+    void setWindowSize(GLFWwindow* window, Vec2i size);
+    void setWindowPos(GLFWwindow* window, Vec2i pos);
 
     void updateCursorPosAndDelta();
     void updateFps();
     void updateWindowSize();
     void updateWindowPos();
 
-    //void createDefaultEditorWidgets(WidgetStore& widgetStore);
+    void createDefaultEditorWidgets(WidgetStore& widgetStore);
     void logVendorInfo();
     std::vector<FilePath> filesInsideDirectory();
 
@@ -99,7 +99,7 @@ namespace Editor
         io.WantSaveIniSettings = false;
 #endif
 
-        // createDefaultEditorWidgets(ctx.widgetStore);
+        createDefaultEditorWidgets(ctx()->widgetStore);
         setMouseScrollCallback();
         ctx()->initialized = true;
     }
@@ -119,7 +119,7 @@ namespace Editor
             RT_LOG_MSG("GLFW initialized");
             if (!options.enableMainWindowBorders) 
             {
-                glfwWindowHint(GLFW_DECORATED, false);
+                glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
             }
 
             window = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -440,19 +440,17 @@ namespace Editor
         ctx()->cursorRelativePos = { mx, my };
     }
 
-    /*
     void createDefaultEditorWidgets(WidgetStore& widgetStore)
     {
-        //widgetStore.push(std::make_unique<Viewport>());
-        //widgetStore.push(std::make_unique<LogViewer>());
-        //widgetStore.push(std::make_unique<RTControls>(&ctx.raytracer, &ctx.widgetStore, &ctx.textureStore));
+        insertWidgetArray<ViewportContext>(widgetStore, "Viewport context");
+        insertWidgetArray<LogViewerContext>(widgetStore, "Log viewer");
+        insertWidgetArray<RTControlsContext>(widgetStore, "RT Controls");
 #ifndef NDEBUG
-        //widgetStore.push(std::make_unique<WidgetInspector>(&ctx.widgetStore));
-        //widgetStore.push(std::make_unique<ImGuiMtericsWidget>());
-        //widgetStore.push(std::make_unique<ImguiStackToolWidget>());
+        insertWidgetArray<WidgetInspectorContext>(widgetStore, "Widget inpsector");
+        insertWidgetArray<ImGuiStackToolWidgetContext>(widgetStore, "stack tool");
+        insertWidgetArray<ImGuiMetricsWidgetContext>(widgetStore, "metrics tool");
 #endif
     }
-    */
 
     std::vector<FilePath> filesInsideDirectory()
     {
