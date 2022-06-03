@@ -56,6 +56,7 @@ namespace Editor
         TextureStore textureStore;
         Raytracer    raytracer;
         bool         initialized        = false;
+        bool         windowMaximized    = false;
     };
 
     // For now there is only one context
@@ -362,6 +363,8 @@ namespace Editor
                         win,{
                         ctx()->windowPos.x + static_cast<int>(ctx()->cursorDelta.x),
                         ctx()->windowPos.y + static_cast<int>(ctx()->cursorDelta.y)});
+                if (ctx()->windowMaximized)
+                    maximizeWindow();
             });
 
         // Resize from top
@@ -500,8 +503,7 @@ namespace Editor
 
     void maximizeWindow()
     {
-        static bool maximized = false;
-        if (!maximized)
+        if (!ctx()->windowMaximized)
         {
             RT_LOG_MSG("Window maximized");
             glfwMaximizeWindow(ctx()->window);
@@ -511,12 +513,12 @@ namespace Editor
             RT_LOG_MSG("Window restored");
             glfwRestoreWindow(ctx()->window);
         }
-        maximized ^= 1;
+        ctx()->windowMaximized ^= 1;
     }
 
     void minimizeWindow()
     {
+        RT_LOG_MSG("Window minimzed");
         glfwIconifyWindow(ctx()->window);
     }
-
 }
