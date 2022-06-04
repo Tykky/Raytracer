@@ -131,7 +131,6 @@ namespace Editor
                                      {0.0, 0.0, -1}}; // target
         Vec2f           prevMousePos = { 0.0f, 0.0f };
         Framebuffer     framebuffer;
-        Vertexbuffer    vertexbuffer = {nullptr, 0};
         ShaderProgram   shaderProgram;
 
         // Viewport shows this texture
@@ -173,7 +172,13 @@ namespace Editor
 
     struct SystemInfoContext : public WidgetContext
     {
-        using WidgetContext::WidgetContext;
+        SystemInfoContext(const std::string& name, unsigned int id, const std::string& windowId) :
+                WidgetContext(name, id ,windowId),
+                GPUVendor(getGPUVendor()),
+                renderer(getRenderer()),
+                GLVersion(getGLSLVersion()),
+                GLSLVersion(getGLSLVersion())
+        {}
 
         std::string GPUVendor;
         std::string renderer;

@@ -175,7 +175,7 @@ namespace Editor
         }
         else
         {
-            RT_LOG_WARNING("Color attachments already full! New color attachment not added");
+            RT_LOG_WARNING("Color attachments already full! New color attachment is not added");
         }
     }
 

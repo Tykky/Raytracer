@@ -88,18 +88,18 @@ namespace Editor
         ImGuiImplInitGL3("#version 440");
 
         // ImFIleDialog needs functions for creating and freeing textures for icons
-        ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void* 
+        ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void*
         {
             return createTexture(data, w, h, fmt);
         };
 
-        ifd::FileDialog::Instance().DeleteTexture = [](void* tex) 
+        ifd::FileDialog::Instance().DeleteTexture = [](void* tex)
         {
             deleteTexture(tex);
         };
 
         // Load custom font
-        //io.Fonts->AddFontFromFileTTF("Roboto-Regular.ttf", 16.0f);
+        io.Fonts->AddFontFromFileTTF("data/fonts/Roboto-Regular.ttf", 18.0f);
         io.IniFilename = "data/config/default-settings.ini";
 
 #ifdef NDEBUG
@@ -113,7 +113,7 @@ namespace Editor
         ctx()->initialized = true;
     }
 
-    void createWindow(const char* title, int width, int height, const Options& options) 
+    void createWindow(const char* title, int width, int height, const Options& options)
     {
         if (ctx()->window)
         {
@@ -123,10 +123,10 @@ namespace Editor
 
         glfwSetErrorCallback(windowErrorCallback);
         GLFWwindow* window;
-        if (glfwInit()) 
+        if (glfwInit())
         {
             RT_LOG_MSG("GLFW initialized");
-            if (!options.enableMainWindowBorders) 
+            if (!options.enableMainWindowBorders)
             {
                 glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
             }
@@ -135,28 +135,28 @@ namespace Editor
             glfwMakeContextCurrent(window);
             RT_LOG_MSG("GLFW window created");
 
-            if (!options.enableVsync) 
+            if (!options.enableVsync)
             {
                 RT_LOG_MSG("Vsync disabled");
                 glfwSwapInterval(0);
-            } 
-            else 
+            }
+            else
             {
                 RT_LOG_MSG("Vsync enabled");
             }
 
-            if (loadGLExtensions() != LOADGL_OK) 
+            if (loadGLExtensions() != LOADGL_OK)
             {
                 RT_LOG_ERROR("Failed to load GL extensions!");
                 abort();
             }
-            else 
+            else
             {
                 RT_LOG_MSG("GL extensions loaded");
                 logVendorInfo();
             }
         }
-        else 
+        else
         {
             RT_LOG_ERROR("Failed to initialize GLEW");
             abort();
@@ -164,7 +164,7 @@ namespace Editor
         ctx()->window = window;
     }
 
-    void destroyWindow() 
+    void destroyWindow()
     {
         if (!ctx()->window)
         {
@@ -363,8 +363,6 @@ namespace Editor
                         win,{
                         ctx()->windowPos.x + static_cast<int>(ctx()->cursorDelta.x),
                         ctx()->windowPos.y + static_cast<int>(ctx()->cursorDelta.y)});
-                if (ctx()->windowMaximized)
-                    maximizeWindow();
             });
 
         // Resize from top
@@ -456,11 +454,7 @@ namespace Editor
         insertWidgetArray<ViewportContext>(widgetStore, "Viewport context");
         insertWidgetArray<LogViewerContext>(widgetStore, "Log viewer");
         insertWidgetArray<RTControlsContext>(widgetStore, "RT Controls");
-#ifndef NDEBUG
-        insertWidgetArray<WidgetInspectorContext>(widgetStore, "Widget inpsector");
-        insertWidgetArray<ImGuiStackToolWidgetContext>(widgetStore, "stack tool");
-        insertWidgetArray<ImGuiMetricsWidgetContext>(widgetStore, "metrics tool");
-#endif
+        insertWidgetArray<SystemInfoContext>(widgetStore, "System info");
     }
 
     std::vector<FilePath> filesInsideDirectory()
@@ -505,12 +499,10 @@ namespace Editor
     {
         if (!ctx()->windowMaximized)
         {
-            RT_LOG_MSG("Window maximized");
             glfwMaximizeWindow(ctx()->window);
         }
         else
         {
-            RT_LOG_MSG("Window restored");
             glfwRestoreWindow(ctx()->window);
         }
         ctx()->windowMaximized ^= 1;

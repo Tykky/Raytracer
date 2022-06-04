@@ -117,7 +117,7 @@ namespace Editor
 		setUniform(ctx.shaderProgram.getProgramId(), "view", ctx.camera.getViewMatrix());
 		setUniform(ctx.shaderProgram.getProgramId(), "projection", ctx.camera.getProjectionMatrix());
 
-		drawToTexture(ctx.vertexbuffer, ctx.shaderProgram, ctx.framebuffer);
+		// drawToTexture(ctx.vertexbuffer, ctx.shaderProgram, ctx.framebuffer);
 		//drawTextureView(ctx.m_viewportTexture, ctx.offset, ctx.scale, true);
 
 		if (ImGui::Button("Toggle wireframe"))
@@ -189,7 +189,7 @@ namespace Editor
 		ImGui::Text("GL version: %s", ctx.GLVersion.data());
 		ImGui::Text("GLSL version: %s", ctx.GLSLVersion.data());
 		ImGui::Text("Framerate: %f fps", ImGui::GetIO().Framerate);
-		ImGui::Text("Delta time: %f ms", getDeltaTime() * 1000000.0f);
+		ImGui::Text("Delta time: %f ms", getDeltaTime() * 1000);
     }
 
     void drawAllWidgets(WidgetStore* wStore)
