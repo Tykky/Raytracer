@@ -297,7 +297,7 @@ namespace Editor
             const int size = buf.size();
             if (unsigned int shader = compileShader(&bufPtr, &size, shaderType))
             {
-                RT_LOG_MSG("Successfully conpile shader from path: {}", path);
+                RT_LOG_MSG("Successfully conpiled shader from path: {}", path);
                 switch (shaderType)
                 {
                     case ShaderType::VERTEX:

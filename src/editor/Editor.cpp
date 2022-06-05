@@ -99,7 +99,7 @@ namespace Editor
         };
 
         // Load custom font
-        io.Fonts->AddFontFromFileTTF("data/fonts/Roboto-Regular.ttf", 18.0f);
+        io.Fonts->AddFontFromFileTTF("data/fonts/Roboto-Regular.ttf", 16.0f);
         io.IniFilename = "data/config/default-settings.ini";
 
 #ifdef NDEBUG

@@ -117,8 +117,8 @@ namespace Editor
 		setUniform(ctx.shaderProgram.getProgramId(), "view", ctx.camera.getViewMatrix());
 		setUniform(ctx.shaderProgram.getProgramId(), "projection", ctx.camera.getProjectionMatrix());
 
-		// drawToTexture(ctx.vertexbuffer, ctx.shaderProgram, ctx.framebuffer);
-		//drawTextureView(ctx.m_viewportTexture, ctx.offset, ctx.scale, true);
+		drawToTexture(ctx.vertexbuffer, ctx.shaderProgram, ctx.framebuffer);
+		drawTextureView(ctx.m_viewportTexture, ctx.offset, ctx.scale);
 
 		if (ImGui::Button("Toggle wireframe"))
 		{

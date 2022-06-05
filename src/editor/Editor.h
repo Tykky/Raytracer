@@ -9,6 +9,16 @@
 
 namespace Editor
 {
+    // Correct font path for the platform
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    constexpr char* FONT_PATH = "C:\Windows\Fonts";
+#elif defined(__linux__)
+    constexpr char* FONT_PATH = "/usr/share/fonts"
+#else
+    constexpr char* FONT_PATH = nullptr;
+#endif
+
     // Editor API declaration
 
     struct Options

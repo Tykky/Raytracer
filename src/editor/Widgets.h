@@ -63,6 +63,7 @@ namespace Editor
     {
         auto& wArray = getWidgetArray<Context>(wStore);
         static unsigned long idx = 0;
+        RT_LOG_MSG("Widget: {} id: {} added", name, idx);
         wArray.emplace_back(
             name,
             idx,
@@ -119,7 +120,14 @@ namespace Editor
 
     struct ViewportContext : public WidgetContext
     {
-        using WidgetContext::WidgetContext;
+        ViewportContext(const std::string& name, unsigned int id, const std::string& windowId) :
+                WidgetContext(name, id, windowId)
+        {
+            shaderProgram.addShader("data/shaders/vert.glsl", ShaderType::VERTEX);
+            shaderProgram.addShader("data/shaders/frag.glsl", ShaderType::FRAGMENT);
+            shaderProgram.link();
+            framebuffer.addColorAttachment({800, 600, true});
+        }
 
 	    bool          isPrimary    = false;
         bool          wireframe    = false;
@@ -131,6 +139,7 @@ namespace Editor
                                      {0.0, 0.0, -1}}; // target
         Vec2f           prevMousePos = { 0.0f, 0.0f };
         Framebuffer     framebuffer;
+        Vertexbuffer    vertexbuffer = {defaultCubeData, sizeof(defaultCubeData)};
         ShaderProgram   shaderProgram;
 
         // Viewport shows this texture
