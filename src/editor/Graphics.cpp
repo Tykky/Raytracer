@@ -23,6 +23,7 @@ namespace Editor
             return GL_COMPUTE_SHADER;
 			break;
         }
+        return 0;
     }
 
     Texture::Texture(std::string name, unsigned char* data, int width, int height) :
@@ -469,7 +470,9 @@ namespace Editor
 
     void deleteTexture(void* tex)
     {
-        GLuint texID = (long)(tex);
+        // Pointer trickery to avoid "error: casting loses precision"
+        // We don't care about losing precision
+        GLuint texID = *((unsigned int*)tex);
         glDeleteTextures(1, &texID);
     }
 
