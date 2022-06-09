@@ -230,8 +230,8 @@ namespace Editor
         float     speed = 0.5f;
         glm::vec3 target = {0.0f, 0.0f, 0.0f};
         float     distance = 1.0f;
-        float     yaw = 0.1f;
-        float     pitch = 0.1f;
+        float     yaw = 0.0f;
+        float     pitch = 0.0f;
 
     private:
         float m_aspectRatio;

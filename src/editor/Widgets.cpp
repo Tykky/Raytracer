@@ -113,25 +113,13 @@ namespace Editor
 		// Right now we don't have much stuff in here but at some point the "renderer" will become more complex
 		processInput(ctx);
         auto begin = ImGuiScopedBegin(wStore, ctx);
+        ctx.camera.update();
 
 		setUniform(ctx.shaderProgram.getProgramId(), "view", ctx.camera.getViewMatrix());
 		setUniform(ctx.shaderProgram.getProgramId(), "projection", ctx.camera.getProjectionMatrix());
 
 		drawToTexture(ctx.vertexbuffer, ctx.shaderProgram, ctx.framebuffer);
-		drawTextureView(ctx.m_viewportTexture, ctx.offset, ctx.scale);
-
-		if (ImGui::Button("Toggle wireframe"))
-		{
-			ctx.wireframe ^= 1;
-			if (ctx.wireframe)
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			}
-			else
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			}
-		}
+		drawTextureView(ctx.viewportTexture, ctx.offset, ctx.scale);
     }
 
     void drawWidget(WidgetStore* wStore, SettingsWidgetContext& ctx) 

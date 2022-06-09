@@ -35,7 +35,7 @@ namespace Editor
     struct RTControlsContext;
     struct SystemInfoContext;
 
-    // Each widget type has its own array to allow multiple instances
+    // Each widget type has its own dynamic array to allow multiple instances
     typedef WidgetArrayTuple
 	<
         TextureViewerContext,
@@ -126,7 +126,7 @@ namespace Editor
             shaderProgram.addShader("data/shaders/vert.glsl", ShaderType::VERTEX);
             shaderProgram.addShader("data/shaders/frag.glsl", ShaderType::FRAGMENT);
             shaderProgram.link();
-            framebuffer.addColorAttachment({800, 600, true});
+            framebuffer.addColorAttachment({1920, 1080, true});
         }
 
 	    bool          isPrimary    = false;
@@ -135,7 +135,7 @@ namespace Editor
         Vec2f         offset       = { 0.0f, 0.0f };
         Vec2f         scale        = { 1920, 1080 };
         Camera        camera       = {static_cast<float>(resolution.x)/static_cast<float>(resolution.y),  // aspect ratio
-                                     {0, 0.0, 3},     // pos
+                                     {0.0f, 0.0f, 3},   // pos
                                      {0.0, 0.0, -1}}; // target
         Vec2f           prevMousePos = { 0.0f, 0.0f };
         Framebuffer     framebuffer;
@@ -143,7 +143,7 @@ namespace Editor
         ShaderProgram   shaderProgram;
 
         // Viewport shows this texture
-        void* m_viewportTexture = nullptr;
+        void* viewportTexture = nullptr;
     };
 
     struct SettingsWidgetContext : public WidgetContext
