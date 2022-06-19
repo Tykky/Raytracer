@@ -7,7 +7,7 @@ int main()
 
     options.enableViewports = true;
     options.enableMainWindowBorders = false;
-    Editor::createWindow("kebab", 1920, 1080, options);
+    Editor::createEditorWindow("kebab", 1920, 1080, options);
 
     Editor::init(options);
     Editor::renderLoop();

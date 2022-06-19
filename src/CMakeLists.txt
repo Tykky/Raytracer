@@ -28,7 +28,7 @@ set(RAYTRACER_GUI
     editor/Widgets.cpp
     editor/Graphics.cpp
     editor/Input.cpp
-        ../external/ImFileDialog/ImFileDialog.cpp
+    ../external/ImFileDialog/ImFileDialog.cpp
     ${DEAR_IMGUI_SOURCE})
 
 add_executable(raytracer core/main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})

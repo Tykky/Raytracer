@@ -5,7 +5,6 @@
 #include "editor/styles/DarkTheme.h"
 #include "editor/Input.h"
 #include "core/Raytracer.h"
-#include <map>
 
 namespace Editor 
 {
@@ -113,7 +112,7 @@ namespace Editor
         ctx()->initialized = true;
     }
 
-    void createWindow(const char* title, int width, int height, const Options& options)
+    void createEditorWindow(const char* title, int width, int height, const Options& options)
     {
         if (ctx()->window)
         {
