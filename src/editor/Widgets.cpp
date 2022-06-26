@@ -192,7 +192,7 @@ namespace Editor
 		);
     }
 
-    void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore)
+    void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore, bool drawMainMenuBorders)
     {
         if (ImGui::BeginMainMenuBar())
         {
@@ -240,19 +240,24 @@ namespace Editor
                 ImGui::EndMenu();
             }
 #endif
-            // To align buttons to the right
-            auto ws = getWindowSize();
-            constexpr int width = 80.0f;
-            ImGui::SameLine(ws.x - width);
+            // Use custom close, minimize and maximize buttons when OS
+            // provided title bar is not used
+            if (!drawMainMenuBorders)
+            {
+                // To align buttons to the right
+                auto ws = getWindowSize();
+                constexpr int width = 80.0f;
+                ImGui::SameLine(ws.x - width);
 
-            if (ImGui::Button("-"))
-                minimizeWindow();
+                if (ImGui::Button("-"))
+                    minimizeWindow();
 
-            if (ImGui::Button("O"))
-                maximizeWindow();
+                if (ImGui::Button("O"))
+                    maximizeWindow();
 
-            if (ImGui::Button("X"))
-                exit(0);
+                if (ImGui::Button("X"))
+                    exit(0);
+            }
 
             ImGui::EndMainMenuBar();
         }
@@ -410,7 +415,7 @@ namespace Editor
     
     void processInput(ViewportContext& ctx)
     {
-      float scroll = getMouseScroll();
+        float scroll = getMouseScroll();
         if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && ctx.camera.distance != scroll)
         {
             ctx.camera.distance = scroll * 0.5f;

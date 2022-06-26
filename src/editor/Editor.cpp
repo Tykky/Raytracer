@@ -42,6 +42,7 @@ namespace Editor
 
     struct EditorContext 
     {
+        Options      options;
         GLFWwindow*  window             = nullptr;
         float        deltaTime          = 0.0f;
         float        fps                = 0.0f;
@@ -61,7 +62,7 @@ namespace Editor
     // For now there is only one context
     static EditorContext context;
 
-    EditorContext* ctx()
+    static EditorContext* ctx()
     {
         return &context;
     }
@@ -74,6 +75,8 @@ namespace Editor
 
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+        ctx()->options = options;
 
         if (options.enableViewports) 
         {
@@ -221,12 +224,13 @@ namespace Editor
         updateCursorPosAndDelta();
         updateWindowSize();
         updateWindowPos();
-        dragAndResizeFromEdges();
+        if (!ctx()->options.enableMainWindowBorders)
+            dragAndResizeFromEdges();
     }
 
     void drawEditor(const ImGuiIO& io) 
     {
-        drawMainMenuBar(ctx()->widgetStore, ctx()->textureStore);
+        drawMainMenuBar(ctx()->widgetStore, ctx()->textureStore, ctx()->options.enableMainWindowBorders);
         drawImFileDialogAndProcessInput();
         drawDockspace("Main");
         drawAllWidgets(&ctx()->widgetStore);
@@ -329,7 +333,6 @@ namespace Editor
     // hold contains positions where the mouse was clicked first time
     // flag contains position where the mouse is hovered
     // check contains the positions to be checked for e.g RESIZE_TOP, RESIZE_LEFT etc..., see definition of ResizeFlag
-    // TODO: come up with better name for this
     void executeWhileMouse1Pressed(GLFWwindow* win, ResizeFlag& hold, const ResizeFlag flag, const ResizeFlag check, void (*exec)(GLFWwindow* win))
     {
         if ((hold & check) || (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS && flag & check))

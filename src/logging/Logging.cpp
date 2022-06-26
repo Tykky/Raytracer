@@ -12,7 +12,7 @@ static const char* formatting = "[%D %X] [%l] %v";
 #include <windows.h>
 #endif
 
-constexpr char* failedMsg = "Tried to use logger when it's not initialized! Call initlogger(int ringSize) first\n";
+const char* failedMsg = "Tried to use logger when it's not initialized! Call initlogger(int ringSize) first\n";
 
 void initLogger(const unsigned int logSize)
 {

@@ -219,7 +219,7 @@ namespace Editor
     void drawAllWidgets(WidgetStore* wStore);
 
     // Shows the main menubar at the top of the main window
-    void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore);
+    void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore, bool enableMainWindowBorders);
 
     // Dockspace simply allows windows to be docked to the main window
     void drawDockspace(const char* name);
