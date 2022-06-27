@@ -3,7 +3,12 @@ project(Raytracer)
 
 set(CMAKE_CXX_STANDARD 17)
 
-if(MSVC AND WIN32)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+add_compile_options()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g")
+endif()
+
+if(MSVC)
 	# VS2022 hot reload feature requries these
 	add_link_options($<$<CONFIG:Debug>:/INCREMENTAL>)
     add_compile_options($<$<CONFIG:Debug>:/ZI>)
