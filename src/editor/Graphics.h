@@ -26,9 +26,9 @@ static constexpr float defaultRectangleData[] =
 // Cube for testing purposes
 static constexpr float defaultCubeData[] =
 {
-//       Vertices           tex uv
-//  <----------------->  <---------->
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+//       Vertices           tex uv         vertex normal 
+//  <----------------->  <---------->     <-------------->
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, //  0.5f, 0.5f, 0.5f
      0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,

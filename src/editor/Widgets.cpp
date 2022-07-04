@@ -44,7 +44,7 @@ namespace Editor
     template<typename Context>
     struct ImGuiScopedBegin
     {
-        ImGuiScopedBegin(WidgetStore* wStore, Context& ctx, ImGuiWindowFlags flags = 0)
+        explicit ImGuiScopedBegin(WidgetStore* wStore, Context& ctx, ImGuiWindowFlags flags = 0)
         {
             bool open = true;
             ImGui::Begin(ctx.windowId.data(), &open, flags);
@@ -216,6 +216,8 @@ namespace Editor
                     insertWidgetArray<TextureViewerContext>(widgetStore, "Texture viewer");
                 if (ImGui::MenuItem("Log viewer"))
                     insertWidgetArray<LogViewerContext>(widgetStore, "Log viewer");
+                if (ImGui::MenuItem("Viewport"))
+                    insertWidgetArray<ViewportContext>(widgetStore, "viewport");
                 ImGui::EndMenu();
             }
 
@@ -323,7 +325,7 @@ namespace Editor
 
 		ImVec2 size = ImGui::GetWindowSize();
 
-		constexpr const int comboBoxGap = 100;
+		constexpr const int comboBoxGap = 40;
 
 		ImGui::BeginChild("TextureViewer", {size.x, size.y - comboBoxGap}, false, flags);
 
@@ -425,7 +427,7 @@ namespace Editor
 		auto cPos = getCursorPos();
 
 		// This simply prevents "snapping" the camera when we process mouse input for the first time.
-		// We don't want to be using the "old" values for prevMouseX an prevMouseDeltaY.
+		// We don't want to be using the "old" values for prevMouseX and prevMouseDeltaY.
         if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::RELEASE && getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
 		{
 			ctx.prevMousePos.x = cPos.x;

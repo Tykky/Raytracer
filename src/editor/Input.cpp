@@ -24,7 +24,7 @@ namespace Editor
 	StatusCode getKey(KeyCode code)
 	{
 		int status = glfwGetKey(getCurrentWindowHandle(), keyCodeToGLFW(code));
-		assert(status == 0 || status == 1);
+        assert(status == 0 || status == 1);
 		return static_cast<StatusCode>(status);
 	}
 

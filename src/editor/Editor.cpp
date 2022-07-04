@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "Widgets.h"
 #include "editor/Graphics.h"
+#include "editor/Types.h"
 #include "editor/styles/DarkTheme.h"
 #include "editor/Input.h"
 #include "core/Raytracer.h"
@@ -89,7 +90,7 @@ namespace Editor
         ImGuiImplInitGLFW(ctx()->window);
         ImGuiImplInitGL3("#version 440");
 
-        // ImFIleDialog needs functions for creating and freeing textures for icons
+        // ImFIleDialog needs functions for alloating and freeing textures for icons
         ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void*
         {
             return createTexture(data, w, h, fmt);
@@ -190,7 +191,7 @@ namespace Editor
 
         if (!ctx()->initialized)
         {
-            RT_LOG_WARNING("Tried to enter render loop when the editor is not initialized!");
+            RT_LOG_WARNING("Tried to enter render loop when the editor is not yet initialized!");
             return;
         }
 
@@ -362,7 +363,7 @@ namespace Editor
             executeWhileMouse1Pressed(win, hold, flag, DRAG_TOP, [](GLFWwindow *win)
             {
                 setWindowPos(
-                        win,{
+                        win, {
                         ctx()->windowPos.x + static_cast<int>(ctx()->cursorDelta.x),
                         ctx()->windowPos.y + static_cast<int>(ctx()->cursorDelta.y)});
             });

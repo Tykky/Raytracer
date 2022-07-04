@@ -7,9 +7,11 @@ int main()
 
     options.enableViewports = true;
     options.enableMainWindowBorders = true;
-    Editor::createEditorWindow("kebab", 800, 600, options);
+    options.enableVsync = false;
+    Editor::createEditorWindow("", 1920, 1080, options);
 
     Editor::init(options);
     Editor::renderLoop();
+
     Editor::destroyWindow();
 }
