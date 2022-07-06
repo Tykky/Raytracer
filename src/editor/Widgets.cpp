@@ -180,6 +180,14 @@ namespace Editor
 		ImGui::Text("Delta time: %f ms", getDeltaTime() * 1000);
     }
 
+    void drawWidget(WidgetStore* wStore, RasterSettingsContext& ctx)
+    {
+        ImGui::SetNextWindowSize({ 800, 600 });
+        auto begin = ImGuiScopedBegin(wStore, ctx);
+        if (ImGui::Button("wireframe"))
+            toggleWireframe();
+    }
+
     void drawAllWidgets(WidgetStore* wStore)
     {
         std::apply
@@ -218,6 +226,8 @@ namespace Editor
                     insertWidgetArray<LogViewerContext>(widgetStore, "Log viewer");
                 if (ImGui::MenuItem("Viewport"))
                     insertWidgetArray<ViewportContext>(widgetStore, "viewport");
+                if (ImGui::MenuItem("Raster settings"))
+                    insertWidgetArray<RasterSettingsContext>(widgetStore, "Raster settings");
                 ImGui::EndMenu();
             }
 

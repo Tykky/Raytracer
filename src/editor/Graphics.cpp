@@ -176,7 +176,7 @@ namespace Editor
         }
         else
         {
-            RT_LOG_WARNING("Color attachments already full! New color attachment is not added");
+            RT_LOG_WARNING("Color attachments are full!");
         }
     }
 
@@ -515,6 +515,18 @@ namespace Editor
     void blitTexture(unsigned int target, int width, int height, const void* data)
     {
         glTexSubImage2D(target, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+    }
+
+    bool toggleWireframe()
+    {
+        // Gl context is global so it's fine to use static
+        static bool toggle = false;
+        toggle ^= 1;
+        if (toggle)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        else
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        return toggle;
     }
 
     int loadGLExtensions()

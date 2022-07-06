@@ -458,6 +458,7 @@ namespace Editor
         insertWidgetArray<LogViewerContext>(widgetStore, "Log viewer");
         insertWidgetArray<RTControlsContext>(widgetStore, "RT Controls");
         insertWidgetArray<SystemInfoContext>(widgetStore, "System info");
+        insertWidgetArray<RasterSettingsContext>(widgetStore, "Raster settings");
     }
 
     std::vector<FilePath> filesInsideDirectory()

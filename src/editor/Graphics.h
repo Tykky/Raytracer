@@ -277,6 +277,9 @@ namespace Editor
 
     void blitTexture(unsigned int target, int width, int height, const void* data);
 
+    // true: wireframe on, false: wireframe off
+    bool toggleWireframe();
+
 #define LOADGL_OK 0
 
     // Returns 0 when loading extensions is successful

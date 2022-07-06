@@ -33,6 +33,7 @@ namespace Editor
     struct ImGuiStackToolWidgetContext;
     struct RTControlsContext;
     struct SystemInfoContext;
+    struct RasterSettingsContext;
 
     // Each widget type has its own dynamic array to allow multiple instances
     typedef WidgetArrayTuple
@@ -45,7 +46,8 @@ namespace Editor
 		ImGuiMetricsWidgetContext,
 	    ImGuiStackToolWidgetContext,
 		RTControlsContext,
-		SystemInfoContext
+		SystemInfoContext,
+        RasterSettingsContext
 	>
 	WidgetStore;
 
@@ -68,7 +70,7 @@ namespace Editor
         // Dear Imgui allows ids to be appended as suffix after "###"
         wArray.emplace_back(name, idx,  
 		//  window title           id = name + idx
-		//  <--->          <-------------------------->
+		//  <-->           <-------------------------->
             name + "###" + name + std::to_string(idx++)
 		);
     }
@@ -127,15 +129,15 @@ namespace Editor
             shaderProgram.addShader("data/shaders/vert.glsl", ShaderType::VERTEX);
             shaderProgram.addShader("data/shaders/frag.glsl", ShaderType::FRAGMENT);
             shaderProgram.link();
-            framebuffer.addColorAttachment({1920, 1080, true});
+            framebuffer.addColorAttachment({3840, 2160, true});
             viewportTexture = reinterpret_cast<void*>(framebuffer.getColorAttachments()[0].id());
         }
 
 	    bool          isPrimary    = false;
         bool          wireframe    = false;
-        Vec2i         resolution   = { 1920, 1080 };
+        Vec2i         resolution   = { 3840, 2160 };
         Vec2f         offset       = { 0.0f, 0.0f };
-        Vec2f         scale        = { 1920, 1080 };
+        Vec2f         scale        = { 3840, 2160 };
         Camera        camera       = {static_cast<float>(resolution.x)/static_cast<float>(resolution.y),  // aspect ratio
                                      {0.0f, 0.0f, 3},   // pos
                                      {0.0, 0.0, -1}};   // target
@@ -197,6 +199,11 @@ namespace Editor
         std::string GLSLVersion;
     };
 
+    struct RasterSettingsContext : public WidgetContext
+    {
+        using WidgetContext::WidgetContext;
+    };
+
     // Draw widget functions
     // These allow multiple instances of each widget type.
 
@@ -209,6 +216,7 @@ namespace Editor
     void drawWidget(WidgetStore* wStore, ImGuiStackToolWidgetContext& ctx);
     void drawWidget(WidgetStore* wStore, RTControlsContext& ctx);
     void drawWidget(WidgetStore* wStore, SystemInfoContext& ctx);
+    void drawWidget(WidgetStore* wStore, RasterSettingsContext& ctx);
 
     template<typename Context>
     void drawWidgetArray(WidgetStore* wStore, WidgetArray<Context>& wArray)
