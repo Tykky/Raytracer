@@ -1,4 +1,7 @@
 #include "editor/Editor.h"
+#include "logging/Logging.h"
+#include "scene/Components.h"
+#include "scene/Scene.h"
 
 int main()
 {

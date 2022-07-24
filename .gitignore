@@ -1,7 +1,7 @@
 /.idea
 /cmake-*
 CMakeSettings.json
-/build
+/build*
 doc/latex
 doc/api
 doc/xml
@@ -16,3 +16,4 @@ _build/
 make.bat
 imgui.ini
 build.sh
+compile_commands.json

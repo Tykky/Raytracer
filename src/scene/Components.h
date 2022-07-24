@@ -1,45 +1,46 @@
 #ifndef RAYTRACER_COMPONENTS_H
 #define RAYTRACER_COMPONENTS_H
 
-#include <glm/glm.hpp>
-#include "glm/gtc/matrix_transform.hpp"
-#include "primitives/Mesh.h"
-#include "materials/Material.h"
+#include "types/Types.h"
+#include <utility>
+#include "mesh/Mesh.h"
 
-struct TransformComponent
+namespace RT
 {
-	glm::vec3 Translation = { 0.0f, 0.0f, 0.0f };
-	glm::vec3 Rotation = { 0.0f, 0.0f, 0.0f };
-	glm::vec3 Scale = { 0.0f, 0.0f, 0.0f };
-
-	inline glm::mat4 getTransform()
+	// Components used by ECS
+	struct TransformComponent
 	{
-		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), Rotation.x, { 1, 0, 0 }) *
-						     glm::rotate(glm::mat4(1.0f), Rotation.y, { 0, 1, 0 }) *
-						     glm::rotate(glm::mat4(1.0f), Rotation.z, { 0, 0, 1 });
+		Vec3f translation;
+		Vec3f rotation;
+		Vec3f scale;
+	};
 
-		return rotation * 
-			   glm::translate(glm::mat4(1.0f), Translation) *
-			   glm::scale(glm::mat4(1.0f), Scale);
-			   
-	}
-};
+	struct CameraComponent
+	{
+		float   fov;
+		float   zNear;
+		float   zFar;
+		float   aspectRatio;
 
-struct CameraComponent
-{
-	float fov   = 45.0f;
-	float zNear = 0.1f;
-	float zFar  = 100.0f;
-};
+		float   yaw;
+		float   pitch;
 
-struct MeshComponent
-{
-	Mesh mesh;
-};
+		Vec3f   dir;
+		Vec3f   right;
+		Vec3f   up;
 
-struct MaterialComponent
-{
-	std::shared_ptr<Material> material;
-};
+		Vec3f   target;
+
+		Mat4x4f view;
+		Mat4x4f projection;
+	};
+
+	struct MeshComponent
+	{
+		float*       data;
+		VertexLayout layout;
+	};
+
+}
 
 #endif // RAYTRACER_COMPONENTS_H

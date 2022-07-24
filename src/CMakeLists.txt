@@ -20,7 +20,8 @@ set(RAYTRACER_SRC core/Ray.cpp
     logging/Logging.cpp
     io/Io.cpp
     io/MeshLoader.cpp
-    scene/Components.cpp
+    scene/Scene.cpp
+    mesh/Mesh.cpp
 )
 
 set(RAYTRACER_GUI

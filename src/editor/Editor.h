@@ -2,7 +2,7 @@
 #define RAYTRACER_EDITOR_H
 
 #include "logging/Logging.h"
-#include "editor/Types.h"
+#include "types/Types.h"
 
 // Everything related to resource management for the Editor.
 // Contains the main functions to create and destroy the editor context.

@@ -7,6 +7,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g")
 endif()
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -Wall -g")
+endif()
+
 if(MSVC)
 	# VS2022 hot reload feature requries these
 	add_link_options($<$<CONFIG:Debug>:/INCREMENTAL>)

@@ -2,10 +2,12 @@
 #include <GLFW/glfw3.h>
 #include "Widgets.h"
 #include "editor/Graphics.h"
-#include "editor/Types.h"
+#include "types/Types.h"
 #include "editor/styles/DarkTheme.h"
 #include "editor/Input.h"
 #include "core/Raytracer.h"
+#include "ImFileDialog.h"
+#include "scene/Scene.h"
 
 namespace Editor 
 {
@@ -58,6 +60,7 @@ namespace Editor
         Raytracer    raytracer;
         bool         initialized        = false;
         bool         windowMaximized    = false;
+        RT::Scene    scene;
     };
 
     // For now there is only one context

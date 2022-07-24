@@ -7,9 +7,8 @@
 #include <functional>
 #include "Graphics.h"
 #include "logging/Logging.h"
-#include "ImFileDialog.h"
 #include "core/Raytracer.h"
-#include "editor/Types.h"
+#include "types/Types.h"
 #include <tuple>
 
 // Contains the GUI implementation for the editor
@@ -67,10 +66,10 @@ namespace Editor
         // Each widget type has seperate idx counter
         static unsigned long idx = 0;
 
-        // Dear Imgui allows ids to be appended as suffix after "###"
+        // Dear Imgui allows id:s to be appended as suffix after "###"
         wArray.emplace_back(name, idx,  
 		//  window title           id = name + idx
-		//  <-->           <-------------------------->
+		//  <-->           <------------------------------>
             name + "###" + name + std::to_string(idx++)
 		);
     }
@@ -137,7 +136,7 @@ namespace Editor
         bool          wireframe    = false;
         Vec2i         resolution   = { 3840, 2160 };
         Vec2f         offset       = { 0.0f, 0.0f };
-        Vec2f         scale        = { 3840, 2160 };
+        Vec2f         scale        = { 3480, 2160 };
         Camera        camera       = {static_cast<float>(resolution.x)/static_cast<float>(resolution.y),  // aspect ratio
                                      {0.0f, 0.0f, 3},   // pos
                                      {0.0, 0.0, -1}};   // target
