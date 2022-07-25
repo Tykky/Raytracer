@@ -2,7 +2,7 @@
 
 namespace RT
 {
-    std::uint32_t addEntity(Scene& scene)
+    Entity addEntity(Scene& scene)
     {
         return static_cast<std::uint32_t>(scene.registry.create());
     }

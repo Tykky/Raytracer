@@ -1,25 +1,8 @@
 include_directories(.)
 
-set(RAYTRACER_SRC core/Ray.cpp
-    core/Camera.cpp
-    core/Vector3D.cpp
-    core/utility.cpp
-    primitives/Sphere.cpp
-    primitives/Hitlist.cpp
-    primitives/Aabb.cpp
-    primitives/Bvhnode.cpp
-    primitives/Triangle.cpp
-    primitives/Mesh.cpp
-    materials/Lambertian.cpp
-    materials/Metal.cpp
-    materials/Dielectric.cpp
-    materials/Mix.cpp
-    samplers/RandomMonteCarloSampler.cpp
-    samplers/FastSampler.cpp
-    threads/Threadpool.cpp
+set(RAYTRACER_SRC
     logging/Logging.cpp
     io/Io.cpp
-    io/MeshLoader.cpp
     scene/Scene.cpp
     mesh/Mesh.cpp
 )
@@ -32,5 +15,5 @@ set(RAYTRACER_GUI
     ../external/ImFileDialog/ImFileDialog.cpp
     ${DEAR_IMGUI_SOURCE})
 
-add_executable(raytracer core/main.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
+add_executable(raytracer EditorMain.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
 target_link_libraries(raytracer ${EXTERNAL})

@@ -2,12 +2,19 @@
 #define RAYTRACER_COMPONENTS_H
 
 #include "types/Types.h"
+#include <cstddef>
+#include <cstdint>
 #include <utility>
 #include "mesh/Mesh.h"
 
 namespace RT
 {
 	// Components used by ECS
+
+	struct idComponent
+	{
+		u32 id;
+	};
 	struct TransformComponent
 	{
 		Vec3f translation;
@@ -37,10 +44,11 @@ namespace RT
 
 	struct MeshComponent
 	{
-		float*       data;
+		float*       vertices;
+		u32          size;
+		u32          meshId;
 		VertexLayout layout;
 	};
-
 }
 
 #endif // RAYTRACER_COMPONENTS_H

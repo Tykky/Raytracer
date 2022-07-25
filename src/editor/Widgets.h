@@ -7,7 +7,6 @@
 #include <functional>
 #include "Graphics.h"
 #include "logging/Logging.h"
-#include "core/Raytracer.h"
 #include "types/Types.h"
 #include <tuple>
 
@@ -175,7 +174,6 @@ namespace Editor
     {
         using WidgetContext::WidgetContext;
 
-        Raytracer*    raytracer       = nullptr;
         int           samples         = 100;
         WidgetStore*  widgetStore     = nullptr;
         TextureStore* textureStore    = nullptr;

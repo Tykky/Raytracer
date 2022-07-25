@@ -17,3 +17,4 @@ make.bat
 imgui.ini
 build.sh
 compile_commands.json
+.cache

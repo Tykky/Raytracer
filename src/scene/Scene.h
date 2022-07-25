@@ -49,4 +49,5 @@ namespace RT
         return scene.registry.get<Component>(static_cast<enttEntity>(entity));
     }
 }
+
 #endif // RAYTRACER_SCENE_H

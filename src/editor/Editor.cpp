@@ -5,7 +5,6 @@
 #include "types/Types.h"
 #include "editor/styles/DarkTheme.h"
 #include "editor/Input.h"
-#include "core/Raytracer.h"
 #include "ImFileDialog.h"
 #include "scene/Scene.h"
 
@@ -57,7 +56,6 @@ namespace Editor
         Vec2i        windowPos          = {0, 0};
         WidgetStore  widgetStore;
         TextureStore textureStore;
-        Raytracer    raytracer;
         bool         initialized        = false;
         bool         windowMaximized    = false;
         RT::Scene    scene;

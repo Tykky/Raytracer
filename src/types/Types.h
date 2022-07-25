@@ -1,6 +1,9 @@
 #ifndef RAYTRACER_TYPES_H
 #define RAYTRACER_TYPES_H
 
+#include <cmath>
+#include <cstdint>
+
 template<typename T>
 struct Vec2
 {
@@ -62,5 +65,10 @@ typedef Mat3x3<int>    Mat3x3i;
 typedef Mat4x4<double> Mat4x4d;
 typedef Mat4x4<float>  Mat4x4f;
 typedef Mat4x4<int>    Mat4x4i;
+
+typedef std::uint32_t u32;
+typedef std::int32_t  i32;
+typedef std::uint64_t u64;
+typedef std::int64_t  i64;
 
 #endif // RAYTRACER_TYPES_H
