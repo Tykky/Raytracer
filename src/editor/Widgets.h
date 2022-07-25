@@ -229,7 +229,7 @@ namespace Editor
     // Following widgets do not allow multiple instances
 
     // Shows the main menubar at the top of the main window
-    void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore, bool enableMainWindowBorders);
+    void drawMainMenuBar(WidgetStore& widgetStore, bool enableMainWindowBorders);
 
     // Dockspace allows windows to be docked to the main window
     void drawDockspace(const char* name);

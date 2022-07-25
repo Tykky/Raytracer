@@ -200,7 +200,7 @@ namespace Editor
 		);
     }
 
-    void drawMainMenuBar(WidgetStore& widgetStore, TextureStore& textureStore, bool drawMainMenuBorders)
+    void drawMainMenuBar(WidgetStore& widgetStore, bool drawMainMenuBorders)
     {
         if (ImGui::BeginMainMenuBar())
         {

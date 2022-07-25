@@ -55,7 +55,6 @@ namespace Editor
         Vec2i        windowSize         = { 0, 0 };
         Vec2i        windowPos          = {0, 0};
         WidgetStore  widgetStore;
-        TextureStore textureStore;
         bool         initialized        = false;
         bool         windowMaximized    = false;
         RT::Scene    scene;
@@ -232,7 +231,7 @@ namespace Editor
 
     void drawEditor(const ImGuiIO& io) 
     {
-        drawMainMenuBar(ctx()->widgetStore, ctx()->textureStore, ctx()->options.enableMainWindowBorders);
+        drawMainMenuBar(ctx()->widgetStore, ctx()->options.enableMainWindowBorders);
         drawImFileDialogAndProcessInput();
         drawDockspace("Main");
         drawAllWidgets(&ctx()->widgetStore);

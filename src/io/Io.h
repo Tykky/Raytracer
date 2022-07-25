@@ -8,7 +8,8 @@ typedef std::vector<char> Rawbuffer;
 typedef std::string FilePath;
 typedef std::string FileExtension;
 
-// returns null terminated file
+// returns null terminated file,
+// true when successfull, false when fails
 bool readRawFile(Rawbuffer& buffer, const char* filename);
 
 // Returns all file paths inside given directory, ignores folders
