@@ -183,13 +183,13 @@ typedef vec<double, 2> v2d;
 typedef vec<float, 2>  v2f;
 typedef vec<int, 2>    v2i;
 
-typedef v3<double> v3d;
-typedef v3<float>  v3f;
-typedef v3<int>    v3i;
+typedef vec<double, 3> v3d;
+typedef vec<float, 3>  v3f;
+typedef vec<int, 3>    v3i;
 
-typedef v4<double> v4d;
-typedef v4<float>  v4f;
-typedef v4<int>    v4i;
+typedef vec<double,4>  v4d;
+typedef vec<float, 4>  v4f;
+typedef vec<int, 4>    v4i;
 
 typedef Mat3x3<double> m33d;
 typedef Mat3x3<float>  m33f;
