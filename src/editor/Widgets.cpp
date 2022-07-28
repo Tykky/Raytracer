@@ -18,7 +18,7 @@ namespace Editor
 
     float getFps();
     float getDeltaTime();
-    Vec2i getWindowSize();
+    v2i getWindowSize();
     void maximizeWindow();
     void minimizeWindow();
 
@@ -259,7 +259,7 @@ namespace Editor
                 // To align buttons to the right
                 auto ws = getWindowSize();
                 constexpr int width = 80.0f;
-                ImGui::SameLine(ws.x - width);
+                ImGui::SameLine(ws.x() - width);
 
                 if (ImGui::Button("-"))
                     minimizeWindow();
@@ -297,9 +297,9 @@ namespace Editor
             ImGui::SetNextWindowViewport(viewport->ID);
 
             // We don't need rounding for the main dockspace
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+            // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+            // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            // ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
             // We don't need any of this either for the main dockspace
             auto windowFlags = ImGuiWindowFlags_NoMove     | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize   |
@@ -308,7 +308,7 @@ namespace Editor
 
            if (ImGui::Begin(name, nullptr, windowFlags))
            {
-                ImGui::PopStyleVar(3);
+                // ImGui::PopStyleVar(3);
                 const auto dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
 
                 ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
@@ -329,7 +329,7 @@ namespace Editor
         }
     }
 
-    void drawTextureView(void* texId, Vec2f& offset, Vec2f& scale)
+    void drawTextureView(void* texId, v2f& offset, v2f& scale)
     {
         constexpr int flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
@@ -341,18 +341,18 @@ namespace Editor
 
 		if (ImGui::IsWindowHovered() && ImGui::IsKeyDown(ImGuiKey_LeftCtrl))
 		{
-			zoomTextureWhenScrolled(scale.x, scale.y);
-			moveTextureWhenDragged(offset.x, offset.y);
+			zoomTextureWhenScrolled(scale.x(), scale.y());
+			moveTextureWhenDragged(offset.x(), offset.y());
 		}
 
 		// Dear Imgui draws textures upper left corner on current cursor position.
 		// When we zoom the texture we want to keep it centered. We do this by
 		// computing correct upper left corner so that the center of the texture is in the middle of the window.
-		ImVec2 center = {(size.x - scale.x) * 0.5f + offset.x, (size.y - scale.y) * 0.5f + offset.y};
+		ImVec2 center = {(size.x - scale.x()) * 0.5f + offset.x(), (size.y - scale.y()) * 0.5f + offset.y()};
 
 		// By moving the cursor position we can move the texture.
 		ImGui::SetCursorPos(center);
-		ImGui::Image(texId, ImVec2(scale.x, scale.y));
+		ImGui::Image(texId, ImVec2(scale.x(), scale.y()));
 		ImGui::EndChild();
     }
 
@@ -440,15 +440,15 @@ namespace Editor
 		// We don't want to be using the "old" values for prevMouseX and prevMouseDeltaY.
         if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::RELEASE && getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
 		{
-			ctx.prevMousePos.x = cPos.x;
-			ctx.prevMousePos.y = cPos.y;
+			ctx.prevMousePos.x() = cPos.x();
+			ctx.prevMousePos.y() = cPos.y();
 		}
 
-		float mousePoxXDelta = static_cast<float>(cPos.x) - ctx.prevMousePos.x;
-		float mousePosYDelta = static_cast<float>(cPos.y) - ctx.prevMousePos.y;
+		float mousePoxXDelta = static_cast<float>(cPos.x()) - ctx.prevMousePos.x();
+		float mousePosYDelta = static_cast<float>(cPos.y()) - ctx.prevMousePos.y();
 
-		ctx.prevMousePos.x = cPos.x;
-		ctx.prevMousePos.y = cPos.y;
+		ctx.prevMousePos.x() = cPos.x();
+		ctx.prevMousePos.y() = cPos.y();
 
         // Move sideways
         if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && getMouseButton(MouseCode::MOUSE_BUTTON_3) == StatusCode::PRESS)

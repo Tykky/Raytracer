@@ -9,8 +9,20 @@ namespace RT
         {VertexLayout::POINT,           3}
     };
 
-    std::size_t numelementsVertexLayout(VertexLayout layout)
+    u32 numelementsVertexLayout(VertexLayout layout)
     {
-        return numElementsMap.at(layout);
+        switch (layout)
+        {
+            case VertexLayout::POINT_NORMAL_UV:
+                return 8;
+            case VertexLayout::POINT_NORMAL:
+                return 6;
+            case VertexLayout::POINT_UV:
+                return 5;
+            case VertexLayout::POINT:
+                return 3;
+            default:
+                return 0;
+        }
     }
 }

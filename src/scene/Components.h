@@ -1,25 +1,21 @@
 #ifndef RAYTRACER_COMPONENTS_H
 #define RAYTRACER_COMPONENTS_H
 
-#include "types/Types.h"
+#include "util/Types.h"
 #include <cstddef>
 #include <cstdint>
 #include <utility>
 #include "mesh/Mesh.h"
+#include "util/Math.h"
 
 namespace RT
 {
 	// Components used by ECS
-
-	struct idComponent
-	{
-		u32 id;
-	};
 	struct TransformComponent
 	{
-		Vec3f translation;
-		Vec3f rotation;
-		Vec3f scale;
+		v3f translation;
+		v3f rotation;
+		v3f scale;
 	};
 
 	struct CameraComponent
@@ -32,14 +28,14 @@ namespace RT
 		float   yaw;
 		float   pitch;
 
-		Vec3f   dir;
-		Vec3f   right;
-		Vec3f   up;
+		v3f   dir;
+		v3f   right;
+		v3f   up;
 
-		Vec3f   target;
+		v3f   target;
 
-		Mat4x4f view;
-		Mat4x4f projection;
+		m44f view;
+		m44f projection;
 	};
 
 	struct MeshComponent

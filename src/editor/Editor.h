@@ -2,7 +2,7 @@
 #define RAYTRACER_EDITOR_H
 
 #include "logging/Logging.h"
-#include "types/Types.h"
+#include "util/Types.h"
 
 // Everything related to resource management for the Editor.
 // Contains the main functions to create and destroy the editor context.
@@ -20,7 +20,6 @@ namespace Editor
 #endif
 
     // Editor API declaration
-
     struct Options
     {
         bool enableViewports         = false; // Viewports allow moving editor windows outside the main window

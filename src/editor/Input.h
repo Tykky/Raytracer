@@ -1,7 +1,8 @@
 #ifndef RAYTRACER_EDITOR_INPUT_H
 #define RAYTRACER_EDITOR_INPUT_H
 
-#include "types/Types.h"
+#include "util/Types.h"
+#include "util/Math.h"
 
 // Everything that has to do with user input,
 // keystrokes, mouse input etc..
@@ -160,7 +161,7 @@ namespace Editor
     StatusCode getKey(KeyCode code);
     StatusCode getMouseButton(MouseCode button);
     float      getMouseScroll();
-    Vec2d      getCursorPos();
+    v2d        getCursorPos();
 	void       setMouseScrollCallback();
 }
 

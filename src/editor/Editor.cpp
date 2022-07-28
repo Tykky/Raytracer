@@ -2,11 +2,12 @@
 #include <GLFW/glfw3.h>
 #include "Widgets.h"
 #include "editor/Graphics.h"
-#include "types/Types.h"
+#include "util/Types.h"
 #include "editor/styles/DarkTheme.h"
 #include "editor/Input.h"
 #include "ImFileDialog.h"
 #include "scene/Scene.h"
+#include "util/Math.h"
 
 namespace Editor 
 {
@@ -17,11 +18,11 @@ namespace Editor
     void windowErrorCallback(int code, const char* description);
     void dragAndResizeFromEdges();
     void updateEditorContext();
-    int  checkCursorEdge(Vec2d relPos, Vec2i windowSize, float resizeAreaSize, float dragAreaSize);
+    int  checkCursorEdge(v2d relPos, v2i windowSize, float resizeAreaSize, float dragAreaSize);
     void changeCursorOnEdge(GLFWwindow* win, int flag);
 
-    void setWindowSize(GLFWwindow* window, Vec2i size);
-    void setWindowPos(GLFWwindow* window, Vec2i pos);
+    void setWindowSize(GLFWwindow* window, v2i size);
+    void setWindowPos(GLFWwindow* window, v2i pos);
 
     void updateCursorPosAndDelta();
     void updateFps();
@@ -31,7 +32,7 @@ namespace Editor
     float getDeltaTime();
     float getFps();
     GLFWwindow* getCurrentWindowHandle();
-    Vec2i getWindowSize();
+    v2i getWindowSize();
 
     void maximizeWindow();
     void minimizeWindow();
@@ -49,11 +50,11 @@ namespace Editor
         float        deltaTime          = 0.0f;
         float        fps                = 0.0f;
         float        mouseScroll        = 0.0f;
-        Vec2d        cursorPos          = { 0.0f, 0.0f }; // Screen coordinates
-        Vec2d        cursorRelativePos  = { 0.0f, 0.0f }; // Relative to window position
-        Vec2d        cursorDelta        = { 0.0f, 0.0f };
-        Vec2i        windowSize         = { 0, 0 };
-        Vec2i        windowPos          = {0, 0};
+        v2d        cursorPos          = { 0.0f, 0.0f }; // Screen coordinates
+        v2d        cursorRelativePos  = { 0.0f, 0.0f }; // Relative to window position
+        v2d        cursorDelta        = { 0.0f, 0.0f };
+        v2i        windowSize         = { 0, 0 };
+        v2i        windowPos          = {0, 0};
         WidgetStore  widgetStore;
         bool         initialized        = false;
         bool         windowMaximized    = false;
@@ -270,23 +271,23 @@ namespace Editor
         RESIZE_LEFT   = 1 << 4;
 
 
-    int checkCursorEdge(Vec2d relPos, Vec2i windowSize, float resizeAreaSize, float dragAreaSize)
+    int checkCursorEdge(v2d relPos, v2i windowSize, float resizeAreaSize, float dragAreaSize)
     {
         int flag = NONE;
 
-        if (relPos.y < resizeAreaSize)
+        if (relPos.y() < resizeAreaSize)
             flag |= RESIZE_TOP;
 
-        if (relPos.y >= resizeAreaSize && relPos.y < dragAreaSize)
+        if (relPos.y() >= resizeAreaSize && relPos.y() < dragAreaSize)
             flag |= DRAG_TOP;
 
-        if (relPos.x > windowSize.x - resizeAreaSize)
+        if (relPos.x() > windowSize.x() - resizeAreaSize)
             flag |= RESIZE_RIGHT;
 
-        if (relPos.y > windowSize.y - resizeAreaSize)
+        if (relPos.y() > windowSize.y() - resizeAreaSize)
             flag |= RESIZE_BOTTOM;
 
-        if (relPos.x < resizeAreaSize)
+        if (relPos.x() < resizeAreaSize)
             flag |= RESIZE_LEFT;
 
         return flag;
@@ -319,15 +320,15 @@ namespace Editor
             glfwSetCursor(win, resizeVerticalCursor);
     }
 
-    void setWindowSize(GLFWwindow* window, Vec2i size)
+    void setWindowSize(GLFWwindow* window, v2i size)
     {
-        glfwSetWindowSize(window, size.x, size.y);
+        glfwSetWindowSize(window, size.x(), size.y());
         ctx()->windowSize = size;
     }
 
-    void setWindowPos(GLFWwindow* window, Vec2i pos)
+    void setWindowPos(GLFWwindow* window, v2i pos)
     {
-        glfwSetWindowPos(window, pos.x, pos.y);
+        glfwSetWindowPos(window, pos.x(), pos.y());
         ctx()->windowPos = pos;
     }
 
@@ -364,8 +365,8 @@ namespace Editor
             {
                 setWindowPos(
                         win, {
-                        ctx()->windowPos.x + static_cast<int>(ctx()->cursorDelta.x),
-                        ctx()->windowPos.y + static_cast<int>(ctx()->cursorDelta.y)});
+                        ctx()->windowPos.x() + static_cast<int>(ctx()->cursorDelta.x()),
+                        ctx()->windowPos.y() + static_cast<int>(ctx()->cursorDelta.y())});
             });
 
         // Resize from top
@@ -374,13 +375,13 @@ namespace Editor
             {
                 setWindowSize(
                         win, {
-                        ctx()->windowSize.x,
-                        ctx()->windowSize.y - static_cast<int>(ctx()->cursorDelta.y)});
+                        ctx()->windowSize.x(),
+                        ctx()->windowSize.y() - static_cast<int>(ctx()->cursorDelta.y())});
 
                 setWindowPos(
                         win, {
-                        ctx()->windowPos.x,
-                        ctx()->windowPos.y + static_cast<int>(ctx()->cursorDelta.y)});
+                        ctx()->windowPos.x(),
+                        ctx()->windowPos.y() + static_cast<int>(ctx()->cursorDelta.y())});
             });
 
         // Resize from left
@@ -388,13 +389,13 @@ namespace Editor
         {
             setWindowSize(
                     win, {
-                    ctx()->windowSize.x - static_cast<int>(ctx()->cursorDelta.x),
-                    ctx()->windowSize.y});
+                    ctx()->windowSize.x() - static_cast<int>(ctx()->cursorDelta.x()),
+                    ctx()->windowSize.y()});
 
             setWindowPos(
                     win, {
-                    ctx()->windowPos.x + static_cast<int>(ctx()->cursorDelta.x),
-                    ctx()->windowPos.y});
+                    ctx()->windowPos.x() + static_cast<int>(ctx()->cursorDelta.x()),
+                    ctx()->windowPos.y()});
         });
 
         // Resize from right
@@ -402,8 +403,8 @@ namespace Editor
         {
             setWindowSize(
                     win, {
-                    ctx()->windowSize.x + static_cast<int>(ctx()->cursorDelta.x),
-                    ctx()->windowSize.y});
+                    ctx()->windowSize.x() + static_cast<int>(ctx()->cursorDelta.x()),
+                    ctx()->windowSize.y()});
         });
 
         // Resize from bottom
@@ -411,8 +412,8 @@ namespace Editor
         {
             setWindowSize(
                     win, {
-                    ctx()->windowSize.x,
-                    ctx()->windowSize.y + static_cast<int>(ctx()->cursorDelta.y)});
+                    ctx()->windowSize.x(),
+                    ctx()->windowSize.y() + static_cast<int>(ctx()->cursorDelta.y())});
         });
 	}
 
@@ -442,8 +443,8 @@ namespace Editor
         glfwGetCursorPos(ctx()->window, &mx, &my);
         glfwGetWindowPos(ctx()->window, &wx, &wy);
 
-        ctx()->cursorDelta.x = mx + wx - ctx()->cursorPos.x;
-        ctx()->cursorDelta.y = my + wy - ctx()->cursorPos.y;
+        ctx()->cursorDelta.x() = mx + wx - ctx()->cursorPos.x();
+        ctx()->cursorDelta.y() = my + wy - ctx()->cursorPos.y();
 
         // Relative to screen
         ctx()->cursorPos = { mx + wx, my + wy};
@@ -494,7 +495,7 @@ namespace Editor
         return ctx()->window;
     }
 
-    Vec2i getWindowSize()
+    v2i getWindowSize()
     {
         return ctx()->windowSize;
     }

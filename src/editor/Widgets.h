@@ -7,8 +7,9 @@
 #include <functional>
 #include "Graphics.h"
 #include "logging/Logging.h"
-#include "types/Types.h"
+#include "util/Types.h"
 #include <tuple>
+#include "util/Math.h"
 
 // Contains the GUI implementation for the editor
 
@@ -107,8 +108,8 @@ namespace Editor
     {
         using WidgetContext::WidgetContext;
 
-        Vec2f         offset         = {0.0f, 0.0f};
-        Vec2f         scale          = {600.0f, 600.0f};
+        v2f         offset         = {0.0f, 0.0f};
+        v2f         scale          = {600.0f, 600.0f};
 		TextureStore* textureStore   = nullptr;
         Texture*      currentTexture = nullptr;
     };
@@ -133,13 +134,13 @@ namespace Editor
 
 	    bool          isPrimary    = false;
         bool          wireframe    = false;
-        Vec2i         resolution   = { 3840, 2160 };
-        Vec2f         offset       = { 0.0f, 0.0f };
-        Vec2f         scale        = { 3480, 2160 };
-        Camera        camera       = {static_cast<float>(resolution.x)/static_cast<float>(resolution.y),  // aspect ratio
+        v2i         resolution   = { 3840, 2160 };
+        v2f         offset       = { 0.0f, 0.0f };
+        v2f         scale        = { 3480, 2160 };
+        Camera        camera       = {static_cast<float>(resolution.x())/static_cast<float>(resolution.y()),  // aspect ratio
                                      {0.0f, 0.0f, 3},   // pos
                                      {0.0, 0.0, -1}};   // target
-        Vec2f           prevMousePos = { 0.0f, 0.0f };
+        v2f           prevMousePos = { 0.0f, 0.0f };
         Framebuffer     framebuffer;
         Vertexbuffer    vertexbuffer = {defaultCubeData, sizeof(defaultCubeData)};
         ShaderProgram   shaderProgram;
@@ -234,7 +235,7 @@ namespace Editor
     // Dockspace allows windows to be docked to the main window
     void drawDockspace(const char* name);
     void drawImFileDialogAndProcessInput();
-    void drawTextureView(void* currentTexId, Vec2f& offset, Vec2f& scale);
+    void drawTextureView(void* currentTexId, v2f& offset, v2f& scale);
     void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture);
 
     void moveTextureWhenDragged(float& offsetX, float& offsetY);

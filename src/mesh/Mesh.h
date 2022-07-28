@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <unordered_map>
+#include "util/Types.h"
 
 namespace RT
 {
@@ -15,10 +16,10 @@ namespace RT
     };
 
     // Number of elements per layout (e.g number of floats)
-    std::size_t numElementsInVertexLayout(VertexLayout layout);
+    u32 numElementsInVertexLayout(VertexLayout layout);
 
     template<typename T>
-    std::size_t sizeofVertexLayout(VertexLayout layout)
+    u32 sizeofVertexLayout(VertexLayout layout)
     {
         return sizeof(T) * numElementsVertexLayout(layout);
     }
