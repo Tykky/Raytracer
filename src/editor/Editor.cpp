@@ -50,11 +50,11 @@ namespace Editor
         float        deltaTime          = 0.0f;
         float        fps                = 0.0f;
         float        mouseScroll        = 0.0f;
-        v2d        cursorPos          = { 0.0f, 0.0f }; // Screen coordinates
-        v2d        cursorRelativePos  = { 0.0f, 0.0f }; // Relative to window position
-        v2d        cursorDelta        = { 0.0f, 0.0f };
-        v2i        windowSize         = { 0, 0 };
-        v2i        windowPos          = {0, 0};
+        v2d          cursorPos          = { 0.0f, 0.0f }; // Screen coordinates
+        v2d          cursorRelativePos  = { 0.0f, 0.0f }; // Relative to window position
+        v2d          cursorDelta        = { 0.0f, 0.0f };
+        v2i          windowSize         = { 0, 0 };
+        v2i          windowPos          = {0, 0};
         WidgetStore  widgetStore;
         bool         initialized        = false;
         bool         windowMaximized    = false;
