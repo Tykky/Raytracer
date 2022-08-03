@@ -18,7 +18,7 @@ namespace Editor
 
     float getFps();
     float getDeltaTime();
-    v2i getWindowSize();
+    v2i32 getWindowSize();
     void maximizeWindow();
     void minimizeWindow();
 

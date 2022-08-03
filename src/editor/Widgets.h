@@ -134,7 +134,7 @@ namespace Editor
 
 	    bool          isPrimary    = false;
         bool          wireframe    = false;
-        v2i         resolution   = { 3840, 2160 };
+        v2i32         resolution   = { 3840, 2160 };
         v2f         offset       = { 0.0f, 0.0f };
         v2f         scale        = { 3480, 2160 };
         Camera        camera       = {static_cast<float>(resolution.x())/static_cast<float>(resolution.y()),  // aspect ratio

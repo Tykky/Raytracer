@@ -18,11 +18,11 @@ namespace Editor
     void windowErrorCallback(int code, const char* description);
     void dragAndResizeFromEdges();
     void updateEditorContext();
-    int  checkCursorEdge(v2d relPos, v2i windowSize, float resizeAreaSize, float dragAreaSize);
+    int  checkCursorEdge(v2d relPos, v2i32 windowSize, float resizeAreaSize, float dragAreaSize);
     void changeCursorOnEdge(GLFWwindow* win, int flag);
 
-    void setWindowSize(GLFWwindow* window, v2i size);
-    void setWindowPos(GLFWwindow* window, v2i pos);
+    void setWindowSize(GLFWwindow* window, v2i32 size);
+    void setWindowPos(GLFWwindow* window, v2i32 pos);
 
     void updateCursorPosAndDelta();
     void updateFps();
@@ -32,7 +32,7 @@ namespace Editor
     float getDeltaTime();
     float getFps();
     GLFWwindow* getCurrentWindowHandle();
-    v2i getWindowSize();
+    v2i32 getWindowSize();
 
     void maximizeWindow();
     void minimizeWindow();
@@ -53,8 +53,8 @@ namespace Editor
         v2d          cursorPos          = { 0.0f, 0.0f }; // Screen coordinates
         v2d          cursorRelativePos  = { 0.0f, 0.0f }; // Relative to window position
         v2d          cursorDelta        = { 0.0f, 0.0f };
-        v2i          windowSize         = { 0, 0 };
-        v2i          windowPos          = {0, 0};
+        v2i32          windowSize         = { 0, 0 };
+        v2i32          windowPos          = {0, 0};
         WidgetStore  widgetStore;
         bool         initialized        = false;
         bool         windowMaximized    = false;
@@ -271,7 +271,7 @@ namespace Editor
         RESIZE_LEFT   = 1 << 4;
 
 
-    int checkCursorEdge(v2d relPos, v2i windowSize, float resizeAreaSize, float dragAreaSize)
+    int checkCursorEdge(v2d relPos, v2i32 windowSize, float resizeAreaSize, float dragAreaSize)
     {
         int flag = NONE;
 
@@ -320,13 +320,13 @@ namespace Editor
             glfwSetCursor(win, resizeVerticalCursor);
     }
 
-    void setWindowSize(GLFWwindow* window, v2i size)
+    void setWindowSize(GLFWwindow* window, v2i32 size)
     {
         glfwSetWindowSize(window, size.x(), size.y());
         ctx()->windowSize = size;
     }
 
-    void setWindowPos(GLFWwindow* window, v2i pos)
+    void setWindowPos(GLFWwindow* window, v2i32 pos)
     {
         glfwSetWindowPos(window, pos.x(), pos.y());
         ctx()->windowPos = pos;
@@ -495,7 +495,7 @@ namespace Editor
         return ctx()->window;
     }
 
-    v2i getWindowSize()
+    v2i32 getWindowSize()
     {
         return ctx()->windowSize;
     }

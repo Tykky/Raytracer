@@ -3,15 +3,31 @@
 
 #include <cstddef>
 #include <cmath>
+#include <cstdint>
 #include <stdexcept>
+#include <string>
 #include <type_traits>
+#include "logging/Logging.h"
+#include "util/Types.h"
+
+// Header only, implements all the vector/matrix math 
+// required by the application
+
+// Using something like std::size_t is likely to be overkill
+// since the rest of the application is mostly using vectors
+// smaller or equal to 4.
+typedef std::size_t Size;
+
+// used for debugging
+typedef std::string String;
+
 
 // Fixed size vector of size N with operator overloading 
-template<typename T, std::size_t N>
+template<typename T, Size N>
 struct Vec
 {
-	T operator[](std::size_t idx) const { return data[idx]; }
-	T& operator[](std::size_t idx) { return data[idx]; }
+	T operator[](Size idx) const { return data[idx]; }
+	T& operator[](Size idx)      { return data[idx]; }
 
 	T& x() { return data[0]; }
 	T& y() { return data[1]; }
@@ -22,7 +38,7 @@ struct Vec
 
 	inline Vec<T, N>& operator+=(const Vec<T, N>& rhs) 
 	{
-		for (std::size_t i = 0; i < N; i++) 
+		for (Size i = 0; i < N; i++) 
 		{
 			data[i] += rhs[i];
 		}
@@ -31,7 +47,7 @@ struct Vec
 
 	inline Vec<T, N>& operator+=(T rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
+		for (Size i = 0; i < N; i++) 
 		{
 			data[i] += rhs;
 		}
@@ -42,16 +58,16 @@ struct Vec
 
 	inline Vec<T, N>& operator-=(const Vec<T, N>& rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
+		for (Size i = 0; i < N; i++) 
 		{
-			data[i] -= rhs;
+			data[i] -= rhs[i];
 		}
 		return *this;
 	}
 
 	inline Vec<T, N>& operator-=(const T rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
+		for (Size i = 0; i < N; i++) 
 		{
 			data[i] -= rhs;
 		}
@@ -62,7 +78,7 @@ struct Vec
 
 	inline Vec<T, N>& operator*=(const Vec<T, N>& rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
+		for (Size i = 0; i < N; i++) 
 		{
 			data[i] *= rhs[i];
 		}
@@ -71,7 +87,7 @@ struct Vec
 
 	inline Vec<T, N>& operator*=(T rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
+		for (Size i = 0; i < N; i++) 
 		{
 			data[i] *= rhs;
 		}
@@ -82,7 +98,7 @@ struct Vec
 
 	inline Vec<T, N>& operator/=(const Vec<T, N>& rhs)
 	{
-		for (std::size_t i ; i < N; i++)
+		for (Size i ; i < N; i++)
 		{
 			data[i] /= rhs[i];
 		}
@@ -91,7 +107,7 @@ struct Vec
 
 	inline Vec<T, N>& operator/=(T rhs)
 	{
-		for (std::size_t i ; i < N; i++)
+		for (Size i ; i < N; i++)
 		{
 			data[i] /= rhs;
 		}
@@ -102,116 +118,68 @@ struct Vec
 
 	friend inline Vec<T, N> operator+(Vec<T, N> lhs, const Vec<T, N>& rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
-		{
-			lhs[i] += rhs[i]; 
-		}
-		return lhs;
+		return lhs += rhs;
 	}
 
 	friend inline Vec<T, N> operator+(Vec<T, N> lhs, T rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
-		{
-			lhs[i] += rhs;
-		}
-		return lhs;
+		return lhs += rhs;
 	}
 
 	friend inline Vec<T, N> operator+(T lhs, Vec<T, N> rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
-		{
-			rhs[i] += lhs;
-		}
-		return rhs;
+		return rhs += lhs;
 	}
 
 	// - operator
 
 	friend inline Vec<T, N> operator-(Vec<T, N> lhs, const Vec<T, N>& rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
-		{
-			lhs[i] -= rhs[i];
-		}
-		return lhs;
+		return lhs -= rhs;
 	}
 
 	friend inline Vec<T, N> operator-(Vec<T, N> lhs, const T rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
-		{
-			lhs[i] -= rhs;
-		}
-		return lhs;
+		return lhs -= rhs;
 	}
 
 	friend inline Vec<T, N> operator-(T lhs, Vec<T, N> rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
-		{
-			rhs[i] -= lhs;
-		}
-		return rhs;
+		return rhs -= lhs;
 	}
 
 	// * operator
 
 	friend inline Vec<T, N> operator*(Vec<T, N> lhs, const Vec<T, N>& rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
-		{
-			lhs[i] *= rhs[i];
-		}
-		return lhs;
+		return lhs *= rhs;
 	}
 
 	friend inline Vec<T, N> operator*(Vec<T, N> lhs, T rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
-		{
-			lhs[i] *= rhs;
-		}
-		return lhs;
+		return lhs *= rhs;
 	}
 
 	friend inline Vec<T, N> operator*(T lhs, Vec<T, N> rhs)
 	{
-		for (std::size_t i = 0; i < N; i++) 
-		{
-			rhs[i] *= lhs;
-		}
-		return rhs;
+		return rhs *= lhs;
 	}
 
 	// / operator
 
 	friend inline Vec<T, N> operator/=(Vec<T, N> lhs, const Vec<T,N>& rhs)
 	{
-		for (std::size_t i = 0; i < N; rhs)
-		{
-			lhs[i] /= rhs[i];
-		}
-		return lhs;
+		return lhs /= rhs;
 	}
 
 	friend inline Vec<T, N> operator/=(Vec<T, N> lhs, T rhs)
 	{
-		for (std::size_t i = 0; i < N; rhs)
-		{
-			lhs[i] /= rhs;
-		}
-		return lhs;
+		return lhs /= rhs;
 	}
 
 	friend inline Vec<T, N> operator/=(T lhs, Vec<T, N> rhs)
 	{
-		for (std::size_t i = 0; i < N; lhs)
-		{
-			rhs[i] /= lhs;
-		}
-		return rhs;
+		return rhs /= lhs;
 	}
 
 	// Dot and cross products
@@ -219,7 +187,7 @@ struct Vec
 	friend inline T dot(const Vec<T, N>& lhs, const Vec<T, N>& rhs)
 	{
 		T s = 0;
-		for (std::size_t i = 0; i < N; i++) 
+		for (Size i = 0; i < N; i++) 
 		{
 			s += lhs[i] * rhs[i];
 		}
@@ -244,24 +212,21 @@ struct Vec
 	template<typename Float> // Any floating point type, e.g float or double
 	Float length()
 	{
-		static_assert(std::is_floating_point<Float>(), "length only allowed with floating point types!");
+		static_assert(std::is_floating_point<Float>(), "length() only allowed with floating point types!");
 
 		T s = 0;
-		for (std::size_t i = 0; i < N; i++) 
+		for (Size i = 0; i < N; i++) 
 		{
 			s += data[i] * data[i];
 		}
 		return std::sqrt(static_cast<Float>(s));
 	}
 
-	// Doesn't make much sense to normalize non floating point vector due precision issues.
-	// Though it's possible
-
 	inline void normalize()
 	{
-		static_assert(std::is_floating_point<T>(), "normalize only allowed with floating point types!");
+		static_assert(std::is_floating_point<T>(), "normalize() only allowed with floating point types!");
 
-		for (std::size_t i = 0; i < N; i++)
+		for (Size i = 0; i < N; i++)
 		{
 			data[i] = data[i] / (*this).template length<T>();
 		}
@@ -269,23 +234,132 @@ struct Vec
 
 	friend inline Vec<T, N> normalize(const Vec<T, N>& v)
 	{
-		static_assert(std::is_floating_point<T>(), "normalize only allowed with floating point types!");
+		static_assert(std::is_floating_point<T>(), "normalize(const Vec<T, N>& v) only allowed with floating point types!");
 
 		Vec<T, N> ret;
-		for (std::size_t i = 0; i < N; i++)
+		for (Size i = 0; i < N; i++)
 		{
 			ret[i] = v[i] / v.template length<T>();
 		}
 		return ret;
 	}
 
+	// for debugging
+	inline String to_string()
+	{
+		String s = "(";
+		for (Size i = 0; i < N; i++)
+		{
+			s += std::to_string(data[i]);
+			if (i != N - 1)
+				s += ", ";
+		}
+		s += ")";
+		return s;
+	}
+
     T data[N];
 };
 
-// N*M matrix
-template<typename T, std::size_t N, std::size_t M>
-struct MatNM
+inline Size flatIdx(Size x, Size y, Size row_width)
 {
+	return row_width * y + x;
+}
+
+inline Vec<Size, 2> reverseFlatIdx(Size idx, Size row_width)
+{
+	return {
+		idx % row_width,
+		static_cast<Size>(std::floor(static_cast<double>(idx) / static_cast<double>(row_width)))
+	};
+}
+
+// Matrix with M rows and N columns
+template<typename T, Size M, Size N>
+struct Matrix
+{
+
+	T operator[](Size idx) const { return data[idx]; }
+	T& operator[](Size idx)      { return data[idx]; }
+	inline T get(Size x, Size y) { return data[flatIdx(x, y, N)]; }
+
+	inline Matrix<T, M, N>& operator+=(const Matrix<T, M, N>& rhs)
+	{
+		for (Size i = 0; i < M * N; i++)
+		{
+			data[i] += rhs[i];
+		}
+		return *this;
+	}
+
+	inline Matrix<T, M, N>& operator+=(const T rhs)
+	{
+		for (Size i = 0; i < N; i++)
+		{
+			data[i] += rhs;
+		}
+		return *this;
+	}
+
+	inline Matrix<T, M, N>& operator-=(const Matrix<T, M, N>& rhs)
+	{
+		for (Size i = 0; i < N * M; i++)
+		{
+			data[i] -= rhs[i];
+		}
+		return *this;
+	}
+
+	inline Matrix<T, M, N>& operator-=(const T rhs)
+	{
+		for (Size i = 0; i < M * N; i++)
+		{
+			data[i] -= rhs;
+		}
+		return *this;
+	}
+
+	inline Matrix<T, N, M> transpose() const
+	{
+		Matrix<T, N, M> m;
+		for (Size i = 0; i < N * M; i++)
+		{
+			auto idx = reverseFlatIdx(i, N);
+			m[flatIdx(idx[1], idx[0], M)] = data[i];
+		}
+		return m;
+	}
+
+	// Matrix multiplication is only defined when the left-hand matrix has same number of columns as
+	// the right-hand matrix has rows, hence only one additional template parameter is required.
+	template<Size P> // P = number of rows in the right-hand matrix
+	friend inline Matrix<T, M, P> operator*(const Matrix<T, N, M>& lhs, const Matrix<T, M, P>& rhs)
+	{
+		// Matrix multiplication is simply computing dot product between rows of the left-hand matrix
+		// and columns of the right-hand matrix. To make reading columns of the right-hand matrix more
+		// cache friendly we first transpose the right-hand matrix. After that matrix multiplication
+		// is just computing dot products between two row vectors.
+
+		auto rhs_t = rhs.transpose();
+
+	}
+
+	// for debugging
+	inline String to_string()
+	{
+		String s = "[\n";
+		for (Size i = 0; i < N * M; i++)
+		{
+			s +=std::to_string(data[i]);
+			if ((i + 1) % N == 0 && i > 0)
+				s += "\n";
+			else
+				s +=", ";
+		}
+		s += "]";
+		return s;
+	}
+
     T data[N * M];
 };
 
@@ -305,15 +379,18 @@ struct Mat4x4
 
 typedef Vec<double, 2> v2d;
 typedef Vec<float, 2>  v2f;
-typedef Vec<int, 2>    v2i;
+typedef Vec<i32, 2>    v2i32;
+typedef Vec<u32, 2>    v2u32;
+typedef Vec<i64, 2>    v2i64;
+typedef Vec<u64, 2>    v2u64;
 
 typedef Vec<double, 3> v3d;
 typedef Vec<float, 3>  v3f;
-typedef Vec<int, 3>    v3i;
+typedef Vec<i32, 3>    v3i32;
 
 typedef Vec<double,4>  v4d;
 typedef Vec<float, 4>  v4f;
-typedef Vec<int, 4>    v4i;
+typedef Vec<i32, 4>    v4i32;
 
 typedef Mat3x3<double> m33d;
 typedef Mat3x3<float>  m33f;
