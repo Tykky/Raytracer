@@ -16,11 +16,10 @@
 // Using something like std::size_t is likely to be overkill
 // since the rest of the application is mostly using vectors
 // smaller or equal to 4.
-typedef std::size_t Size;
+typedef u32 Size;
 
 // used for debugging
 typedef std::string String;
-
 
 // Fixed size vector of size N with operator overloading 
 template<typename T, Size N>
@@ -187,7 +186,7 @@ struct Vec
 	friend inline T dot(const Vec<T, N>& lhs, const Vec<T, N>& rhs)
 	{
 		T s = 0;
-		for (Size i = 0; i < N; i++) 
+		for (Size i = 0; i < N; i++)
 		{
 			s += lhs[i] * rhs[i];
 		}
@@ -261,24 +260,10 @@ struct Vec
     T data[N];
 };
 
-inline Size flatIdx(Size x, Size y, Size row_width)
-{
-	return row_width * y + x;
-}
-
-inline Vec<Size, 2> reverseFlatIdx(Size idx, Size row_width)
-{
-	return {
-		idx % row_width,
-		static_cast<Size>(std::floor(static_cast<double>(idx) / static_cast<double>(row_width)))
-	};
-}
-
 // Matrix with M rows and N columns
 template<typename T, Size M, Size N>
 struct Matrix
 {
-
 	T operator[](Size idx) const { return data[idx]; }
 	T& operator[](Size idx)      { return data[idx]; }
 	inline T get(Size x, Size y) { return data[flatIdx(x, y, N)]; }
@@ -322,26 +307,34 @@ struct Matrix
 	inline Matrix<T, N, M> transpose() const
 	{
 		Matrix<T, N, M> m;
-		for (Size i = 0; i < N * M; i++)
+		for (Size i = 0; i < M; i++)
 		{
-			auto idx = reverseFlatIdx(i, N);
-			m[flatIdx(idx[1], idx[0], M)] = data[i];
+			for (Size j = 0; j < N; j++)
+			{
+				m[j * M + i] = data[i * N + j];
+			}
 		}
 		return m;
 	}
 
-	// Matrix multiplication is only defined when the left-hand matrix has same number of columns as
+	// Matrix multiplication is only defined when the left-hand matrix has the same number of columns as
 	// the right-hand matrix has rows, hence only one additional template parameter is required.
-	template<Size P> // P = number of rows in the right-hand matrix
-	friend inline Matrix<T, M, P> operator*(const Matrix<T, N, M>& lhs, const Matrix<T, M, P>& rhs)
-	{
-		// Matrix multiplication is simply computing dot product between rows of the left-hand matrix
-		// and columns of the right-hand matrix. To make reading columns of the right-hand matrix more
-		// cache friendly we first transpose the right-hand matrix. After that matrix multiplication
-		// is just computing dot products between two row vectors.
-
+	template<Size P> friend inline Matrix<T, N, P> operator*(const Matrix<T, N, M>& lhs, const Matrix<T, M, P>& rhs) {
+		// To make reading columns of the right-hand matrix more cache friendly
 		auto rhs_t = rhs.transpose();
 
+		Matrix<T, N, P> m = {0};
+		for (Size i = 0; i < N; i++)
+		{
+			for(Size j = 0; j < P; j++)
+			{
+				for (Size k = 0; k < M; k++)
+				{
+					m[i * P + j] += lhs[i * M + k] * rhs_t[j * M + k];
+				}
+			}
+		}
+		return m;
 	}
 
 	// for debugging

@@ -7,7 +7,30 @@
 
 void test()
 {
-    RT_LOG_ERROR("asd");
+    Vec<float, 4> v = {2.5, 3.4, 2.5, 2.1};
+    Vec<float, 4> a = {2.5, -3.4, -2.5, 2.1};
+    auto b = cross(v,a);
+    auto d = dot(a, b);
+
+    Matrix<float, 4, 4> m1 = {1, 2, 3, 4,
+                              3, 4, 5, 6,
+                              7, 8, 9, 10,
+                              11, 12, 13 ,14};
+
+    Matrix<float, 4, 4> m2 = {1, 2, 3, 4,
+                              3, 4, 5, 6,
+                              7, 8, 9, 10,
+                              11, 12, 13 ,14};
+
+
+    auto m12 = m1 * m2;
+
+    RT_LOG_MSG("vector is {}", v.to_string());
+    RT_LOG_MSG("dotis {}", d);
+    RT_LOG_MSG("matrix is {}", m1.to_string());
+    RT_LOG_MSG("transpose is {}", m1.transpose().to_string());
+    RT_LOG_MSG("matrix product is {}", m12.to_string());
+
 }
 
 int main()
@@ -16,19 +39,6 @@ int main()
     initLogger(128);
 
     test();
-
-    Vec<float, 4> v = {2.5, 3.4, 2.5, 2.1};
-
-    Matrix<int, 4, 4> m = {0, 1, 2, 3,
-                           4, 5, 6, 7,
-                           8, 9, 10, 11,
-                           12, 13, 14,15};
-
-    RT_LOG_MSG("vector is {}", v.to_string());
-    RT_LOG_MSG("matrix is {}", m.to_string());
-    auto u = m.transpose();
-    RT_LOG_MSG("matrix is {}", u.to_string());
-
 
     options.enableViewports = true;
     options.enableMainWindowBorders = true;
