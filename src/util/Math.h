@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cmath>
 #include <cstdint>
+#include <iterator>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -266,7 +267,6 @@ struct Matrix
 {
 	T operator[](Size idx) const { return data[idx]; }
 	T& operator[](Size idx)      { return data[idx]; }
-	inline T get(Size x, Size y) { return data[flatIdx(x, y, N)]; }
 
 	inline Matrix<T, M, N>& operator+=(const Matrix<T, M, N>& rhs)
 	{
@@ -304,7 +304,7 @@ struct Matrix
 		return *this;
 	}
 
-	inline Matrix<T, N, M> transpose() const
+	friend inline Matrix<T, N, M> transpose(const Matrix<T, M, N>& data) 
 	{
 		Matrix<T, N, M> m;
 		for (Size i = 0; i < M; i++)
@@ -319,9 +319,9 @@ struct Matrix
 
 	// Matrix multiplication is only defined when the left-hand matrix has the same number of columns as
 	// the right-hand matrix has rows, hence only one additional template parameter is required.
-	template<Size P> friend inline Matrix<T, N, P> operator*(const Matrix<T, N, M>& lhs, const Matrix<T, M, P>& rhs) {
-		// To make reading columns of the right-hand matrix more cache friendly
-		auto rhs_t = rhs.transpose();
+	template<Size P> friend inline Matrix<T, N, P> operator*(const Matrix<T, N, M>& lhs, const Matrix<T, M, P>& rhs) 
+	{
+		auto rhs_t = transpose(rhs);
 
 		Matrix<T, N, P> m = {0};
 		for (Size i = 0; i < N; i++)
@@ -334,7 +334,6 @@ struct Matrix
 				}
 			}
 		}
-		return m;
 	}
 
 	// for debugging
@@ -356,41 +355,52 @@ struct Matrix
     T data[N * M];
 };
 
+// cameraTransform gives cameras position and orientation.
+// The view matrix is the inverse of the cameraTransform matrix.
+// Since cameraTransform behaves "nicely" and only rotates and 
+// transforms, the inverse can be reduced to only transposing 
+// the upper left 3x3 matrix and negating the position.
 template<typename T>
-struct Mat3x3
+Matrix<T, 4, 4> view(const Matrix<T, 4, 4>& cameraTransform)
 {
-	T data[9];
-	T& operator()() { return data; }
-};
+	// To transpose the upper 3x3 matrix
+	auto camera_t = transpose(cameraTransform);
 
-template<typename T>
-struct Mat4x4
-{
-	T data[16];
-	T& operator()() { return data; }
-};
+	// After transposing the position vector can be found in
+	// the last row of camera_t
 
-typedef Vec<double, 2> v2d;
-typedef Vec<float, 2>  v2f;
-typedef Vec<i32, 2>    v2i32;
-typedef Vec<u32, 2>    v2u32;
-typedef Vec<i64, 2>    v2i64;
-typedef Vec<u64, 2>    v2u64;
+	// Looping through the last row of camera_t i.e the position vector
+	Size j = 3;
+	for (Size i  = 12; i < 16; i++)
+	{
+		// Move last row to last column and negate
+		camera_t[j += 3] = -camera_t[i];
+	}
 
-typedef Vec<double, 3> v3d;
-typedef Vec<float, 3>  v3f;
-typedef Vec<i32, 3>    v3i32;
+	return camera_t;
+}
 
-typedef Vec<double,4>  v4d;
-typedef Vec<float, 4>  v4f;
-typedef Vec<i32, 4>    v4i32;
+typedef Vec<double, 2>       v2d;
+typedef Vec<float, 2>        v2f;
+typedef Vec<i32, 2>          v2i32;
+typedef Vec<u32, 2>          v2u32;
+typedef Vec<i64, 2>          v2i64;
+typedef Vec<u64, 2>          v2u64;
 
-typedef Mat3x3<double> m33d;
-typedef Mat3x3<float>  m33f;
-typedef Mat3x3<int>    m33i;
+typedef Vec<double, 3>       v3d;
+typedef Vec<float, 3>        v3f;
 
-typedef Mat4x4<double> m44d;
-typedef Mat4x4<float>  m44f;
-typedef Mat4x4<int>    m44i;
+typedef Vec<i32, 3>          v3i32;
+typedef Vec<double,4>        v4d;
+typedef Vec<float, 4>        v4f;
+typedef Vec<i32, 4>          v4i32;
+
+typedef Matrix<double, 3, 3> m33d;
+typedef Matrix<float, 3, 3>  m33f;
+typedef Matrix<int, 3, 3>    m33i;
+
+typedef Matrix<double, 4, 4> m44d;
+typedef Matrix<float, 4, 4>  m44f;
+typedef Matrix<int, 4, 4>    m44i;
 
 #endif // RAYTRACER_MATH_H

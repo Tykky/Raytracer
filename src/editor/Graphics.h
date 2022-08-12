@@ -8,7 +8,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-// Small graphics layer on top of OpenGL
+// Thin RAII wrapper for opengl stuff
+
 
 // Quad for testing purposes
 static constexpr float defaultRectangleData[] =
