@@ -195,7 +195,6 @@ struct Vec
 	}
 
 	// Only allowed when N >= 3
-	// When N > 3, higher dimension components will be ignored
 	friend inline Vec<T, N> cross(const Vec<T, N>& a, const Vec<T, N>& b)
 	{
 		static_assert(N >= 3, "Cross product is not defined for vector sizes < 3");
@@ -357,9 +356,9 @@ struct Matrix
 
 // cameraTransform gives cameras position and orientation.
 // The view matrix is the inverse of the cameraTransform matrix.
-// Since cameraTransform behaves "nicely" and only rotates and 
+// Since cameraTransform behaves "nicely", only rotates and 
 // transforms, the inverse can be reduced to only transposing 
-// the upper left 3x3 matrix and negating the position.
+// the upper left 3x3 matrix and negating the position vector.
 template<typename T>
 Matrix<T, 4, 4> view(const Matrix<T, 4, 4>& cameraTransform)
 {
@@ -374,7 +373,8 @@ Matrix<T, 4, 4> view(const Matrix<T, 4, 4>& cameraTransform)
 	for (Size i  = 12; i < 16; i++)
 	{
 		// Move last row to last column and negate
-		camera_t[j += 3] = -camera_t[i];
+		camera_t[j] = -camera_t[i];
+		j += 4;
 	}
 
 	return camera_t;

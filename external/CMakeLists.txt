@@ -1,12 +1,10 @@
 include(FetchContent)
 
-#[[
 FetchContent_Declare(
-    googletest
+    gtest
     GIT_REPOSITORY https://github.com/google/googletest.git
     GIT_TAG c9461a9b55ba954df0489bab6420eb297bed846b
 )
-]]
 
 FetchContent_Declare(
     glfw
@@ -62,8 +60,18 @@ FetchContent_Declare(
     GIT_TAG bc654faf82e54d29f6c5fd7efcfd16a587917e82
 )
 
+# Google benchmark requires gtest
 FetchContent_MakeAvailable(
-   #googletest
+    gtest
+)
+
+FetchContent_Declare(
+    benchmark
+    GIT_REPOSITORY https://github.com/google/benchmark
+    GIT_TAG 2a78e8cbe9b104834d96c78ccc9f9513a29f8c71
+)
+
+FetchContent_MakeAvailable(
    glfw
    glew
    glm
@@ -73,6 +81,7 @@ FetchContent_MakeAvailable(
    simplejson
    entt
    fmt
+   benchmark
 )
 
 find_package(OpenGL REQUIRED)
@@ -89,6 +98,7 @@ include_directories(${spdlog_SOURCE_DIR}/include)
 include_directories(${Simplejson_SOURCE_DIR})
 include_directories(${entt_SOURCE_DIR}/single_include)
 include_directories(${fmt_SOURCE_DIR}/include)
+include_directories(${benchmark_SOURCE_DIR}/include)
 
 set(EXTERNAL
     OpenGL::GL

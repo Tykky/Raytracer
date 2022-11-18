@@ -10,7 +10,6 @@
 
 // Thin RAII wrapper for opengl stuff
 
-
 // Quad for testing purposes
 static constexpr float defaultRectangleData[] =
 {

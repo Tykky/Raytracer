@@ -108,8 +108,8 @@ namespace Editor
     {
         using WidgetContext::WidgetContext;
 
-        v2f         offset         = {0.0f, 0.0f};
-        v2f         scale          = {600.0f, 600.0f};
+        v2f           offset         = {0.0f, 0.0f};
+        v2f           scale          = {600.0f, 600.0f};
 		TextureStore* textureStore   = nullptr;
         Texture*      currentTexture = nullptr;
     };
@@ -135,15 +135,15 @@ namespace Editor
 	    bool          isPrimary    = false;
         bool          wireframe    = false;
         v2i32         resolution   = { 3840, 2160 };
-        v2f         offset       = { 0.0f, 0.0f };
-        v2f         scale        = { 3480, 2160 };
+        v2f           offset       = { 0.0f, 0.0f };
+        v2f           scale        = { 3480, 2160 };
         Camera        camera       = {static_cast<float>(resolution.x())/static_cast<float>(resolution.y()),  // aspect ratio
                                      {0.0f, 0.0f, 3},   // pos
                                      {0.0, 0.0, -1}};   // target
         v2f           prevMousePos = { 0.0f, 0.0f };
-        Framebuffer     framebuffer;
-        Vertexbuffer    vertexbuffer = {defaultCubeData, sizeof(defaultCubeData)};
-        ShaderProgram   shaderProgram;
+        Framebuffer   framebuffer;
+        Vertexbuffer  vertexbuffer = {defaultCubeData, sizeof(defaultCubeData)};
+        ShaderProgram shaderProgram;
 
         // Viewport shows this texture
         void* viewportTexture = nullptr;

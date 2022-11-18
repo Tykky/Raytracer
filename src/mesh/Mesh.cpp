@@ -9,7 +9,7 @@ namespace RT
         {VertexLayout::POINT,           3}
     };
 
-    u32 numelementsVertexLayout(VertexLayout layout)
+    u32 numelementsInVertexLayout(VertexLayout layout)
     {
         switch (layout)
         {

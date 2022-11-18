@@ -53,8 +53,8 @@ namespace Editor
         v2d          cursorPos          = { 0.0f, 0.0f }; // Screen coordinates
         v2d          cursorRelativePos  = { 0.0f, 0.0f }; // Relative to window position
         v2d          cursorDelta        = { 0.0f, 0.0f };
-        v2i32          windowSize         = { 0, 0 };
-        v2i32          windowPos          = {0, 0};
+        v2i32        windowSize         = { 0, 0 };
+        v2i32        windowPos          = {0, 0};
         WidgetStore  widgetStore;
         bool         initialized        = false;
         bool         windowMaximized    = false;
@@ -154,11 +154,8 @@ namespace Editor
                 RT_LOG_ERROR("Failed to load GL extensions!");
                 abort();
             }
-            else
-            {
-                RT_LOG_MSG("GL extensions loaded");
-                logVendorInfo();
-            }
+			RT_LOG_MSG("GL extensions loaded");
+			logVendorInfo();
         }
         else
         {

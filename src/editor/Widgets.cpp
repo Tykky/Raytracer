@@ -19,8 +19,8 @@ namespace Editor
     float getFps();
     float getDeltaTime();
     v2i32 getWindowSize();
-    void maximizeWindow();
-    void minimizeWindow();
+    void  maximizeWindow();
+    void  minimizeWindow();
 
     // Widget helper implementation
 
@@ -332,9 +332,7 @@ namespace Editor
     void drawTextureView(void* texId, v2f& offset, v2f& scale)
     {
         constexpr int flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
-
 		ImVec2 size = ImGui::GetWindowSize();
-
 		constexpr const int comboBoxGap = 40;
 
 		ImGui::BeginChild("TextureViewer", {size.x, size.y - comboBoxGap}, false, flags);
