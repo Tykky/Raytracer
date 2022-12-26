@@ -71,6 +71,12 @@ FetchContent_Declare(
     GIT_TAG 2a78e8cbe9b104834d96c78ccc9f9513a29f8c71
 )
 
+FetchContent_Declare(
+    assimp
+    GIT_REPOSITORY https://github.com/assimp/assimp
+    GIT_TAG 11fe77c446bf52872e912413fb7e749c25e3706a
+)
+
 FetchContent_MakeAvailable(
    glfw
    glew
@@ -82,6 +88,7 @@ FetchContent_MakeAvailable(
    entt
    fmt
    benchmark
+   assimp
 )
 
 find_package(OpenGL REQUIRED)
@@ -99,11 +106,13 @@ include_directories(${Simplejson_SOURCE_DIR})
 include_directories(${entt_SOURCE_DIR}/single_include)
 include_directories(${fmt_SOURCE_DIR}/include)
 include_directories(${benchmark_SOURCE_DIR}/include)
+include_directories(${assimp_SOURCE_DIR}/include)
 
 set(EXTERNAL
     OpenGL::GL
     libglew_static
     glfw
+    assimp
 )
 
 set(DEAR_IMGUI_SOURCE

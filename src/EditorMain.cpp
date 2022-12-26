@@ -5,6 +5,10 @@
 #include "scene/Scene.h"
 #include "util/Math.h"
 
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing flags
+
 int main()
 {
     Editor::Options options;
