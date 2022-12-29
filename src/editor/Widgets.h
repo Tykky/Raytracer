@@ -67,10 +67,10 @@ namespace Editor
         static unsigned long idx = 0;
 
         // Dear Imgui allows id:s to be appended as suffix after "###"
-        wArray.emplace_back(name, idx,  
-		//  window title           id = name + idx
-		//  <-->           <------------------------------>
-            name + "###" + name + std::to_string(idx++)
+        wArray.emplace_back(name, idx,
+            //  window title           id = name + idx
+            //  <-->           <------------------------------>
+                name + "###" + name + std::to_string(idx++)
 		);
     }
 
@@ -79,7 +79,7 @@ namespace Editor
     {
         auto isMarkedForDelete = [](Context& widget) 
         {
-            return widget.markForDelete;
+            return widget.wCtx.markForDelete;
         };
 
 		wArray.erase(
@@ -95,41 +95,55 @@ namespace Editor
     // Common context for all the widgets
     struct WidgetContext
     {
-        WidgetContext(const std::string& name, unsigned int id, const std::string& windowId) :
-            name(name), id(id), windowId(windowId) {}
-
         std::string  name;
-        unsigned int id = 0;
+        unsigned int id;
         std::string  windowId;
         bool         markForDelete = false;
     };
 
-    struct TextureViewerContext : public WidgetContext
+    struct TextureViewerContext
     {
-        using WidgetContext::WidgetContext;
+        TextureViewerContext(std::string name, unsigned int id, std::string windowId)
+        {
+            wCtx.name = name;
+            wCtx.id = id;
+            wCtx.windowId = windowId;
+        };
 
+        WidgetContext wCtx;
         v2f           offset         = {0.0f, 0.0f};
         v2f           scale          = {600.0f, 600.0f};
 		TextureStore* textureStore   = nullptr;
         Texture*      currentTexture = nullptr;
     };
 
-    struct LogViewerContext : public WidgetContext
+    struct LogViewerContext
     {
-        using WidgetContext::WidgetContext;
+        LogViewerContext(std::string name, unsigned int id, std::string windowId)
+        {
+            wCtx.name = name;
+            wCtx.id = id;
+            wCtx.windowId = windowId;
+        };
+
+        WidgetContext wCtx = {};
         bool srollToBottom = true;
     };
 
-    struct ViewportContext : public WidgetContext
+    struct ViewportContext
     {
-        ViewportContext(const std::string& name, unsigned int id, const std::string& windowId) :
-                WidgetContext(name, id, windowId)
+        WidgetContext wCtx;
+        ViewportContext(std::string name, unsigned int id, std::string windowId)
         {
             shaderProgram.addShader("data/shaders/vert.glsl", ShaderType::VERTEX);
             shaderProgram.addShader("data/shaders/frag.glsl", ShaderType::FRAGMENT);
             shaderProgram.link();
             framebuffer.addColorAttachment({3840, 2160, true});
             viewportTexture = reinterpret_cast<void*>(framebuffer.getColorAttachments()[0].id());
+
+            wCtx.name = name;
+            wCtx.id = id;
+            wCtx.windowId = windowId;
         }
 
 	    bool          isPrimary    = false;
@@ -137,7 +151,8 @@ namespace Editor
         v2i32         resolution   = { 3840, 2160 };
         v2f           offset       = { 0.0f, 0.0f };
         v2f           scale        = { 3480, 2160 };
-        Camera        camera       = {static_cast<float>(resolution.x())/static_cast<float>(resolution.y()),  // aspect ratio
+        Camera        camera       = {static_cast<float>(resolution.x())/
+									  static_cast<float>(resolution.y()),  // aspect ratio
                                      {0.0f, 0.0f, 3},   // pos
                                      {0.0, 0.0, -1}};   // target
         v2f           prevMousePos = { 0.0f, 0.0f };
@@ -149,57 +164,97 @@ namespace Editor
         void* viewportTexture = nullptr;
     };
 
-    struct SettingsWidgetContext : public WidgetContext
+    struct SettingsWidgetContext
     {
-        using WidgetContext::WidgetContext;
+        SettingsWidgetContext(std::string name, unsigned int id, std::string windowId)
+        {
+            wCtx.name = name;
+            wCtx.id = id;
+            wCtx.windowId = windowId;
+        };
+
+        WidgetContext wCtx;
     };
 
-    struct WidgetInspectorContext : public WidgetContext
+    struct WidgetInspectorContext
     {
-        using WidgetContext::WidgetContext;
+        WidgetInspectorContext(std::string name, unsigned int id, std::string windowId)
+        {
+            wCtx.name = name;
+            wCtx.id = id;
+            wCtx.windowId = windowId;
+        };
 
+        WidgetContext wCtx;
         WidgetStore*  widgetStore = nullptr;
     };
 
-    struct ImGuiMetricsWidgetContext : public WidgetContext
+    struct ImGuiMetricsWidgetContext
     {
-        using WidgetContext::WidgetContext;
+        ImGuiMetricsWidgetContext(std::string name, unsigned int id, std::string windowId)
+        {
+            wCtx.name = name;
+            wCtx.id = id;
+            wCtx.windowId = windowId;
+        };
+
+        WidgetContext wCtx;
     };
 
-    struct ImGuiStackToolWidgetContext : public WidgetContext
+    struct ImGuiStackToolWidgetContext
     {
-        using WidgetContext::WidgetContext;
+        ImGuiStackToolWidgetContext(std::string name, unsigned int id, std::string windowId)
+        {
+            wCtx.name = name;
+            wCtx.id = id;
+            wCtx.windowId = windowId;
+        };
+
+        WidgetContext wCtx;
     };
 
-    struct RTControlsContext : public WidgetContext
+    struct RTControlsContext
     {
-        using WidgetContext::WidgetContext;
+        RTControlsContext(std::string name, unsigned int id, std::string windowId)
+        {
+            wCtx.name = name;
+            wCtx.id = id;
+            wCtx.windowId = windowId;
+        };
 
+        WidgetContext wCtx;
         int           samples         = 100;
         WidgetStore*  widgetStore     = nullptr;
         TextureStore* textureStore    = nullptr;
         unsigned int  viewportTexture = 0;
     };
 
-    struct SystemInfoContext : public WidgetContext
+    struct SystemInfoContext
     {
-        SystemInfoContext(const std::string& name, unsigned int id, const std::string& windowId) :
-			WidgetContext(name, id ,windowId),
-			GPUVendor(getGPUVendor()),
-			renderer(getRenderer()),
-			GLVersion(getGLSLVersion()),
-			GLSLVersion(getGLSLVersion())
-        {}
+        SystemInfoContext(std::string name, unsigned int id, std::string windowId)
+        {
+            wCtx.name = name;
+            wCtx.id = id;
+            wCtx.windowId = windowId;
+        };
 
+        WidgetContext wCtx;
         std::string GPUVendor;
         std::string renderer;
         std::string GLVersion;
         std::string GLSLVersion;
     };
 
-    struct RasterSettingsContext : public WidgetContext
+    struct RasterSettingsContext
     {
-        using WidgetContext::WidgetContext;
+        RasterSettingsContext(std::string name, unsigned int id, std::string windowId)
+        {
+            wCtx.name = name;
+            wCtx.id = id;
+            wCtx.windowId = windowId;
+        };
+
+        WidgetContext wCtx;
     };
 
     // Draw widget functions

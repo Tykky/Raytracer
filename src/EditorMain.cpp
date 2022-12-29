@@ -1,3 +1,5 @@
+#include <cstdlib>
+
 #include "editor/Editor.h"
 #include "editor/Graphics.h"
 #include "logging/Logging.h"
@@ -5,6 +7,7 @@
 #include "scene/Scene.h"
 #include "util/Math.h"
 
+#include "util/Types.h"
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
@@ -18,17 +21,10 @@ int main()
     options.enableMainWindowBorders = true;
     options.enableVsync = false;
 
-    Matrix<u32, 4, 4> m = { 1,   2,   3,  4, 
-		                    5,   6,   7,  8, 
-						    9,  10,  11, 12, 
-						   13,  14,  15, 16};
+    Editor::EditorContext ctx;
 
-    auto s = view(m);
-
-	RT_LOG_MSG("{}", s.to_string());
-
-    Editor::createEditorWindow("", 1920, 1080, options);
-    Editor::init(options);
-    Editor::renderLoop();
-    Editor::destroyWindow();
+    Editor::createEditorWindow("", 1920, 1080, options, ctx);
+    Editor::init(options, ctx);
+    Editor::renderLoop(ctx);
+    Editor::destroyWindow(ctx);
 } 

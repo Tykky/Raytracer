@@ -1,10 +1,7 @@
 #include "Editor.h"
-#include <GLFW/glfw3.h>
 #include "Widgets.h"
 #include "editor/Graphics.h"
-#include "util/Types.h"
 #include "editor/styles/DarkTheme.h"
-#include "editor/Input.h"
 #include "ImFileDialog.h"
 #include "scene/Scene.h"
 #include "util/Math.h"
@@ -12,73 +9,37 @@
 namespace Editor 
 {
     // Internal forward declaration
-
-    void renderGui(ImGuiIO& io);
-    void drawEditor(const ImGuiIO& io);
+    void renderGui(ImGuiIO& io, EditorContext& ctx);
+    void drawEditor(const ImGuiIO& io, EditorContext& ctx);
     void windowErrorCallback(int code, const char* description);
-    void dragAndResizeFromEdges();
-    void updateEditorContext();
+    void dragAndResizeFromEdges(EditorContext& ctx);
+    void updateEditorContext(EditorContext& ctx);
     int  checkCursorEdge(v2d relPos, v2i32 windowSize, float resizeAreaSize, float dragAreaSize);
     void changeCursorOnEdge(GLFWwindow* win, int flag);
 
-    void setWindowSize(GLFWwindow* window, v2i32 size);
-    void setWindowPos(GLFWwindow* window, v2i32 pos);
+    void setWindowSize(GLFWwindow* window, v2i32 size, EditorContext& ctx);
+    void setWindowPos(GLFWwindow* window, v2i32 pos, EditorContext& ctx);
 
-    void updateCursorPosAndDelta();
-    void updateFps();
-    void updateWindowSize();
-    void updateWindowPos();
+    void updateCursorPosAndDelta(EditorContext& ctx);
+    void updateFps(EditorContext& ctx);
+    void updateWindowSize(EditorContext& ctx);
+    void updateWindowPos(EditorContext& ctx);
 
-    float getDeltaTime();
-    float getFps();
-    GLFWwindow* getCurrentWindowHandle();
-    v2i32 getWindowSize();
-
-    void maximizeWindow();
-    void minimizeWindow();
+    void maximizeWindow(EditorContext& ctx);
+    void minimizeWindow(EditorContext& ctx);
 
     void createDefaultEditorWidgets(WidgetStore& widgetStore);
     void logVendorInfo();
     std::vector<FilePath> filesInsideDirectory();
 
-    // Editor Context
-
-    struct EditorContext 
-    {
-        Options      options;
-        GLFWwindow*  window             = nullptr;
-        float        deltaTime          = 0.0f;
-        float        fps                = 0.0f;
-        float        mouseScroll        = 0.0f;
-        v2d          cursorPos          = { 0.0f, 0.0f }; // Screen coordinates
-        v2d          cursorRelativePos  = { 0.0f, 0.0f }; // Relative to window position
-        v2d          cursorDelta        = { 0.0f, 0.0f };
-        v2i32        windowSize         = { 0, 0 };
-        v2i32        windowPos          = {0, 0};
-        WidgetStore  widgetStore;
-        bool         initialized        = false;
-        bool         windowMaximized    = false;
-        RT::Scene    scene;
-    };
-
-    // For now there is only one context
-    static EditorContext context;
-
-    static EditorContext* ctx()
-    {
-        return &context;
-    }
-
-    // Editor API implementation
-
-    void init(const Options& options) 
+    void init(const Options& options, EditorContext& ctx) 
     {
         ImGui::CreateContext();
 
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-        ctx()->options = options;
+        ctx.options = options;
 
         if (options.enableViewports) 
         {
@@ -88,10 +49,10 @@ namespace Editor
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         execDarkTheme(); // use dark theme by default
 
-        ImGuiImplInitGLFW(ctx()->window);
+        ImGuiImplInitGLFW(ctx.window);
         ImGuiImplInitGL3("#version 440");
 
-        // ImFIleDialog needs functions for alloating and freeing textures for icons
+        // ImFIleDialog needs functions for allocating freeing textures for icons
         ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void*
         {
             return createTexture(data, w, h, fmt);
@@ -112,14 +73,14 @@ namespace Editor
         io.WantSaveIniSettings = false;
 #endif
 
-        createDefaultEditorWidgets(ctx()->widgetStore);
-        setMouseScrollCallback();
-        ctx()->initialized = true;
+        createDefaultEditorWidgets(ctx.widgetStore);
+        // setMouseScrollCallback();
+        ctx.initialized = true;
     }
 
-    void createEditorWindow(const char* title, int width, int height, const Options& options)
+    void createEditorWindow(const char* title, int width, int height, const Options& options, EditorContext& ctx)
     {
-        if (ctx()->window)
+        if (ctx.window)
         {
             RT_LOG_WARNING("Tried to create a window when there is already one!");
             return;
@@ -162,38 +123,38 @@ namespace Editor
             RT_LOG_ERROR("Failed to initialize GLEW");
             abort();
         }
-        ctx()->window = window;
+        ctx.window = window;
     }
 
-    void destroyWindow()
+    void destroyWindow(EditorContext& ctx)
     {
-        if (!ctx()->window)
+        if (!ctx.window)
         {
             RT_LOG_WARNING("Tried to destroy window when one hasn't been created yet!");
             return;
         }
 
-        glfwDestroyWindow(reinterpret_cast<GLFWwindow*>(ctx()->window));
+        glfwDestroyWindow(ctx.window);
         RT_LOG_MSG("GLFW window destroyed");
         glfwTerminate();
         RT_LOG_MSG("GLFW terminated");
     }
 
-    void renderLoop() 
+    void renderLoop(EditorContext& ctx) 
     {
-        if (!ctx()->window)
+        if (!ctx.window)
         {
             RT_LOG_WARNING("Tried to enter renderloop when there is no valid window yet!");
             return;
         }
 
-        if (!ctx()->initialized)
+        if (!ctx.initialized)
         {
             RT_LOG_WARNING("Tried to enter render loop when the editor is not yet initialized!");
             return;
         }
 
-        GLFWwindow* glfwWindow = reinterpret_cast<GLFWwindow*>(ctx()->window);
+        GLFWwindow* glfwWindow = ctx.window;
         ImGuiIO& io = ImGui::GetIO();
         double current = glfwGetTime();
         double last;
@@ -201,11 +162,11 @@ namespace Editor
         {
             last = current;
             current = glfwGetTime();
-            ctx()->deltaTime = current - last;
+            ctx.deltaTime = current - last;
 
             glfwPollEvents();
             clear();
-            renderGui(io);
+            renderGui(io, ctx);
             glfwSwapBuffers(glfwWindow);
         }
     }
@@ -217,33 +178,33 @@ namespace Editor
         RT_LOG_ERROR("[GLFW CALLBACK] ({}) {}", code, description);
     }
 
-    void updateEditorContext()
+    void updateEditorContext(EditorContext& ctx)
     {
-		updateFps();
-        updateCursorPosAndDelta();
-        updateWindowSize();
-        updateWindowPos();
-        if (!ctx()->options.enableMainWindowBorders)
-            dragAndResizeFromEdges();
+		updateFps(ctx);
+        updateCursorPosAndDelta(ctx);
+        updateWindowSize(ctx);
+        updateWindowPos(ctx);
+        if (!ctx.options.enableMainWindowBorders)
+            dragAndResizeFromEdges(ctx);
     }
 
-    void drawEditor(const ImGuiIO& io) 
+    void drawEditor(const ImGuiIO& io, EditorContext& ctx) 
     {
-        drawMainMenuBar(ctx()->widgetStore, ctx()->options.enableMainWindowBorders);
+        drawMainMenuBar(ctx.widgetStore, ctx.options.enableMainWindowBorders);
         drawImFileDialogAndProcessInput();
         drawDockspace("Main");
-        drawAllWidgets(&ctx()->widgetStore);
-        deleteAllMarkedWidgets(ctx()->widgetStore);
+        drawAllWidgets(&ctx.widgetStore);
+        deleteAllMarkedWidgets(ctx.widgetStore);
     }
 
-    void renderGui(ImGuiIO& io) 
+    void renderGui(ImGuiIO& io, EditorContext& ctx) 
     {
         ImGuiImplGLNewFrame();
         ImGuiImplGLFWNewFrame();
         ImGui::NewFrame();
 
-        updateEditorContext();
-        drawEditor(io);
+        updateEditorContext(ctx);
+        drawEditor(io, ctx);
 
         ImGui::Render(); // calls Imgui::EndFrame()
 
@@ -317,33 +278,35 @@ namespace Editor
             glfwSetCursor(win, resizeVerticalCursor);
     }
 
-    void setWindowSize(GLFWwindow* window, v2i32 size)
+    void setWindowSize(GLFWwindow* window, v2i32 size, EditorContext& ctx)
     {
         glfwSetWindowSize(window, size.x(), size.y());
-        ctx()->windowSize = size;
+        ctx.windowSize = size;
     }
 
-    void setWindowPos(GLFWwindow* window, v2i32 pos)
+    void setWindowPos(GLFWwindow* window, v2i32 pos, EditorContext& ctx)
     {
         glfwSetWindowPos(window, pos.x(), pos.y());
-        ctx()->windowPos = pos;
+        ctx.windowPos = pos;
     }
 
     // hold contains positions where the mouse was clicked first time
     // flag contains position where the mouse is hovered
     // check contains the positions to be checked for e.g RESIZE_TOP, RESIZE_LEFT etc..., see definition of ResizeFlag
-    void executeWhileMouse1Pressed(GLFWwindow* win, ResizeFlag& hold, const ResizeFlag flag, const ResizeFlag check, void (*exec)(GLFWwindow* win))
+    void executeWhileMouse1Pressed(GLFWwindow* win, ResizeFlag& hold, const ResizeFlag flag, const ResizeFlag check, EditorContext& ctx, void (*exec)(GLFWwindow* win, EditorContext& ctx))
     {
+        /*
         if ((hold & check) || (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::PRESS && flag & check))
         {
             hold |= check;
-            exec(win);
+            exec(win, ctx);
             if (getMouseButton(MouseCode::MOUSE_BUTTON_1) == StatusCode::RELEASE)
                 hold &= ~check;
         }
+        */
     }
 
-	void dragAndResizeFromEdges()
+	void dragAndResizeFromEdges(EditorContext& ctx)
     {
         // both in pixels
         constexpr double dragAreaSize   = 20.0f;
@@ -351,103 +314,110 @@ namespace Editor
 
         GLFWwindow* win = glfwGetCurrentContext();
 
-        int flag = checkCursorEdge(ctx()->cursorRelativePos, ctx()->windowSize, resizeAreaSize, dragAreaSize);
+        int flag = checkCursorEdge(ctx.cursorRelativePos, ctx.windowSize, resizeAreaSize, dragAreaSize);
         static int hold = NONE; // to allow dragging/scaling when mouse goes slightly over the edge
 
         changeCursorOnEdge(win, flag);
 
         // Drag from top
         if (!(hold & RESIZE_TOP)) // do not resize when window is dragged
-            executeWhileMouse1Pressed(win, hold, flag, DRAG_TOP, [](GLFWwindow *win)
+            executeWhileMouse1Pressed(win, hold, flag, DRAG_TOP, ctx, [](GLFWwindow* win, EditorContext& ctx)
             {
                 setWindowPos(
                         win, {
-                        ctx()->windowPos.x() + static_cast<int>(ctx()->cursorDelta.x()),
-                        ctx()->windowPos.y() + static_cast<int>(ctx()->cursorDelta.y())});
+                        ctx.windowPos.x() + static_cast<int>(ctx.cursorDelta.x()),
+                        ctx.windowPos.y() + static_cast<int>(ctx.cursorDelta.y())},
+                        ctx);
             });
 
         // Resize from top
         if (!(hold & DRAG_TOP)) // do not drag when window is being resized from top
-            executeWhileMouse1Pressed(win, hold, flag, RESIZE_TOP, [](GLFWwindow *win)
+            executeWhileMouse1Pressed(win, hold, flag, RESIZE_TOP, ctx, [](GLFWwindow *win, EditorContext& ctx)
             {
                 setWindowSize(
                         win, {
-                        ctx()->windowSize.x(),
-                        ctx()->windowSize.y() - static_cast<int>(ctx()->cursorDelta.y())});
+                        ctx.windowSize.x(),
+                        ctx.windowSize.y() - static_cast<int>(ctx.cursorDelta.y())},
+                        ctx);
 
                 setWindowPos(
                         win, {
-                        ctx()->windowPos.x(),
-                        ctx()->windowPos.y() + static_cast<int>(ctx()->cursorDelta.y())});
+                        ctx.windowPos.x(),
+                        ctx.windowPos.y() + static_cast<int>(ctx.cursorDelta.y())},
+                        ctx);
             });
 
         // Resize from left
-        executeWhileMouse1Pressed(win, hold ,flag, RESIZE_LEFT, [](GLFWwindow* win)
+        executeWhileMouse1Pressed(win, hold ,flag, RESIZE_LEFT, ctx, [](GLFWwindow* win, EditorContext& ctx)
         {
             setWindowSize(
                     win, {
-                    ctx()->windowSize.x() - static_cast<int>(ctx()->cursorDelta.x()),
-                    ctx()->windowSize.y()});
+                    ctx.windowSize.x() - static_cast<int>(ctx.cursorDelta.x()),
+                    ctx.windowSize.y()},
+                    ctx);
 
             setWindowPos(
                     win, {
-                    ctx()->windowPos.x() + static_cast<int>(ctx()->cursorDelta.x()),
-                    ctx()->windowPos.y()});
+                    ctx.windowPos.x() + static_cast<int>(ctx.cursorDelta.x()),
+                    ctx.windowPos.y()},
+                    ctx);
         });
 
         // Resize from right
-        executeWhileMouse1Pressed(win, hold, flag, RESIZE_RIGHT, [](GLFWwindow* win)
+        executeWhileMouse1Pressed(win, hold, flag, RESIZE_RIGHT, ctx, [](GLFWwindow* win, EditorContext& ctx)
         {
             setWindowSize(
                     win, {
-                    ctx()->windowSize.x() + static_cast<int>(ctx()->cursorDelta.x()),
-                    ctx()->windowSize.y()});
+                    ctx.windowSize.x() + static_cast<int>(ctx.cursorDelta.x()),
+                    ctx.windowSize.y()},
+					ctx);
         });
 
         // Resize from bottom
-        executeWhileMouse1Pressed(win, hold, flag, RESIZE_BOTTOM, [](GLFWwindow* win)
+        executeWhileMouse1Pressed(win, hold, flag, RESIZE_BOTTOM, ctx, [](GLFWwindow* win, EditorContext& ctx)
         {
             setWindowSize(
                     win, {
-                    ctx()->windowSize.x(),
-                    ctx()->windowSize.y() + static_cast<int>(ctx()->cursorDelta.y())});
+                    ctx.windowSize.x(),
+                    ctx.windowSize.y() + static_cast<int>(ctx.cursorDelta.y())},
+                    ctx);
         });
 	}
 
-    void updateWindowSize()
+    void updateWindowSize(EditorContext& ctx)
    {
         int w, h;
-        glfwGetWindowSize(ctx()->window, &w, &h);
-        ctx()->windowSize = { w, h };
+        glfwGetWindowSize(ctx.window, &w, &h);
+        ctx.windowSize = { w, h };
     }
 
-    void updateWindowPos()
+    void updateWindowPos(EditorContext& ctx)
     {
         int w, h;
-        glfwGetWindowPos(ctx()->window, &w, &h);
-        ctx()->windowPos = {w, h};
+        glfwGetWindowPos(ctx.window, &w, &h);
+        ctx.windowPos = {w, h};
     }
 
-    void updateFps()
+    void updateFps(EditorContext& ctx)
     {
-        ctx()->fps = 1.0f / ctx()->deltaTime;
+        ctx.fps = 1.0f / ctx.deltaTime;
     }
 
-    void updateCursorPosAndDelta()
+    void updateCursorPosAndDelta(EditorContext& ctx)
     {
         double mx, my; // mouse position
         int wx, wy;    // Window position
-        glfwGetCursorPos(ctx()->window, &mx, &my);
-        glfwGetWindowPos(ctx()->window, &wx, &wy);
+        glfwGetCursorPos(ctx.window, &mx, &my);
+        glfwGetWindowPos(ctx.window, &wx, &wy);
 
-        ctx()->cursorDelta.x() = mx + wx - ctx()->cursorPos.x();
-        ctx()->cursorDelta.y() = my + wy - ctx()->cursorPos.y();
+        ctx.cursorDelta.x() = mx + wx - ctx.cursorPos.x();
+        ctx.cursorDelta.y() = my + wy - ctx.cursorPos.y();
 
         // Relative to screen
-        ctx()->cursorPos = { mx + wx, my + wy};
+        ctx.cursorPos = { mx + wx, my + wy};
 
         // Relative to window position
-        ctx()->cursorRelativePos = { mx, my };
+        ctx.cursorRelativePos = { mx, my };
     }
 
     void createDefaultEditorWidgets(WidgetStore& widgetStore)
@@ -461,12 +431,7 @@ namespace Editor
 
     std::vector<FilePath> filesInsideDirectory()
     {
-        return std::vector<FilePath>();
-    }
-
-    void* getWindowHandle()
-    {
-        return ctx()->window;
+        return {};
     }
 
     void logVendorInfo()
@@ -477,42 +442,22 @@ namespace Editor
         RT_LOG_MSG("GLSL version: {}", getGLSLVersion());
     }
 
-    float getDeltaTime()
+    void maximizeWindow(EditorContext& ctx)
     {
-        return ctx()->deltaTime;
-    }
-
-    float getFps()
-    {
-        return ctx()->fps;
-    }
-
-    GLFWwindow* getCurrentWindowHandle()
-    {
-        return ctx()->window;
-    }
-
-    v2i32 getWindowSize()
-    {
-        return ctx()->windowSize;
-    }
-
-    void maximizeWindow()
-    {
-        if (!ctx()->windowMaximized)
+        if (!ctx.windowMaximized)
         {
-            glfwMaximizeWindow(ctx()->window);
+            glfwMaximizeWindow(ctx.window);
         }
         else
         {
-            glfwRestoreWindow(ctx()->window);
+            glfwRestoreWindow(ctx.window);
         }
-        ctx()->windowMaximized ^= 1;
+        ctx.windowMaximized ^= 1;
     }
 
-    void minimizeWindow()
+    void minimizeWindow(EditorContext& ctx)
     {
         RT_LOG_MSG("Window minimzed");
-        glfwIconifyWindow(ctx()->window);
+        glfwIconifyWindow(ctx.window);
     }
 }

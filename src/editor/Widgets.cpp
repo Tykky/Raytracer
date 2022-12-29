@@ -7,20 +7,17 @@
 #include <iostream>
 #include <vector>
 #include <functional>
+
+#include "Editor.h"
 #include "logging/Logging.h"
 #include "ImFileDialog.h"
 #include "editor/styles/DarkTheme.h"
-#include "editor/Input.h"
 
 namespace Editor
 {
     // Forward declaration of functions in Editor.cpp
 
-    float getFps();
-    float getDeltaTime();
-    v2i32 getWindowSize();
-    void  maximizeWindow();
-    void  minimizeWindow();
+    struct EditorContext;
 
     // Widget helper implementation
 
@@ -47,10 +44,10 @@ namespace Editor
         explicit ImGuiScopedBegin(WidgetStore* wStore, Context& ctx, ImGuiWindowFlags flags = 0)
         {
             bool open = true;
-            ImGui::Begin(ctx.windowId.data(), &open, flags);
+            ImGui::Begin(ctx.wCtx.windowId.data(), &open, flags);
             if (!open) // when close window button is pressed
             {
-                ctx.markForDelete = true;
+                ctx.wCtx.markForDelete = true;
             }
          }
 
@@ -177,7 +174,7 @@ namespace Editor
 		ImGui::Text("GL version: %s", ctx.GLVersion.data());
 		ImGui::Text("GLSL version: %s", ctx.GLSLVersion.data());
 		ImGui::Text("Framerate: %f fps", ImGui::GetIO().Framerate);
-		ImGui::Text("Delta time: %f ms", getDeltaTime() * 1000);
+		// ImGui::Text("Delta time: %f ms", getDeltaTime() * 1000);
     }
 
     void drawWidget(WidgetStore* wStore, RasterSettingsContext& ctx)
@@ -252,6 +249,8 @@ namespace Editor
                 ImGui::EndMenu();
             }
 #endif
+            /*
+
             // Use custom close, minimize and maximize buttons when OS
             // provided title bar is not used
             if (!drawMainMenuBorders)
@@ -270,6 +269,8 @@ namespace Editor
                 if (ImGui::Button("X"))
                     exit(0);
             }
+
+			*/
 
             ImGui::EndMainMenuBar();
         }
@@ -425,6 +426,7 @@ namespace Editor
     
     void processInput(ViewportContext& ctx)
     {
+        /*
         float scroll = getMouseScroll();
         if (getKey(KeyCode::KEY_LEFT_ALT) == StatusCode::PRESS && ctx.camera.distance != scroll)
         {
@@ -491,5 +493,6 @@ namespace Editor
             ctx.camera.target += x;
             ctx.camera.update();
         }
+        */
     }
 }
