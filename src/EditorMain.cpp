@@ -14,17 +14,15 @@
 
 int main()
 {
-    Editor::Options options;
-    initLogger(128);
-
-    options.enableViewports = true;
-    options.enableMainWindowBorders = true;
-    options.enableVsync = false;
-
     Editor::EditorContext ctx;
 
-    Editor::createEditorWindow("", 1920, 1080, options, ctx);
-    Editor::init(options, ctx);
+    ctx.options.enableViewports         = true;
+    ctx.options.enableMainWindowBorders = true;
+    ctx.options.enableVsync             = false;
+
+    Editor::initEditor(ctx);
+    Editor::createEditorWindow("Raytracer", 1920, 1080, ctx);
+    Editor::initGui(ctx);
     Editor::renderLoop(ctx);
     Editor::destroyWindow(ctx);
 } 

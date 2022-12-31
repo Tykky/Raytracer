@@ -45,12 +45,14 @@ namespace Editor
         bool         windowMaximized    = false;
     };
 
+    // Creates editor context (Dear Imgui) and initializes it with options
+    void initEditor(EditorContext& ctx);
+
     // Creates GLFW window and loads OpenGL extensions
-    void createEditorWindow(const char* title, int width, int height, const Options& options, EditorContext& ctx);
+    void createEditorWindow(const char* title, int width, int height, EditorContext& ctx);
     void destroyWindow(EditorContext& ctx);
 
-    // Creates editor context (Dear Imgui) and initializes it with options
-    void init(const Options& options, EditorContext& ctx);
+    void initGui(EditorContext& ctx);
 
     // Begins executing draw/input loop
     void renderLoop(EditorContext& ctx);

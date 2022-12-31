@@ -69,7 +69,7 @@ namespace Editor
         // Dear Imgui allows id:s to be appended as suffix after "###"
         wArray.emplace_back(name, idx,
             //  window title           id = name + idx
-            //  <-->           <------------------------------>
+            //  <-->           <-------------------------->
                 name + "###" + name + std::to_string(idx++)
 		);
     }

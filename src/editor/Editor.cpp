@@ -5,6 +5,7 @@
 #include "ImFileDialog.h"
 #include "scene/Scene.h"
 #include "util/Math.h"
+#include <stdexcept>
 
 namespace Editor 
 {
@@ -32,25 +33,27 @@ namespace Editor
     void logVendorInfo();
     std::vector<FilePath> filesInsideDirectory();
 
-    void init(const Options& options, EditorContext& ctx) 
+    void initEditor(EditorContext& ctx) 
     {
-        ImGui::CreateContext();
+        initLogger(128);
+
+        if (!glfwInit())
+            throw std::runtime_error("Initializing GLFW failed");
+			
+        glfwSetErrorCallback(windowErrorCallback);
+
+    	ImGui::CreateContext();
 
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-        ctx.options = options;
-
-        if (options.enableViewports) 
+        if (ctx.options.enableViewports) 
         {
             io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         }
 
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         execDarkTheme(); // use dark theme by default
-
-        ImGuiImplInitGLFW(ctx.window);
-        ImGuiImplInitGL3("#version 440");
 
         // ImFIleDialog needs functions for allocating freeing textures for icons
         ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void*
@@ -69,61 +72,35 @@ namespace Editor
 
 #ifdef NDEBUG
         // We don't want to save user settings for now, maybe at sometime there is a feature to
-        // save and load user settings. For nowe we only load the default init file.
+        // save and load user settings. For nowe we only load the default initEditor file.
         io.WantSaveIniSettings = false;
 #endif
 
-        createDefaultEditorWidgets(ctx.widgetStore);
         // setMouseScrollCallback();
         ctx.initialized = true;
     }
 
-    void createEditorWindow(const char* title, int width, int height, const Options& options, EditorContext& ctx)
+    void createEditorWindow(const char* title, int width, int height, EditorContext& ctx)
     {
-        if (ctx.window)
-        {
-            RT_LOG_WARNING("Tried to create a window when there is already one!");
-            return;
-        }
+		if (!ctx.options.enableMainWindowBorders)
+		{
+			glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+		}
 
-        glfwSetErrorCallback(windowErrorCallback);
-        GLFWwindow* window;
-        if (glfwInit())
-        {
-            RT_LOG_MSG("GLFW initialized");
-            if (!options.enableMainWindowBorders)
-            {
-                glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-            }
+		ctx.window = glfwCreateWindow(width, height, title, NULL, NULL);
+		glfwMakeContextCurrent(ctx.window);
 
-            window = glfwCreateWindow(width, height, title, NULL, NULL);
-            glfwMakeContextCurrent(window);
-            RT_LOG_MSG("GLFW window created");
+		if (!ctx.options.enableVsync)
+		{
+			RT_LOG_MSG("Vsync disabled");
+			glfwSwapInterval(0);
+		}
+		else
+		{
+			RT_LOG_MSG("Vsync enabled");
+		}
 
-            if (!options.enableVsync)
-            {
-                RT_LOG_MSG("Vsync disabled");
-                glfwSwapInterval(0);
-            }
-            else
-            {
-                RT_LOG_MSG("Vsync enabled");
-            }
-
-            if (loadGLExtensions() != LOADGL_OK)
-            {
-                RT_LOG_ERROR("Failed to load GL extensions!");
-                abort();
-            }
-			RT_LOG_MSG("GL extensions loaded");
-			logVendorInfo();
-        }
-        else
-        {
-            RT_LOG_ERROR("Failed to initialize GLEW");
-            abort();
-        }
-        ctx.window = window;
+		logVendorInfo();
     }
 
     void destroyWindow(EditorContext& ctx)
@@ -138,6 +115,16 @@ namespace Editor
         RT_LOG_MSG("GLFW window destroyed");
         glfwTerminate();
         RT_LOG_MSG("GLFW terminated");
+    }
+
+    void initGui(EditorContext& ctx)
+    {
+        if (loadGLExtensions() != LOADGL_OK)
+            throw std::exception("Failed to load GL extensions");
+
+        ImGuiImplInitGLFW(ctx.window);
+        ImGuiImplInitGL3("#version 440");
+        createDefaultEditorWidgets(ctx.widgetStore);
     }
 
     void renderLoop(EditorContext& ctx) 
