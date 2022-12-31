@@ -7,8 +7,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-
-// Thin RAII wrapper for opengl stuff
+#include "util/Types.h"
 
 // Quad for testing purposes
 static constexpr float defaultRectangleData[] =
@@ -87,128 +86,22 @@ namespace Editor
         COMPUTE
 	};
 
-    class Texture
+    struct Texture
     {
-    public:
-        Texture(std::string name, unsigned char* data, int width, int height);
-        ~Texture();
-
-        Texture() = delete;
-        Texture(const Texture& texture) = delete;
-        Texture(Texture&& texture);
-        Texture& operator=(Texture&& texture);
-
-        const Texture& operator=(const Texture& texture) = delete;
-
-        inline unsigned int getTextureId() const { return m_textureID; }
-        inline const std::string& getName() const { return m_name; }
-
-    private:
-        std::string  m_name;
-        int          m_width;
-        int          m_height;
-        char         m_fmt;
-        unsigned int m_textureID;
+        unsigned int id;
     };
 
-    // Clump OpenGls vertex buffer, vertex array and element
-    // buffer into one object
-    class Vertexbuffer
+    struct Framebuffer
     {
-    public:
-        Vertexbuffer() = delete;
-        Vertexbuffer(const float* vertices, std::size_t size);
-        ~Vertexbuffer();
-
-        Vertexbuffer(const Vertexbuffer& vertexbuffer) = delete;
-        Vertexbuffer& operator=(const Vertexbuffer& vertexbuffer) = delete;
-        Vertexbuffer(Vertexbuffer&& vertexbuffer);
-        Vertexbuffer& operator=(Vertexbuffer&& vertexbuffer);
-
-        void bind();
-
-    private:
-        unsigned int m_vbo; // Vertex Buffer Object
-        unsigned int m_vao; // Vertex Array Object
-        unsigned int m_ebo; // Vertex Element Object
+        unsigned int id;
     };
 
-    // A texture we can use as render target
-    // TODO, refactor this. There is one texture class already
-    class RenderTexture
+    struct ShaderProgram
     {
-    public:
-        RenderTexture() = default;
-        RenderTexture(unsigned int width, unsigned int height, bool depthTesting);
-        ~RenderTexture();
-
-        RenderTexture(const RenderTexture& renderTexture) = delete;
-        RenderTexture &operator=(const RenderTexture& renderTexture) = delete;
-        RenderTexture(RenderTexture&& renderTexture);
-        RenderTexture& operator=(RenderTexture&& renderTexture);
-
-        inline unsigned int id() const { return m_renderTextureId; }
-        inline unsigned int depthId() const { return m_depthRenderBufferId; }
-        inline int getHeight() const { return m_height; }
-        inline int getWidth() const { return m_width; }
-
-    private:
-        int          m_width               = 0;
-        int          m_height              = 0;
-        unsigned int m_renderTextureId     = 0;
-        unsigned int m_depthRenderBufferId = 0;
-        bool         m_isDepthTestEnabled  = 0;
+        unsigned int id;
     };
 
-    class Framebuffer
-    {
-    public:
-        Framebuffer();
-        ~Framebuffer();
-
-        Framebuffer(const Framebuffer& framebuffer) = delete;
-        Framebuffer& operator=(const Framebuffer& framebuffer) = delete;
-        Framebuffer(Framebuffer&& framebuffer);
-        Framebuffer& operator=(Framebuffer&& framebuffer);
-
-        void addColorAttachment(RenderTexture&& renderTexture);
-
-        inline unsigned int getNumColorAttachments() const { return m_numColorAttachments; }
-        inline const RenderTexture* getColorAttachments() const { return m_colorAttachments; }
-
-        void bind();
-        void unbind();
-        void clear();
-
-    private:
-        unsigned int   m_framebufferID;
-        RenderTexture  m_colorAttachments[16];
-        unsigned int   m_numColorAttachments = 0;
-    };
-
-    class ShaderProgram
-    {
-    public:
-        ShaderProgram() = default;
-        ~ShaderProgram();
-
-        ShaderProgram(const ShaderProgram& shaderProgram) = delete;
-        ShaderProgram& operator=(const ShaderProgram& shaderProgram) = delete;
-        ShaderProgram(ShaderProgram&& shaderProgram);
-        ShaderProgram& operator=(ShaderProgram&& shaderProgram);
-
-        bool addShader(const char* path, ShaderType shaderType);
-        bool link();
-        void use();
-
-        inline unsigned int getProgramId() { return m_shaderProgramId; }
-
-    private:
-        unsigned int m_shaderProgramId   = 0;
-        unsigned int m_vertexShaderId    = 0;
-        unsigned int m_fragmentShaderId  = 0;
-        unsigned int m_computeShaderId   = 0;
-    };
+    Texture createTexture();
 
     class Camera
     {

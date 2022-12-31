@@ -10,4 +10,6 @@ typedef std::int32_t  i32;
 typedef std::uint64_t u64;
 typedef std::int64_t  i64;
 
+typedef unsigned int uint;
+
 #endif // RAYTRACER_TYPES_H

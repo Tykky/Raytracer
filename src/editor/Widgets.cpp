@@ -70,10 +70,9 @@ namespace Editor
         }
     };
 
-    // drawWidget implementation
-
     void drawWidget(WidgetStore* wStore, TextureViewerContext& ctx)
     {
+        /*
         auto begin = ImGuiScopedBegin(wStore, ctx);
         void* currentTexId = nullptr;
         const char* preview = nullptr;
@@ -86,6 +85,7 @@ namespace Editor
 
         drawTextureView(currentTexId, ctx.offset, ctx.scale);
         drawTexturePickerComboBox(preview, ctx.textureStore, ctx.currentTexture);
+        */
     }
 
     void drawWidget(WidgetStore* wStore, LogViewerContext& ctx)
@@ -106,6 +106,7 @@ namespace Editor
 
     void drawWidget(WidgetStore* wStore, ViewportContext& ctx)
     {
+        /*
 		// TODO: consider moving the rendering of the viewport over to camera.
 		// Right now we don't have much stuff in here but at some point the "renderer" will become more complex
 		processInput(ctx);
@@ -117,6 +118,7 @@ namespace Editor
 
 		drawToTexture(ctx.vertexbuffer, ctx.shaderProgram, ctx.framebuffer);
 		drawTextureView(ctx.viewportTexture, ctx.offset, ctx.scale);
+        */
     }
 
     void drawWidget(WidgetStore* wStore, SettingsWidgetContext& ctx) 

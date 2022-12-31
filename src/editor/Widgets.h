@@ -113,8 +113,8 @@ namespace Editor
         WidgetContext wCtx;
         v2f           offset         = {0.0f, 0.0f};
         v2f           scale          = {600.0f, 600.0f};
-		TextureStore* textureStore   = nullptr;
-        Texture*      currentTexture = nullptr;
+		// TextureStore* textureStore   = nullptr;
+    	// Texture*      currentTexture = nullptr;
     };
 
     struct LogViewerContext
@@ -135,6 +135,7 @@ namespace Editor
         WidgetContext wCtx;
         ViewportContext(std::string name, unsigned int id, std::string windowId)
         {
+            /*
             shaderProgram.addShader("data/shaders/vert.glsl", ShaderType::VERTEX);
             shaderProgram.addShader("data/shaders/frag.glsl", ShaderType::FRAGMENT);
             shaderProgram.link();
@@ -144,6 +145,7 @@ namespace Editor
             wCtx.name = name;
             wCtx.id = id;
             wCtx.windowId = windowId;
+            */
         }
 
 	    bool          isPrimary    = false;
