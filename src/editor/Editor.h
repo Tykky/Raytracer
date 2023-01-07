@@ -11,13 +11,13 @@
 
 namespace Editor
 {
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-    static const char* FONT_PATH = "C:\\Windows\\Fonts";
-#elif defined(__linux__)
-    static const char* FONT_PATH = "/usr/share/fonts";
-#else
-    static const char* FONT_PATH = nullptr;
-#endif
+	#ifdef WIN32
+		static const char* FONT_PATH = "C:\\Windows\\Fonts";
+	#elif defined(__linux__)
+		static const char* FONT_PATH = "/usr/share/fonts";
+	#else
+		static const char* FONT_PATH = nullptr;
+	#endif
 
     // Editor API declaration
     struct Options
@@ -45,16 +45,15 @@ namespace Editor
         bool         windowMaximized    = false;
     };
 
-    // Creates editor context (Dear Imgui) and initializes it with options
+    // Creates editor context
     void initEditor(EditorContext& ctx);
 
-    // Creates GLFW window and loads OpenGL extensions
     void createEditorWindow(const char* title, int width, int height, EditorContext& ctx);
     void destroyWindow(EditorContext& ctx);
 
     void initGui(EditorContext& ctx);
 
-    // Begins executing draw/input loop
+    // Begins executing draw loop
     void renderLoop(EditorContext& ctx);
 }
 

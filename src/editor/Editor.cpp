@@ -2,8 +2,7 @@
 #include "Widgets.h"
 #include "editor/Graphics.h"
 #include "editor/styles/DarkTheme.h"
-#include "ImFileDialog.h"
-#include "scene/Scene.h"
+// #include "ImFileDialog.h"
 #include "util/Math.h"
 #include <stdexcept>
 
@@ -22,7 +21,6 @@ namespace Editor
     void setWindowPos(GLFWwindow* window, v2i32 pos, EditorContext& ctx);
 
     void updateCursorPosAndDelta(EditorContext& ctx);
-    void updateFps(EditorContext& ctx);
     void updateWindowSize(EditorContext& ctx);
     void updateWindowPos(EditorContext& ctx);
 
@@ -31,7 +29,7 @@ namespace Editor
 
     void createDefaultEditorWidgets(WidgetStore& widgetStore);
     void logVendorInfo();
-    std::vector<FilePath> filesInsideDirectory();
+    // std::vector<FilePath> filesInsideDirectory();
 
     void initEditor(EditorContext& ctx) 
     {
@@ -53,8 +51,9 @@ namespace Editor
         }
 
         io.ConfigWindowsMoveFromTitleBarOnly = true;
-        execDarkTheme(); // use dark theme by default
+        execDarkTheme();
 
+        /*
         // ImFIleDialog needs functions for allocating freeing textures for icons
         ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void*
         {
@@ -65,6 +64,7 @@ namespace Editor
         {
             deleteTexture(tex);
         };
+        */
 
         // Load custom font
         io.Fonts->AddFontFromFileTTF("data/fonts/Roboto-Regular.ttf", 16.0f);
@@ -119,8 +119,10 @@ namespace Editor
 
     void initGui(EditorContext& ctx)
     {
+        /*
         if (loadGLExtensions() != LOADGL_OK)
             throw std::exception("Failed to load GL extensions");
+        */
 
         ImGuiImplInitGLFW(ctx.window);
         ImGuiImplInitGL3("#version 440");
@@ -152,7 +154,7 @@ namespace Editor
             ctx.deltaTime = current - last;
 
             glfwPollEvents();
-            clear();
+            // clear();
             renderGui(io, ctx);
             glfwSwapBuffers(glfwWindow);
         }
@@ -167,7 +169,6 @@ namespace Editor
 
     void updateEditorContext(EditorContext& ctx)
     {
-		updateFps(ctx);
         updateCursorPosAndDelta(ctx);
         updateWindowSize(ctx);
         updateWindowPos(ctx);
@@ -385,11 +386,6 @@ namespace Editor
         ctx.windowPos = {w, h};
     }
 
-    void updateFps(EditorContext& ctx)
-    {
-        ctx.fps = 1.0f / ctx.deltaTime;
-    }
-
     void updateCursorPosAndDelta(EditorContext& ctx)
     {
         double mx, my; // mouse position
@@ -416,17 +412,22 @@ namespace Editor
         insertWidgetArray<RasterSettingsContext>(widgetStore, "Raster settings");
     }
 
+
+    /*
     std::vector<FilePath> filesInsideDirectory()
     {
         return {};
     }
+    */
 
     void logVendorInfo()
     {
+        /*
         RT_LOG_MSG("vendor: {}", getGPUVendor());
         RT_LOG_MSG("renderer: {}", getRenderer());
         RT_LOG_MSG("GL version: {}", getGLVersion());
         RT_LOG_MSG("GLSL version: {}", getGLSLVersion());
+        */
     }
 
     void maximizeWindow(EditorContext& ctx)

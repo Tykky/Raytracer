@@ -77,31 +77,80 @@ namespace Editor
 
     float getDeltaTime();
 
-    // Graphics API declaration
-
-    enum class ShaderType
+    enum class VertexLayout
     {
-        VERTEX,
-		FRAGMENT,
-        COMPUTE
-	};
+        POINT,
+        POINT_UV,
+        TRIANGLE,
+        TRIANGLE_UV
+    };
+
+    enum class TextureTarget
+    {
+        TEXTURE_1D,
+        TEXTURE_2D,
+        TEXTURE_3D,
+        TEXTURE_1D_ARRAY,
+        TEXUTRE_2D_ARRAY,
+        TEXTURE_CUBE_MAP,
+        TEXTURE_CUBE_MAP_ARRAY
+    };
+
+    enum class FramebufferOperation
+    {
+        READ,
+        DRAW,
+        READ_AND_DRAW,
+    };
 
     struct Texture
     {
-        unsigned int id;
+    	uint id;
     };
 
     struct Framebuffer
     {
-        unsigned int id;
+        uint id;
+    };
+
+    struct ElementBuffer
+    {
+        uint id;
+    };
+
+    struct VertexBuffer
+    {
+        uint id;
+    };
+
+    struct VertexArray
+    {
+        uint id;
     };
 
     struct ShaderProgram
     {
-        unsigned int id;
+        uint id;
     };
+		
+    // typedef std::array<uint, shaderStages.size()> shaderStagesArray;
 
-    Texture createTexture();
+    Texture createTexture     ();
+    void    deleteTexture     (Texture& texture);
+    void    bindTexture       (Texture texture, TextureTarget target);
+    void    unbindTexture     (TextureTarget target);
+    void    uploadTextureData ();
+
+    Framebuffer createFramebuffer ();
+    void        deleteFramebuffer (Framebuffer& framebuffer);
+    void        bindFramebuffer   (const Framebuffer& framebuffer, FramebufferOperation framebufferop);
+
+    ElementBuffer createElementbuffer();
+
+    ShaderProgram createShaderProgram(const char* name);
+    void deleteShaderProgram();
+
+    void enableVertexLayout(VertexLayout layout);
 
     class Camera
     {
@@ -142,10 +191,10 @@ namespace Editor
     };
 
     // Creates and compiles a shader
-    unsigned int compileShader(const char** data, const int* size, ShaderType shaderType);
+    // unsigned int compileShader(const char** data, const int* size, ShaderType shaderType);
 
     // Draws to all current color attachments
-    void drawToTexture(Vertexbuffer& vertexBuffer, ShaderProgram& shader, Framebuffer& framebuffer);
+    // void drawToTexture(Vertexbuffer& vertexBuffer, ShaderProgram& shader, Framebuffer& framebuffer);
 
     // Simply uploads texture from disk
     // to GPU memory. Uses stb_image under the hood,

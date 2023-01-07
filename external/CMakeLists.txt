@@ -62,7 +62,7 @@ FetchContent_Declare(
 
 # Google benchmark requires gtest
 FetchContent_MakeAvailable(
-    gtest
+    #gtest
 )
 
 FetchContent_Declare(
@@ -87,7 +87,7 @@ FetchContent_MakeAvailable(
    simplejson
    entt
    fmt
-   benchmark
+   #benchmark
    assimp
 )
 

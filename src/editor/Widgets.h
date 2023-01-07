@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 #include <functional>
-#include "Graphics.h"
+// #include "Graphics.h"
 #include "logging/Logging.h"
 #include "util/Types.h"
 #include <tuple>
@@ -153,6 +153,7 @@ namespace Editor
         v2i32         resolution   = { 3840, 2160 };
         v2f           offset       = { 0.0f, 0.0f };
         v2f           scale        = { 3480, 2160 };
+        /*
         Camera        camera       = {static_cast<float>(resolution.x())/
 									  static_cast<float>(resolution.y()),  // aspect ratio
                                      {0.0f, 0.0f, 3},   // pos
@@ -161,6 +162,7 @@ namespace Editor
         Framebuffer   framebuffer;
         Vertexbuffer  vertexbuffer = {defaultCubeData, sizeof(defaultCubeData)};
         ShaderProgram shaderProgram;
+        */
 
         // Viewport shows this texture
         void* viewportTexture = nullptr;
@@ -227,7 +229,7 @@ namespace Editor
         WidgetContext wCtx;
         int           samples         = 100;
         WidgetStore*  widgetStore     = nullptr;
-        TextureStore* textureStore    = nullptr;
+        //TextureStore* textureStore    = nullptr;
         unsigned int  viewportTexture = 0;
     };
 
@@ -293,7 +295,7 @@ namespace Editor
     void drawDockspace(const char* name);
     void drawImFileDialogAndProcessInput();
     void drawTextureView(void* currentTexId, v2f& offset, v2f& scale);
-    void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture);
+    // void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture);
 
     void moveTextureWhenDragged(float& offsetX, float& offsetY);
     void zoomTextureWhenScrolled(float& width, float& height);

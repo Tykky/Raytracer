@@ -1,4 +1,5 @@
-// this needs to be defined once, so STB_IMAGE implementation gets placed in only one of the translation units
+// this needs to be defined once, so STB_IMAGE implementation gets placed in only
+// one of the translation units
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "Graphics.h"
@@ -6,35 +7,139 @@
 #include <stb_image.h>
 #include <GL/glew.h>
 #include <string>
+#include <stdexcept>
 
 namespace Editor
 {
-    int shaderTypeToGLEnum(ShaderType shaderType)
+    uint TextureTargetToGLEnum(TextureTarget target)
     {
-        switch(shaderType)
+        switch (target)
         {
-        case ShaderType::VERTEX:
-            return GL_VERTEX_SHADER;
-			break;
-        case ShaderType::FRAGMENT:
-            return GL_FRAGMENT_SHADER;
-            break;
-        case ShaderType::COMPUTE:
-            return GL_COMPUTE_SHADER;
-			break;
+			case TextureTarget::TEXTURE_1D:
+                return GL_TEXTURE_1D;
+			case TextureTarget::TEXTURE_2D:
+                return GL_TEXTURE_2D;
+			case TextureTarget::TEXTURE_3D:
+                return GL_TEXTURE_3D;
+			case TextureTarget::TEXTURE_1D_ARRAY:
+                return GL_TEXTURE_1D_ARRAY;
+			case TextureTarget::TEXUTRE_2D_ARRAY:
+                return GL_TEXTURE_2D_ARRAY;
+			case TextureTarget::TEXTURE_CUBE_MAP:
+                return GL_TEXTURE_CUBE_MAP;
+			case TextureTarget::TEXTURE_CUBE_MAP_ARRAY:
+                return GL_TEXTURE_CUBE_MAP_ARRAY;
         }
-        return 0;
     }
+
+    uint FramebufferOperationToGLEnum(FramebufferOperation op)
+    {
+        switch (op)
+        {
+			case FramebufferOperation::READ:
+                return GL_READ_FRAMEBUFFER;
+			case FramebufferOperation::DRAW:
+                return GL_DRAW_FRAMEBUFFER;
+			case FramebufferOperation::READ_AND_DRAW:
+				return GL_FRAMEBUFFER;
+        }
+    }
+
+    constexpr std::array shaderStages {
+		GL_VERTEX_SHADER,
+		GL_FRAGMENT_SHADER,
+		GL_GEOMETRY_SHADER,
+		GL_COMPUTE_SHADER,
+		GL_TESS_CONTROL_SHADER,
+		GL_TESS_EVALUATION_SHADER,
+    };
 
     Texture createTexture()
     {
         uint id;
         glGenTextures(1, &id);
+        return { id };
     }
 
-    unsigned int compileShader(const char** data, const int* size, ShaderType shaderType)
+    void deleteTexture(Texture& texture)
     {
-        unsigned int shader = glCreateShader(shaderTypeToGLEnum(shaderType));
+        glDeleteTextures(1, &texture.id);
+        texture.id = 0;
+    }
+
+    void bindTexture(Texture texture, TextureTarget target)
+    {
+        if (!texture.id)
+            throw std::runtime_error("Tried to bind invalid texture!");
+
+        glBindTexture(TextureTargetToGLEnum(target), texture.id);
+    }
+
+    void unbindTexture(TextureTarget target)
+    {
+        glBindTexture(TextureTargetToGLEnum(target), 0);
+    }
+
+    void uploadTextureData(const Texture texture)
+    {
+    };
+
+    Framebuffer createFramebuffer()
+    {
+        uint id;
+        glGenFramebuffers(1, &id);
+        return { id };
+    }
+
+    void deleteFramebuffer(Framebuffer& framebuffer)
+    {
+        glDeleteFramebuffers(1, &framebuffer.id);
+        framebuffer.id = 0;
+    }
+
+    void bindFramebuffer(const Framebuffer framebuffer, FramebufferOperation framebufferop)
+    {
+        glBindFramebuffer(FramebufferOperationToGLEnum(framebufferop), framebuffer.id);
+    }
+
+    ShaderProgram createShaderProgram(const char* name)
+    {
+        return {};
+    }
+
+    void deleteShaderProgram()
+    {
+    }
+
+    void enableVertexLayout(VertexLayout layout)
+    {
+        switch (layout)
+        {
+        case VertexLayout::POINT:
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+            break;
+        case VertexLayout::POINT_UV:
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+            break;
+        case VertexLayout::TRIANGLE:
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+            break;
+        case VertexLayout::TRIANGLE_UV:
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+            break;
+        }
+    }
+
+    unsigned int compileShader(const char** data, const int* size, uint shader)
+    {
         glShaderSource(shader, 1, data, size);
         glCompileShader(shader);
         if (checkShaderCompilation(shader))
@@ -69,6 +174,7 @@ namespace Editor
         m_projection = glm::perspective(glm::radians(m_fov), m_aspectRatio, m_zNear, m_zFar);
     }
 
+    /*
     void drawToTexture(Vertexbuffer& vertexBuffer, ShaderProgram& shader, Framebuffer& framebuffer)
     {
         // We assume that all color attachments are same size
@@ -88,6 +194,7 @@ namespace Editor
             RT_LOG_ERROR("Failed to draw to framebuffer");
         }
     }
+    */
 
     std::optional<Texture> loadTexture(const char* filename)
     {
@@ -100,10 +207,11 @@ namespace Editor
             return std::nullopt;
         }
 
-        std::optional<Texture> tex(std::in_place, filename, data, width, height);
+        // std::optional<Texture> tex(std::in_place, filename, data, width, height);
         stbi_image_free(data);
         RT_LOG_MSG("Loaded texture {} with size: {}x{}", filename, width, height);
-        return tex;
+        // return tex;
+        return {};
     }
 
     void clear()

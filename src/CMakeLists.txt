@@ -10,9 +10,9 @@ set(RAYTRACER_SRC
 set(RAYTRACER_GUI
     editor/Editor.cpp
     editor/Widgets.cpp
-    editor/Graphics.cpp
-    ../external/ImFileDialog/ImFileDialog.cpp
+    "editor/platform/opengl/Graphics.cpp"
+    #../external/ImFileDialog/ImFileDialog.cpp
     ${DEAR_IMGUI_SOURCE})
 
-add_executable(raytracer EditorMain.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI})
+add_executable(raytracer EditorMain.cpp ${RAYTRACER_SRC} ${RAYTRACER_GUI} "editor/platform/graphics/Graphics.h")
 target_link_libraries(raytracer ${EXTERNAL})

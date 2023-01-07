@@ -1,7 +1,7 @@
 #include <cstdlib>
 
 #include "editor/Editor.h"
-#include "editor/Graphics.h"
+// #include "editor/Graphics.h"
 #include "logging/Logging.h"
 #include "scene/Components.h"
 #include "scene/Scene.h"

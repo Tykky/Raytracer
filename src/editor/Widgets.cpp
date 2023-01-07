@@ -10,7 +10,7 @@
 
 #include "Editor.h"
 #include "logging/Logging.h"
-#include "ImFileDialog.h"
+//#include "ImFileDialog.h"
 #include "editor/styles/DarkTheme.h"
 
 namespace Editor
@@ -183,8 +183,8 @@ namespace Editor
     {
         ImGui::SetNextWindowSize({ 800, 600 });
         auto begin = ImGuiScopedBegin(wStore, ctx);
-        if (ImGui::Button("wireframe"))
-            toggleWireframe();
+        if (ImGui::Button("wireframe")) {}
+            // toggleWireframe();
     }
 
     void drawAllWidgets(WidgetStore* wStore)
@@ -205,8 +205,8 @@ namespace Editor
         {
             if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem("Open"))
-                    ifd::FileDialog::Instance().Open("Dialog", "Open a file", "");
+                if (ImGui::MenuItem("Open")) {}
+                    // ifd::FileDialog::Instance().Open("Dialog", "Open a file", "");
                 ImGui::EndMenu();
             }
 
@@ -322,6 +322,7 @@ namespace Editor
 
     void drawImFileDialogAndProcessInput()
     {
+        /*
         if (ifd::FileDialog::Instance().IsDone("Dialog"))
         {
             if (ifd::FileDialog::Instance().HasResult())
@@ -330,6 +331,7 @@ namespace Editor
             }
             ifd::FileDialog::Instance().Close();
         }
+        */
     }
 
     void drawTextureView(void* texId, v2f& offset, v2f& scale)
@@ -357,6 +359,7 @@ namespace Editor
 		ImGui::EndChild();
     }
 
+    /*
     void drawTexturePickerComboBox(const char* preview, TextureStore* textureStore, Texture*& currentTexture)
     {
         ImGui::BeginChild("Texture Picker", {180, 30});
@@ -372,6 +375,7 @@ namespace Editor
         }
         ImGui::EndChild();
     }
+    */
 
     void moveTextureWhenDragged(float& offsetX, float& offsetY)
     {
